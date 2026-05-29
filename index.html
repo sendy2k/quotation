@@ -1,0 +1,2406 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a1a1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ใบเสนอราคา">
+<title>ใบเสนอราคา Pro</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async></script>
+<style>
+:root {
+  --bg: #f0ede8;
+  --bg2: #e8e4de;
+  --surface: #ffffff;
+  --surface2: #faf9f7;
+  --border: #ddd9d0;
+  --border-light: #eae7e0;
+  --text: #1c1b18;
+  --text-muted: #8a8780;
+  --text-subtle: #b0ada6;
+  --accent: #1c1b18;
+  --accent-fg: #ffffff;
+  --accent2: #2f4f3a;
+  --success: #2d6a4f;
+  --success-bg: #e8f5ee;
+  --success-border: #a8d5b8;
+  --danger: #b91c1c;
+  --danger-bg: #fef2f2;
+  --warn-bg: #fffbeb;
+  --warn-border: #fbbf24;
+  --warn-text: #78350f;
+  --cost-color: #92400e;
+  --profit-pos: #2d6a4f;
+  --profit-neg: #b91c1c;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-xs: 5px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --shadow: 0 1px 4px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.04);
+  --shadow-md: 0 2px 8px rgba(0,0,0,.08), 0 8px 32px rgba(0,0,0,.06);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Sarabun', -apple-system, sans-serif;
+  background: var(--bg);
+  background-image: radial-gradient(circle at 20% 0%, rgba(47,79,58,.06) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 100%, rgba(28,27,24,.04) 0%, transparent 50%);
+  color: var(--text);
+  font-size: 15px;
+  min-height: 100vh;
+}
+
+/* Install Banner */
+#installBanner { display: none; background: var(--accent); color: var(--accent-fg); padding: 10px 16px; font-size: 13px; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 100; }
+#installBanner.show { display: flex; }
+#installBanner button { padding: 5px 12px; border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; font-family: inherit; border: none; }
+#installBtn { background: white; color: var(--accent); font-weight: 600; }
+#dismissInstall { background: transparent; color: rgba(255,255,255,.7); }
+
+/* Tab Nav */
+.tab-bar {
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 1px 0 var(--border), var(--shadow-sm);
+}
+.tab {
+  padding: 14px 16px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color .15s;
+  letter-spacing: .01em;
+}
+.tab.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 700; }
+.tab:hover { color: var(--text); }
+#listCount { font-size: 10px; background: var(--border); color: var(--text-muted); padding: 1px 7px; border-radius: 20px; margin-left: 2px; font-weight: 700; }
+
+/* Layout */
+.page { padding: 16px; max-width: 1100px; margin: 0 auto; }
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  transition: box-shadow .2s;
+}
+.card:hover { box-shadow: var(--shadow-md); }
+.back-card {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid var(--warn-border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Section label */
+.section-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 2px;
+  opacity: .25;
+}
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+/* Fields */
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: .03em; text-transform: uppercase; }
+.field input, .field textarea, .field select {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 11px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface2);
+  color: var(--text);
+  width: 100%;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.field input:hover, .field textarea:hover, .field select:hover { background: var(--surface); }
+.field input:focus, .field textarea:focus, .field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(28,27,24,.07);
+}
+.field textarea { resize: vertical; min-height: 48px; line-height: 1.6; }
+
+/* Doc Header */
+.doc-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+.logo-zone { flex-shrink: 0; }
+.logo-upload {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  width: auto;
+  min-height: unset;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  color: var(--text-subtle);
+  font-size: 11px;
+  transition: all .15s;
+  background: var(--surface2);
+}
+.logo-upload:hover { background: var(--bg2); border-color: var(--text-muted); color: var(--text-muted); }
+.logo-upload img { max-height: 140px; width: auto; max-width: 100%; object-fit: contain; border-radius: 4px; display: none; }
+.doc-title-area { flex: 1; text-align: right; }
+.doc-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -.5px;
+  color: var(--text);
+  line-height: 1;
+}
+.doc-no-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; justify-content: flex-end; }
+.doc-no-row span { font-size: 11px; color: var(--text-subtle); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+.doc-no-input {
+  border: none;
+  border-bottom: 1.5px solid var(--border);
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  padding: 2px 4px;
+  width: 150px;
+  text-align: right;
+  transition: border-color .15s;
+  border-radius: 0;
+}
+.doc-no-input:focus { outline: none; border-bottom-color: var(--accent); }
+.badge { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: .04em; }
+.badge-new { background: #dbeafe; color: #1d4ed8; }
+.badge-saved { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-border); }
+.date-col { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0; justify-content: flex-end; margin-top: 4px; }
+.date-field { display: flex; flex-direction: row; gap: 8px; align-items: center; }
+.date-field label { font-size: 10.5px; color: var(--text-subtle); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; min-width: 42px; text-align: right; }
+.date-field input {
+  width: 160px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 5px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color .15s, box-shadow .15s;
+}
+.date-field input:hover { border-color: var(--text-subtle); }
+.date-field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(28,27,24,.07); }
+
+/* Table */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { background: var(--surface2); }
+th {
+  padding: 10px 8px;
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1.5px solid var(--border);
+}
+td { padding: 5px 5px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #faf9f7; }
+td input {
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-xs);
+  padding: 5px 7px;
+  font-size: 13px;
+  width: 100%;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  transition: border-color .1s, background .1s;
+}
+td textarea { vertical-align: middle; }
+td input:focus { border-color: var(--border); background: var(--surface2); outline: none; box-shadow: 0 0 0 2px rgba(28,27,24,.05); }
+td textarea:focus { border-color: var(--border) !important; background: var(--surface2) !important; outline: none; box-shadow: 0 0 0 2px rgba(28,27,24,.05); }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .12s;
+  white-space: nowrap;
+  letter-spacing: .01em;
+}
+.btn:hover { background: var(--bg2); border-color: var(--text-subtle); }
+.btn:active { transform: scale(.97); }
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+  box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 1px 8px rgba(0,0,0,.1);
+}
+.btn-primary:hover { opacity: .88; background: var(--accent); border-color: var(--accent); box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.btn-danger { color: var(--danger); border-color: transparent; background: transparent; }
+.btn-danger:hover { background: var(--danger-bg); border-color: #fecaca; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn-icon { padding: 5px 8px; }
+
+/* Actions Row */
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.actions-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+
+/* Divider */
+.divider { border: none; border-top: 1px solid var(--border-light); margin: 12px 0; }
+
+/* VAT rows */
+.calc-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.calc-row label { font-size: 13px; font-weight: 500; color: var(--text); min-width: 120px; }
+.calc-row input[type=number] {
+  width: 80px;
+  padding: 6px 9px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  background: var(--surface2);
+  color: var(--text);
+  font-family: inherit;
+  transition: border-color .15s;
+}
+.calc-row input[type=number]:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+
+/* Summary table */
+.sum-table { width: 100%; font-size: 14px; }
+.sum-table td { padding: 6px 0; border-bottom: none; }
+.sum-table td:last-child { text-align: right; font-weight: 600; }
+.sum-grand td {
+  font-size: 18px;
+  font-weight: 700;
+  border-top: 2px solid var(--border);
+  padding-top: 12px;
+  color: var(--text);
+}
+
+/* Metrics */
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+.metric {
+  background: rgba(255,255,255,.7);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  border: 1px solid rgba(251,191,36,.4);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+}
+.metric-label { font-size: 10px; color: var(--warn-text); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; opacity: .8; }
+.metric-val { font-size: 18px; font-weight: 700; color: var(--warn-text); }
+.profit-pos { color: var(--profit-pos) !important; }
+.profit-neg { color: var(--profit-neg) !important; }
+.cost-color { color: var(--cost-color) !important; }
+
+/* List view */
+.qt-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border-light);
+  transition: background .1s;
+}
+.qt-item:last-child { border-bottom: none; }
+.qt-info { flex: 1; min-width: 0; }
+.qt-no { font-weight: 700; font-size: 14px; }
+.qt-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qt-total { font-weight: 700; font-size: 14px; white-space: nowrap; color: var(--accent2); }
+.empty { text-align: center; padding: 48px 20px; color: var(--text-muted); }
+.empty i { font-size: 40px; display: block; margin-bottom: 12px; opacity: .25; }
+.print-only { display: none; }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  padding: 11px 20px;
+  border-radius: var(--radius);
+  font-size: 13.5px;
+  font-weight: 600;
+  opacity: 0;
+  transition: all .25s cubic-bezier(.34,1.56,.64,1);
+  z-index: 999;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  letter-spacing: .01em;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.success { background: var(--accent); color: white; }
+.toast.error { background: var(--danger); color: white; }
+
+/* Toggle switch */
+.toggle-wrap { position:relative; width:38px; height:22px; flex-shrink:0; cursor:pointer; }
+.toggle-track {
+  width:38px; height:22px;
+  background: var(--border);
+  border-radius:22px;
+  transition: background .2s;
+  position:relative;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.1);
+}
+.toggle-track::after {
+  content:'';
+  position:absolute;
+  top:3px; left:3px;
+  width:16px; height:16px;
+  background:#fff;
+  border-radius:50%;
+  transition: left .2s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+.toggle-track.on { background: var(--accent); }
+.toggle-track.on::after { left:19px; }
+
+/* Deposit */
+.deposit-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border-light); }
+.deposit-row:last-child { border-bottom: none; }
+.deposit-row input[type=text] { flex:1; font-family:inherit; font-size:13px; padding:6px 9px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--surface2); color:var(--text); transition: border-color .15s; }
+.deposit-row input[type=text]:focus { outline:none; border-color:var(--accent); background:var(--surface); }
+.deposit-row input[type=number] { width:110px; font-family:inherit; font-size:13px; padding:6px 9px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--surface2); color:var(--text); text-align:right; transition:border-color .15s; }
+.deposit-row input[type=number]:focus { outline:none; border-color:var(--accent); background:var(--surface); }
+.deposit-row .dep-amt { width:110px; text-align:right; font-size:13px; font-weight:700; color:var(--success); white-space:nowrap; }
+.deposit-row .dep-seq { font-size:12px; color:var(--text-muted); min-width:44px; font-weight:600; }
+.dep-total-row { display:flex; justify-content:space-between; align-items:center; padding-top:10px; margin-top:6px; border-top:2px solid var(--border); font-weight:700; font-size:14px; }
+.dep-remaining { color: var(--danger); }
+.dep-remaining.zero { color: var(--success); }
+
+/* Bank accounts */
+.bank-account-item {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 10px;
+  position: relative;
+  background: var(--surface2);
+  transition: border-color .15s;
+}
+.bank-account-item:hover { border-color: var(--text-subtle); }
+.bank-account-item:last-child { margin-bottom: 0; }
+.bank-account-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.bank-account-label { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: .07em; text-transform: uppercase; }
+.bank-account-actions { display: flex; gap: 4px; }
+.bank-account-body { display: flex; gap: 16px; flex-wrap: nowrap; align-items: flex-start; }
+.bank-account-body.hidden-acct { display: none; }
+.bank-preset-bar {
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--warn-text);
+}
+
+/* Receipt Doc Info Grid */
+#rcDocInfo .rc-info-grid { display: grid; grid-template-columns: auto 90px; gap: 3px 8px; align-items: center; }
+#rcDocInfo .rc-info-grid label { white-space: nowrap; font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em; text-align: right; justify-self: end; margin-bottom: 0; }
+#rcDocInfo .rc-info-grid input { font-family: inherit; font-size: 12px; padding: 4px 7px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); width: 100%; box-sizing: border-box; text-align: right; transition: border-color .15s, box-shadow .15s, background .15s; }
+#rcDocInfo .rc-info-grid input:hover { background: var(--surface); }
+#rcDocInfo .rc-info-grid input:focus { outline: none; border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px rgba(28,27,24,.07); }
+
+/* Print */
+@media print {
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  .back-card { display: none !important; }
+  .print-hidden { display: none !important; }
+  body { background: white; font-size: 13px; }
+  .page { padding: 0; max-width: 100%; }
+  .card { border: none; box-shadow: none; padding: 0; margin-bottom: 4px; }
+  .card:hover { box-shadow: none; }
+  .logo-upload { border: none; }
+  .tab-bar { display: none; }
+  #installBanner { display: none !important; }
+  .doc-header { margin-bottom: 8px; }
+  .section-label { font-size: 11px; margin-bottom: 4px; font-weight: 700; }
+  .section-label::before { display: none; }
+  .grid2 { gap: 8px; }
+  .grid3 { gap: 8px; }
+  .field { gap: 2px; }
+  .field label { font-size: 11px; }
+  .field input, .field textarea, .field select { font-size: 13px; padding: 2px 6px; border: none; background: transparent; }
+  .field textarea { min-height: 0 !important; height: auto !important; overflow: hidden; padding-top: 2px; padding-bottom: 2px; }
+  .table-wrap { border: none; }
+  table { font-size: 13px; }
+  th { padding: 4px 4px; font-size: 11px; background: none; }
+  td { padding: 3px 4px; font-size: 13px; vertical-align: middle; }
+  td input, td textarea { vertical-align: middle; padding-top: 0; padding-bottom: 0; line-height: 1.4; }
+  td input { padding-top: 0; }
+  /* Receipt doc info — print */
+  #rcDocInfo .rc-info-grid { grid-template-columns: auto 120px !important; }
+  #rcDocInfo .rc-info-grid input { border: none !important; background: transparent !important; padding: 2px 0 !important; }
+  /* Hide empty tax fields on print */
+  .tax-field-empty { display: none !important; }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .page { padding: 10px; }
+  .card { padding: 14px; border-radius: 12px; }
+  .grid2 { grid-template-columns: 1fr; }
+  .grid3 { grid-template-columns: 1fr 1fr; }
+  .doc-header { flex-wrap: wrap; }
+  .date-col { align-items: flex-start; }
+  .date-field input { width: 100%; }
+  .metrics-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div id="installBanner">
+  <i class="ti ti-download"></i>
+  <span style="flex:1">ติดตั้งแอปนี้บนอุปกรณ์ของคุณ เพื่อใช้งานแบบออฟไลน์</span>
+  <button id="installBtn">ติดตั้ง</button>
+  <button id="dismissInstall">ปิด</button>
+</div>
+
+<nav class="tab-bar no-print">
+  <button class="tab active" onclick="switchTab('form')" id="tab-form"><i class="ti ti-file-text"></i> แบบฟอร์ม</button>
+  <button class="tab" onclick="switchTab('list')" id="tab-list"><i class="ti ti-archive"></i> บันทึก <span id="listCount">0</span></button>
+  <button class="tab" onclick="switchTab('banks')" id="tab-banks"><i class="ti ti-building-bank"></i> บัญชีธนาคาร <span id="bankPresetCount" style="font-size:11px;background:var(--border);padding:1px 7px;border-radius:20px;margin-left:2px">0</span></button>
+  <button class="tab" onclick="switchTab('contacts')" id="tab-contacts"><i class="ti ti-address-book"></i> ลูกค้า <span id="contactCount" style="font-size:11px;background:var(--border);padding:1px 7px;border-radius:20px;margin-left:2px">0</span></button>
+  <a class="tab" href="receipt.html" style="text-decoration:none"><i class="ti ti-receipt"></i> ใบเสร็จ <span id="receiptCount" style="font-size:11px;background:var(--border);padding:1px 7px;border-radius:20px;margin-left:2px">0</span></a>
+</nav>
+
+<div id="toast" class="toast no-print"></div>
+
+<!-- ============ FORM VIEW ============ -->
+<div id="view-form" class="page">
+
+  <div class="card">
+    <div class="doc-header">
+      <div class="logo-zone">
+        <div id="logoPrintWrap" style="display:none"><img id="logoPrint" style="max-height:140px;width:auto;object-fit:contain" alt="โลโก้"></div>
+        <div id="logoArea" style="display:none"><img id="logoPreview" alt="โลโก้"></div>
+        <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="handleLogo(event)">
+        <div class="no-print" style="display:flex;flex-direction:column;gap:4px;margin-top:4px">
+          <button class="btn btn-sm" id="uploadLogoBtn" onclick="document.getElementById('logoInput').click()" style="width:80px;justify-content:center"><i class="ti ti-photo"></i> โลโก้</button>
+          <button class="btn btn-sm btn-danger" id="removeLogoBtn" style="display:none;width:80px;justify-content:center" onclick="removeLogo()"><i class="ti ti-x"></i> ลบ</button>
+        </div>
+      </div>
+      <div style="border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;background:var(--surface2);min-width:220px;flex:1">
+        <div class="section-label no-print" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">ผู้เสนอราคา <button class="btn btn-sm no-print" onclick="openContactPicker('seller')" title="เลือกจากสมุดที่อยู่"><i class="ti ti-address-book"></i> เลือก</button></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div id="s_name_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ชื่อบริษัท / ร้านค้า</label><textarea id="s_name" rows="1" placeholder="บริษัท ตัวอย่าง จำกัด" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;max-height:38px;flex:1;line-height:1.5"></textarea></div>
+          <div id="s_addr_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ที่อยู่</label><textarea id="s_addr" rows="1" placeholder="เลขที่ ถนน แขวง เขต จังหวัด" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;max-height:38px;flex:1;line-height:1.5"></textarea></div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div id="s_tel_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex:1"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">โทรศัพท์</label><input id="s_tel" placeholder="02-xxx-xxxx" style="flex:1;min-width:0"></div>
+            <div id="s_tax_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex:1"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">เลขผู้เสียภาษี</label><input id="s_tax" placeholder="0-0000-00000-00-0" style="flex:1;min-width:0"></div>
+          </div>
+          <button class="btn btn-sm no-print" onclick="saveFormToContact('seller')" style="margin-top:4px;width:100%;justify-content:center"><i class="ti ti-bookmark"></i> บันทึกลงสมุดที่อยู่</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;background:var(--surface2)">
+        <div class="doc-title-area">
+          <div class="doc-title">ใบเสนอราคา</div>
+          <div class="doc-no-row">
+            <span>เลขที่</span>
+            <input class="doc-no-input" id="docNo" value="QT-2026-001">
+            <span id="statusBadge" class="badge badge-new no-print">ใหม่</span>
+          </div>
+        </div>
+        <hr style="border:none;border-top:1px solid var(--border-light);margin:6px 0 2px;width:100%">
+        <div class="date-col">
+          <div class="date-field"><label>วันที่</label><input type="date" id="docDate"></div>
+          <div id="validDate_wrap" class="date-field"><label>อ้างอิง</label><input type="text" id="validDate" placeholder=""></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:10px">
+      <div style="border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;background:var(--surface2)">
+        <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:6px" class="no-print"><button class="btn btn-sm no-print" onclick="openContactPicker('buyer')" title="เลือกจากสมุดที่อยู่"><i class="ti ti-address-book"></i> เลือก</button></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <div id="c_name_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex:1"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ชื่อบริษัท / ลูกค้า</label><textarea id="c_name" rows="1" placeholder="บริษัท ลูกค้า จำกัด" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;flex:1"></textarea></div>
+            <div id="c_tel_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex-shrink:0"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">โทรศัพท์</label><input id="c_tel" placeholder="08x-xxx-xxxx" style="width:200px;min-width:0"></div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div id="c_addr_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex:1"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ที่อยู่</label><textarea id="c_addr" rows="1" placeholder="เลขที่ ถนน แขวง เขต จังหวัด" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;flex:1"></textarea></div>
+            <div id="c_tax_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex-shrink:0"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">เลขผู้เสียภาษี</label><input id="c_tax" placeholder="0-0000-00000-00-0" style="width:200px;min-width:0"></div>
+          </div>
+          <button class="btn btn-sm no-print" onclick="saveFormToContact('buyer')" style="margin-top:4px;width:100%;justify-content:center"><i class="ti ti-bookmark"></i> บันทึกลงสมุดที่อยู่</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">รายการสินค้า / บริการ</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:24px">#</th>
+          <th>รายละเอียด</th>
+          <th style="width:58px;text-align:center">จำนวน</th>
+          <th style="width:75px;text-align:center">หน่วย</th>
+          <th style="width:95px;text-align:right">ราคา/หน่วย</th>
+          <th style="width:95px;text-align:right">รวมขาย</th>
+          <th style="width:95px;text-align:right" class="no-print">ต้นทุน/หน่วย</th>
+          <th style="width:90px;text-align:right" class="no-print">กำไร</th>
+          <th style="width:30px" class="no-print"></th>
+        </tr></thead>
+        <tbody id="itemBody"></tbody>
+      </table>
+    </div>
+    <div class="actions no-print" style="margin-top:10px">
+      <button class="btn btn-sm" onclick="addRow()"><i class="ti ti-plus"></i> เพิ่มรายการ</button>
+    </div>
+  </div>
+
+  <div class="back-card no-print">
+    <div class="section-label" style="color:var(--warn-text);display:flex;align-items:center;gap:5px"><i class="ti ti-lock"></i> สรุปหลังร้าน (ไม่พิมพ์)</div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-label">ยอดขาย (หลังลด ก่อน VAT)</div><div class="metric-val" id="m_revenue">0.00 ฿</div></div>
+      <div class="metric"><div class="metric-label">ต้นทุนรวม</div><div class="metric-val cost-color" id="m_cost">0.00 ฿</div></div>
+      <div class="metric"><div class="metric-label">กำไรขั้นต้น</div><div class="metric-val" id="m_profit">0.00 ฿</div></div>
+      <div class="metric"><div class="metric-label">อัตรากำไร</div><div class="metric-val" id="m_margin">0.00%</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+      <div class="section-label">สรุปยอด</div>
+
+      <!-- ส่วนลด -->
+      <div class="calc-row" id="discountCalcRow">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+          <div class="toggle-wrap" onclick="toggleDiscount()">
+            <div class="toggle-track" id="discountTrack"></div>
+          </div>
+          <span id="discountLabel">ส่วนลด (%)</span>
+        </label>
+        <input type="number" id="discountPct" min="0" step="0.01" value="0" oninput="calc()" style="display:none">
+      </div>
+      <div id="discountInputRow" style="display:none;padding:4px 0 6px 0">
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="number" id="discountPct2" min="0" step="0.01" placeholder="0.00" oninput="$('discountPct').value=this.value;calc()"
+            style="flex:1;font-family:inherit;font-size:14px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text)">
+          <button id="discountModeBtn" class="btn btn-sm" onclick="toggleDiscountMode()" title="สลับโหมดส่วนลด"
+            style="padding:5px 12px;font-size:13px;min-width:40px;font-weight:600">%</button>
+        </div>
+      </div>
+
+      <!-- VAT -->
+      <div class="calc-row" id="vatCalcRow">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+          <div class="toggle-wrap" onclick="toggleVat()">
+            <div class="toggle-track" id="vatTrack"></div>
+          </div>
+          ภาษีมูลค่าเพิ่ม (%)
+        </label>
+        <input type="number" id="vatPct" min="0" max="100" step="0.01" value="0" oninput="calc()" style="display:none">
+      </div>
+      <div id="vatInputRow" style="display:none;padding:4px 0 6px 0">
+        <input type="number" id="vatPct2" min="0" max="100" step="0.01" placeholder="7" oninput="$('vatPct').value=this.value;calc()"
+          style="width:100%;font-family:inherit;font-size:14px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text)">
+      </div>
+
+      <hr class="divider">
+      <table class="sum-table">
+        <tr id="rowSubtotal" style="display:none"><td style="color:var(--text-muted)">ยอดรวมก่อนลด</td><td id="subtotal">0.00</td></tr>
+        <tr id="rowDiscountAmt" style="display:none"><td style="color:var(--text-muted)">ส่วนลด</td><td id="discountAmt">-0.00</td></tr>
+        <tr id="rowAfterDiscount" style="display:none"><td style="color:var(--text-muted)">ยอดหลังลด</td><td id="afterDiscount">0.00</td></tr>
+        <tr id="rowVatAmt" style="display:none"><td style="color:var(--text-muted)">ภาษีมูลค่าเพิ่ม</td><td id="vatAmt">0.00</td></tr>
+        <tr class="sum-grand"><td>ยอดรวมสุทธิ</td><td id="grandTotal">0.00</td></tr>
+      </table>
+      <div id="grandTotalText" style="margin-top:6px;font-size:12px;color:var(--text-muted);text-align:right;font-style:italic;border-top:1px solid var(--border-light);padding-top:5px">( ศูนย์บาทถ้วน )</div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">เงื่อนไขการชำระเงิน</div>
+    <div style="display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;background:var(--surface2)">
+      <div style="display:flex;gap:6px;align-items:center" class="no-print">
+        <input id="payTerm" value="โอนเงินก่อนส่งของ"
+          style="flex:1;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);padding:8px 11px;font-family:inherit;font-size:14px;color:var(--text);min-width:0;transition:border-color .15s"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+        <button class="btn btn-sm" onclick="savePayTermPreset()" title="บันทึกเป็น preset"><i class="ti ti-bookmark"></i></button>
+      </div>
+      <div id="payTermPrintDisplay" class="print-only" style="display:none;font-size:14px;padding:4px 0"></div>
+      <div id="payTermPresetList" class="no-print" style="display:flex;flex-direction:column;gap:4px"></div>
+      <div id="note_wrap" class="field"><label></label><textarea id="note" placeholder="ระยะเวลาส่งมอบ, เงื่อนไขต่างๆ" oninput="autoResize(this)" style="resize:none;overflow:hidden;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2)"></textarea></div>
+    </div>
+  </div>
+
+  <!-- ปุ่มเพิ่มงวดอยู่นอกการ์ด เห็นได้ตลอด -->
+  <div class="actions no-print" style="margin-bottom:8px">
+    <button class="btn btn-sm" onclick="addDeposit()"><i class="ti ti-cash"></i> + เพิ่มงวดมัดจำ</button>
+  </div>
+
+  <div class="card" id="depositCard" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="section-label" style="margin:0"><i class="ti ti-cash"></i> ตารางชำระมัดจำ</div>
+      <div class="no-print" style="display:flex;gap:6px;align-items:center">
+        <button class="btn btn-sm" onclick="addDeposit()"><i class="ti ti-plus"></i> เพิ่มงวด</button>
+        <button class="btn btn-sm btn-danger" onclick="removeDeposit()" id="depRemoveBtn" style="display:none"><i class="ti ti-minus"></i> ลดงวด</button>
+      </div>
+    </div>
+    <div id="depositRows"></div>
+    <div class="dep-total-row no-print">
+      <span style="color:var(--text-muted);font-size:13px">ยอดคงเหลือ</span>
+      <span id="depRemaining" class="dep-remaining">0.00 ฿</span>
+    </div>
+    <div class="dep-total-row" style="border-top:none;padding-top:4px">
+      <span style="color:var(--text-muted);font-size:13px">รวมมัดจำทั้งหมด</span>
+      <span id="depTotal" style="color:var(--success)">0.00 ฿</span>
+    </div>
+  </div>
+
+  <div class="card" id="paymentCard">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="section-label" style="margin:0"><i class="ti ti-credit-card"></i> ข้อมูลการชำระเงิน</div>
+      <div style="display:flex;gap:6px;align-items:center" class="no-print">
+        <button class="btn btn-sm" id="togglePaymentBtn" onclick="togglePaymentSection()"><i class="ti ti-eye-off"></i> ซ่อน</button>
+        <button class="btn btn-sm" onclick="addBankAccount()"><i class="ti ti-plus"></i> เพิ่มบัญชี</button>
+        <button class="btn btn-sm" onclick="saveBankPresets()" title="บันทึกรายการบัญชีนี้เป็นค่าตั้งต้น"><i class="ti ti-device-floppy"></i> บันทึกค่าตั้งต้น</button>
+        <button class="btn btn-sm" onclick="switchTab('banks')" title="จัดการบัญชีที่บันทึกไว้"><i class="ti ti-settings"></i> จัดการบัญชี</button>
+      </div>
+    </div>
+    <div id="paymentSectionBody">
+      <div id="bankAccountsContainer"></div>
+      <!-- hidden legacy fields for backward compat -->
+      <input type="hidden" id="bankName">
+      <input type="hidden" id="bankAccNo">
+      <input type="hidden" id="bankAccName">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="grid2" style="gap:10px">
+      <div style="display:flex;flex-direction:column;gap:6px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;background:var(--surface2)">
+        <div class="section-label" style="margin-bottom:2px;justify-content:space-between">
+          <span>ผู้เสนอราคา</span>
+          <div style="display:flex;gap:5px" class="no-print">
+            <button class="btn btn-sm" onclick="openStaffPicker()" title="เรียกใช้ข้อมูล"><i class="ti ti-users"></i> เรียกใช้</button>
+            <button class="btn btn-sm" onclick="saveStaffPreset()" title="บันทึกข้อมูล"><i class="ti ti-bookmark"></i> บันทึก</button>
+          </div>
+        </div>
+        <div class="grid2" style="gap:8px">
+          <div class="field" style="align-items:center;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px"><label style="text-align:center;font-size:10px;color:var(--text-subtle);margin-bottom:2px">ชื่อ-นามสกุล</label><input id="preparedBy" style="text-align:center;border:none;background:transparent;padding:2px 0;font-size:14px;font-weight:600"></div>
+          <div class="field" style="align-items:center;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px"><label style="text-align:center;font-size:10px;color:var(--text-subtle);margin-bottom:2px">เบอร์มือถือ</label><input id="preparedTel" style="text-align:center;border:none;background:transparent;padding:2px 0;font-size:14px;font-weight:600"></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;background:var(--surface2)">
+        <div class="section-label" style="margin-bottom:2px;justify-content:space-between">
+          <span>อนุมัติสั่งซื้อ</span>
+          <div style="display:flex;gap:5px" class="no-print">
+            <button class="btn btn-sm" onclick="openApproverPicker()" title="เรียกใช้ข้อมูล"><i class="ti ti-users"></i> เรียกใช้</button>
+            <button class="btn btn-sm" onclick="saveApproverPreset()" title="บันทึกข้อมูล"><i class="ti ti-bookmark"></i> บันทึก</button>
+          </div>
+        </div>
+        <div class="grid2" style="gap:8px">
+          <div class="field" style="align-items:center;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px"><label style="text-align:center;font-size:10px;color:var(--text-subtle);margin-bottom:2px">ชื่อ-นามสกุล</label><input id="approvedBy" style="text-align:center;border:none;background:transparent;padding:2px 0;font-size:14px;font-weight:600"></div>
+          <div class="field" style="align-items:center;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px"><label style="text-align:center;font-size:10px;color:var(--text-subtle);margin-bottom:2px">วันที่อนุมัติ</label>
+            <input type="text" id="approvedDate" placeholder="" style="text-align:center;border:none;background:transparent;padding:2px 0;font-size:14px;font-weight:600">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions-bar no-print">
+    <div class="actions">
+      <button class="btn" onclick="newForm()"><i class="ti ti-file-plus"></i> ใหม่</button>
+      <button class="btn" onclick="clearForm()"><i class="ti ti-trash"></i> ล้าง</button>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="printDoc()"><i class="ti ti-printer"></i> พิมพ์</button>
+      <button class="btn btn-primary" onclick="saveQuotation()"><i class="ti ti-device-floppy"></i> บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LIST VIEW ============ -->
+<div id="view-list" class="page" style="display:none">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+      <div class="section-label" style="margin:0">รายการที่บันทึก</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-sm" id="driveBtn" onclick="driveAction()"><i class="ti ti-brand-google-drive"></i> <span id="driveBtnLabel">เชื่อมต่อ Drive</span></button>
+        <button class="btn btn-sm" onclick="exportBackup()"><i class="ti ti-download"></i> Export</button>
+        <button class="btn btn-sm" onclick="$('importFileInput').click()"><i class="ti ti-upload"></i> Import</button>
+        <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importBackup(event)">
+        <button class="btn btn-sm" onclick="switchTab('form')"><i class="ti ti-plus"></i> สร้างใหม่</button>
+      </div>
+    </div>
+    <div id="listContainer"><div class="empty"><i class="ti ti-archive"></i>ยังไม่มีใบเสนอราคา</div></div>
+  </div>
+</div>
+
+<!-- ============ CONTACTS VIEW ============ -->
+<div id="view-contacts" class="page" style="display:none">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div>
+        <div class="section-label" style="margin:0">สมุดที่อยู่</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:3px">บันทึกข้อมูลผู้เสนอราคาและลูกค้าสำหรับใช้ซ้ำ</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-sm" onclick="addContact('seller')"><i class="ti ti-plus"></i> + ผู้เสนอราคา</button>
+        <button class="btn btn-sm btn-primary" onclick="addContact('buyer')"><i class="ti ti-plus"></i> + ลูกค้า</button>
+      </div>
+    </div>
+    <!-- Search -->
+    <div class="field" style="margin-bottom:12px">
+      <input id="contactSearch" placeholder="ค้นหาชื่อ / บริษัท..." oninput="renderContactList()" style="font-size:14px">
+    </div>
+    <!-- Filter tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:12px">
+      <button id="cf-all" class="btn btn-sm btn-primary" onclick="setContactFilter('all')">ทั้งหมด</button>
+      <button id="cf-seller" class="btn btn-sm" onclick="setContactFilter('seller')"><i class="ti ti-building"></i> ผู้เสนอราคา</button>
+      <button id="cf-buyer" class="btn btn-sm" onclick="setContactFilter('buyer')"><i class="ti ti-users"></i> ลูกค้า</button>
+    </div>
+    <div id="contactList"></div>
+  </div>
+  <div class="card" style="background:var(--warn-bg);border-color:var(--warn-border)">
+    <div style="font-size:13px;color:var(--warn-text);display:flex;align-items:flex-start;gap:8px">
+      <i class="ti ti-info-circle" style="margin-top:1px;flex-shrink:0"></i>
+      <div>เพิ่มข้อมูลบริษัท/ลูกค้าไว้ที่นี่ เมื่อสร้างใบเสนอราคากด <strong>"เลือก"</strong> ข้างหัวข้อ ผู้เสนอราคา / ผู้รับใบเสนอราคา เพื่อกรอกข้อมูลอัตโนมัติ</div>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Picker Modal -->
+<div id="contactPickerModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.45);align-items:flex-end;justify-content:center" onclick="closeContactPicker(event)">
+  <div style="background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:600px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden" onclick="event.stopPropagation()">
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-weight:700;font-size:15px" id="pickerTitle">เลือกรายชื่อ</div>
+        <div style="font-size:12px;color:var(--text-muted)" id="pickerSubtitle"></div>
+      </div>
+      <button class="btn btn-sm" onclick="closeContactPicker()"><i class="ti ti-x"></i></button>
+    </div>
+    <div style="padding:10px 16px;border-bottom:1px solid var(--border)">
+      <input id="pickerSearch" placeholder="ค้นหา..." class="field" style="width:100%;font-size:14px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit" oninput="renderPicker()">
+    </div>
+    <div id="pickerList" style="overflow-y:auto;flex:1;padding:8px 0"></div>
+    <div style="padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
+      <button class="btn btn-sm" style="flex:1" id="pickerAddBtn" onclick="addContactFromPicker()"><i class="ti ti-plus"></i> สร้างรายชื่อใหม่</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ BANK PRESETS VIEW ============ -->
+<div id="view-banks" class="page" style="display:none">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div>
+        <div class="section-label" style="margin:0">บัญชีธนาคารที่บันทึกไว้</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:3px">จัดการบัญชีสำหรับใช้ซ้ำในใบเสนอราคา</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="addPresetBankDirect()"><i class="ti ti-plus"></i> เพิ่มบัญชีใหม่</button>
+    </div>
+    <div id="presetBankList"></div>
+  </div>
+
+  <div class="card" style="background:var(--warn-bg);border-color:var(--warn-border)">
+    <div style="font-size:13px;color:var(--warn-text);display:flex;align-items:flex-start;gap:8px">
+      <i class="ti ti-info-circle" style="margin-top:1px;flex-shrink:0"></i>
+      <div>
+        <strong>วิธีใช้งาน:</strong> เพิ่มบัญชีธนาคารที่ใช้บ่อยไว้ที่นี่ เมื่อสร้างใบเสนอราคาใหม่จะโหลดบัญชีเหล่านี้อัตโนมัติ หรือกด <strong>"ใช้บัญชีนี้"</strong> เพื่อเพิ่มเข้าใบปัจจุบัน
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+
+let rows = [], currentId = null, logoDataUrl = null;
+let deferredPrompt = null;
+
+// PWA Install
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBanner').classList.add('show');
+});
+document.getElementById('installBtn').onclick = async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('installBanner').classList.remove('show');
+};
+document.getElementById('dismissInstall').onclick = () => {
+  document.getElementById('installBanner').classList.remove('show');
+};
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBanner').classList.remove('show');
+  showToast('ติดตั้งแอปสำเร็จ ✓');
+});
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(console.warn);
+}
+
+// Helpers
+function fmt(n) { return Number(n).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function showToast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'toast ' + type + ' show';
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+function $(id) { return document.getElementById(id); }
+
+// Tabs
+function switchTab(t) {
+  const tabs = ['form','list','banks','contacts'];
+  tabs.forEach(id => { const el = $('view-'+id); if(el) el.style.display = (t === id) ? '' : 'none'; });
+  tabs.forEach(id => {
+    const btn = $('tab-'+id); if(btn) btn.classList.toggle('active', t === id);
+  });
+  if (t === 'list') renderList();
+  if (t === 'banks') renderPresetBankList();
+  if (t === 'contacts') renderContactList();
+}
+
+// Logo
+function handleLogo(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => { logoDataUrl = ev.target.result; applyLogo(logoDataUrl); };
+  reader.readAsDataURL(file);
+}
+function applyLogo(src) {
+  if (src) {
+    $('logoPrint').src = src; $('logoPrintWrap').style.display = 'block';
+    $('logoPreview').src = src;
+    $('removeLogoBtn').style.display = 'flex';
+    $('uploadLogoBtn').style.display = 'none';
+  } else {
+    $('logoPrint').src = ''; $('logoPrintWrap').style.display = 'none';
+    $('logoPreview').src = '';
+    $('removeLogoBtn').style.display = 'none';
+    $('uploadLogoBtn').style.display = '';
+  }
+}
+function removeLogo() { logoDataUrl = null; applyLogo(null); $('logoInput').value = ''; }
+
+// ========== MULTI BANK ACCOUNTS ==========
+let bankAccounts = []; // [{id, bankName, accNo, accName, qrDataUrl, collapsed}]
+let paymentSectionVisible = true;
+
+const BANK_PRESET_KEY = 'qt:bankPresets';
+
+function togglePaymentSection() {
+  paymentSectionVisible = !paymentSectionVisible;
+  $('paymentSectionBody').style.display = paymentSectionVisible ? '' : 'none';
+  const btn = $('togglePaymentBtn');
+  btn.innerHTML = paymentSectionVisible
+    ? '<i class="ti ti-eye-off"></i> ซ่อน'
+    : '<i class="ti ti-eye"></i> แสดง';
+}
+
+function addBankAccount(data) {
+  const acc = {
+    id: Date.now() + Math.random(),
+    bankName: data?.bankName || '',
+    accNo: data?.accNo || '',
+    accName: data?.accName || '',
+    qrDataUrl: data?.qrDataUrl || null,
+    collapsed: false
+  };
+  bankAccounts.push(acc);
+  renderBankAccounts();
+}
+
+function removeBankAccount(id) {
+  if (!confirm('ลบบัญชีนี้?')) return;
+  bankAccounts = bankAccounts.filter(a => a.id !== id);
+  renderBankAccounts();
+}
+
+function toggleBankCollapse(id) {
+  const acc = bankAccounts.find(a => a.id === id);
+  if (acc) { acc.collapsed = !acc.collapsed; renderBankAccounts(); }
+}
+
+function updateBankField(id, field, val) {
+  const acc = bankAccounts.find(a => a.id === id);
+  if (acc) acc[field] = val;
+}
+
+function handleBankQr(id, e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const acc = bankAccounts.find(a => a.id === id);
+    if (acc) { acc.qrDataUrl = ev.target.result; renderBankAccounts(); }
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeBankQr(id) {
+  const acc = bankAccounts.find(a => a.id === id);
+  if (acc) { acc.qrDataUrl = null; renderBankAccounts(); }
+}
+
+function renderBankAccounts() {
+  const c = $('bankAccountsContainer');
+  if (!c) return;
+
+  // Show preset bar if presets exist
+  const presets = getBankPresets();
+  let presetBar = '';
+  if (presets.length > 0 && bankAccounts.length === 0) {
+    presetBar = `<div class="bank-preset-bar no-print">
+      <i class="ti ti-info-circle"></i>
+      <span>มีบัญชีที่บันทึกไว้ ${presets.length} รายการ</span>
+      <button class="btn btn-sm" onclick="loadBankPresets()"><i class="ti ti-download"></i> โหลดค่าตั้งต้น</button>
+    </div>`;
+  }
+
+  if (bankAccounts.length === 0) {
+    c.innerHTML = presetBar + `<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">
+      <i class="ti ti-credit-card" style="font-size:28px;display:block;margin-bottom:6px;opacity:.4"></i>
+      ยังไม่มีข้อมูลบัญชี กด "+ เพิ่มบัญชี"</div>`;
+    return;
+  }
+
+  c.innerHTML = presetBar + bankAccounts.map((acc, idx) => {
+    const safeId = acc.id;
+    const label = acc.bankName || `บัญชีที่ ${idx + 1}`;
+    const bodyClass = acc.collapsed ? 'bank-account-body hidden-acct' : 'bank-account-body';
+    return `<div class="bank-account-item" id="bacc-${safeId}">
+      <div class="bank-account-header no-print">
+        <div class="bank-account-label">
+          <i class="ti ti-building-bank"></i> ${label}
+          ${acc.accNo ? `<span style="font-weight:400;margin-left:4px;text-transform:none">${acc.accNo}</span>` : ''}
+        </div>
+        <div class="bank-account-actions no-print">
+          <button class="btn btn-sm btn-icon" onclick="toggleBankCollapse(${safeId})" title="${acc.collapsed ? 'ขยาย' : 'ย่อ'}">
+            <i class="ti ${acc.collapsed ? 'ti-chevron-down' : 'ti-chevron-up'}"></i>
+          </button>
+          <button class="btn btn-sm btn-danger btn-icon" onclick="removeBankAccount(${safeId})" title="ลบบัญชีนี้">
+            <i class="ti ti-trash"></i>
+          </button>
+        </div>
+      </div>
+      <div class="${bodyClass}">
+        <div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:4px">
+          <div class="field" style="flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:70px">ธนาคาร</label>
+            <input style="flex:1" value="${(acc.bankName||'').replace(/"/g,'&quot;')}" placeholder="เช่น กสิกรไทย, ไทยพาณิชย์"
+              oninput="updateBankField(${safeId},'bankName',this.value);document.querySelector('#bacc-${safeId} .bank-account-label').innerHTML='<i class=\\'ti ti-building-bank\\'></i> '+(this.value||'บัญชีที่ ${idx+1}')+(bankAccounts.find(a=>a.id==${safeId})?.accNo ? '<span style=\\'font-weight:400;margin-left:4px;text-transform:none\\'>'+(bankAccounts.find(a=>a.id==${safeId})?.accNo||'')+'</span>' : '')">
+          </div>
+          <div class="field" style="flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:70px">เลขที่บัญชี</label>
+            <input style="flex:1" value="${(acc.accNo||'').replace(/"/g,'&quot;')}" placeholder="xxx-x-xxxxx-x"
+              oninput="updateBankField(${safeId},'accNo',this.value)">
+          </div>
+          <div class="field" style="flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:70px">ชื่อบัญชี</label>
+            <input style="flex:1" value="${(acc.accName||'').replace(/"/g,'&quot;')}" placeholder="ชื่อ-นามสกุล / บริษัท"
+              oninput="updateBankField(${safeId},'accName',this.value)">
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+          <div onclick="document.getElementById('bankQrInput-${safeId}').click()" title="คลิกอัปโหลด QR Code"
+            style="border:1.5px dashed var(--border);border-radius:var(--radius-sm);width:72px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--text-muted);font-size:12px;overflow:hidden;padding:${acc.qrDataUrl?'2px':''}">
+            ${acc.qrDataUrl
+              ? `<img src="${acc.qrDataUrl}" style="max-width:70px;max-height:70px;object-fit:contain" alt="QR">`
+              : `<i class="ti ti-qrcode no-print" style="font-size:28px"></i><span class="no-print">อัปโหลด</span>`}
+          </div>
+          <input type="file" id="bankQrInput-${safeId}" accept="image/*" style="display:none"
+            onchange="handleBankQr(${safeId}, event)">
+          ${acc.qrDataUrl
+            ? `<button class="btn btn-sm btn-danger no-print" onclick="removeBankQr(${safeId})"><i class="ti ti-x"></i> ลบ QR</button>`
+            : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function getBankPresets() {
+  try { return JSON.parse(localStorage.getItem(BANK_PRESET_KEY) || '[]'); } catch { return []; }
+}
+
+function saveBankPresets() {
+  if (bankAccounts.length === 0) { showToast('ไม่มีบัญชีให้บันทึก', 'error'); return; }
+  const presets = bankAccounts.map(a => ({
+    bankName: a.bankName, accNo: a.accNo, accName: a.accName, qrDataUrl: a.qrDataUrl
+  }));
+  try {
+    localStorage.setItem(BANK_PRESET_KEY, JSON.stringify(presets));
+    updatePresetCount();
+    showToast('บันทึกบัญชีเป็นค่าตั้งต้นแล้ว ✓');
+  } catch(e) { showToast('บันทึกไม่สำเร็จ', 'error'); }
+}
+
+function loadBankPresets() {
+  const presets = getBankPresets();
+  if (!presets.length) { showToast('ไม่มีค่าตั้งต้น', 'error'); return; }
+  bankAccounts = presets.map(p => ({ ...p, id: Date.now()+Math.random(), collapsed: false }));
+  renderBankAccounts();
+  showToast('โหลดค่าตั้งต้นแล้ว ✓');
+}
+
+function deleteBankPresets() {
+  if (!confirm('ลบค่าตั้งต้นบัญชีทั้งหมด?')) return;
+  localStorage.removeItem(BANK_PRESET_KEY);
+  renderBankAccounts();
+  showToast('ลบค่าตั้งต้นแล้ว');
+}
+
+// ========== PRESET BANK MANAGEMENT (Tab) ==========
+
+function updatePresetCount() {
+  const presets = getBankPresets();
+  const el = $('bankPresetCount');
+  if (el) el.textContent = presets.length;
+}
+
+function addPresetBankDirect() {
+  const presets = getBankPresets();
+  presets.push({ bankName: '', accNo: '', accName: '', qrDataUrl: null });
+  savePresets(presets);
+  renderPresetBankList();
+}
+
+function savePresets(presets) {
+  try {
+    localStorage.setItem(BANK_PRESET_KEY, JSON.stringify(presets));
+    updatePresetCount();
+  } catch(e) { showToast('บันทึกไม่สำเร็จ', 'error'); }
+}
+
+function updatePresetField(idx, field, val) {
+  const presets = getBankPresets();
+  if (presets[idx]) { presets[idx][field] = val; savePresets(presets); }
+}
+
+function removePreset(idx) {
+  if (!confirm('ลบบัญชีนี้ออกจากรายการที่บันทึก?')) return;
+  const presets = getBankPresets();
+  presets.splice(idx, 1);
+  savePresets(presets);
+  renderPresetBankList();
+  showToast('ลบบัญชีแล้ว');
+}
+
+function handlePresetQr(idx, e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const presets = getBankPresets();
+    if (presets[idx]) { presets[idx].qrDataUrl = ev.target.result; savePresets(presets); renderPresetBankList(); }
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePresetQr(idx) {
+  const presets = getBankPresets();
+  if (presets[idx]) { presets[idx].qrDataUrl = null; savePresets(presets); renderPresetBankList(); }
+}
+
+function usePresetInForm(idx) {
+  const presets = getBankPresets();
+  const p = presets[idx];
+  if (!p) return;
+  addBankAccount({ bankName: p.bankName, accNo: p.accNo, accName: p.accName, qrDataUrl: p.qrDataUrl });
+  switchTab('form');
+  showToast(`เพิ่มบัญชี ${p.bankName || 'ใหม่'} เข้าใบเสนอราคาแล้ว ✓`);
+}
+
+function updatePresetHeader(idx, val) {
+  // Update only the header label without re-rendering the whole list
+  const items = $('presetBankList').querySelectorAll('.bank-account-item');
+  if (!items[idx]) return;
+  const labelEl = items[idx].querySelector('.bank-account-label');
+  if (!labelEl) return;
+  const presets = getBankPresets();
+  const accNo = presets[idx] ? presets[idx].accNo || '' : '';
+  labelEl.innerHTML = `<i class="ti ti-building-bank"></i>
+    ${val ? `<strong>${val}</strong>` : `<span style="color:var(--text-muted);font-style:italic;text-transform:none">บัญชีที่ ${idx+1}</span>`}
+    ${accNo ? `<span style="font-weight:400;margin-left:6px;text-transform:none;color:var(--text-muted)">${accNo}</span>` : ''}`;
+}
+
+function renderPresetBankList() {
+  const presets = getBankPresets();
+  const c = $('presetBankList');
+  if (!c) return;
+  if (presets.length === 0) {
+    c.innerHTML = `<div class="empty" style="padding:30px 20px">
+      <i class="ti ti-building-bank" style="font-size:36px;display:block;margin-bottom:8px;opacity:.3"></i>
+      ยังไม่มีบัญชีที่บันทึกไว้<br>
+      <span style="font-size:12px">กด "+ เพิ่มบัญชีใหม่" เพื่อเริ่มต้น</span>
+    </div>`;
+    return;
+  }
+  c.innerHTML = presets.map((p, idx) => `
+    <div class="bank-account-item" style="margin-bottom:12px">
+      <div class="bank-account-header" style="margin-bottom:10px">
+        <div class="bank-account-label">
+          <i class="ti ti-building-bank"></i>
+          ${p.bankName ? `<strong>${p.bankName}</strong>` : `<span style="color:var(--text-muted);font-style:italic;text-transform:none">บัญชีที่ ${idx+1}</span>`}
+          ${p.accNo ? `<span style="font-weight:400;margin-left:6px;text-transform:none;color:var(--text-muted)">${p.accNo}</span>` : ''}
+        </div>
+        <div class="bank-account-actions">
+          <button class="btn btn-sm" onclick="usePresetInForm(${idx})" style="color:var(--success);border-color:var(--success)">
+            <i class="ti ti-send"></i> ใช้บัญชีนี้
+          </button>
+          <button class="btn btn-sm btn-danger btn-icon" onclick="removePreset(${idx})" title="ลบบัญชีนี้">
+            <i class="ti ti-trash"></i>
+          </button>
+        </div>
+      </div>
+      <div class="bank-account-body">
+        <div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:6px">
+          <div class="field"><label>ธนาคาร</label>
+            <input value="${(p.bankName||'').replace(/"/g,'&quot;')}" placeholder="เช่น กสิกรไทย, ไทยพาณิชย์"
+              oninput="updatePresetField(${idx},'bankName',this.value);updatePresetHeader(${idx},this.value)">
+          </div>
+          <div class="field"><label>เลขที่บัญชี</label>
+            <input value="${(p.accNo||'').replace(/"/g,'&quot;')}" placeholder="xxx-x-xxxxx-x"
+              oninput="updatePresetField(${idx},'accNo',this.value)">
+          </div>
+          <div class="field"><label>ชื่อบัญชี</label>
+            <input value="${(p.accName||'').replace(/"/g,'&quot;')}" placeholder="ชื่อ-นามสกุล / บริษัท"
+              oninput="updatePresetField(${idx},'accName',this.value)">
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+          <div class="section-label" style="margin:0">QR Code</div>
+          <div onclick="document.getElementById('presetQrInput-${idx}').click()" title="คลิกอัปโหลด QR Code"
+            style="border:1.5px dashed var(--border);border-radius:var(--radius-sm);width:110px;height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--text-muted);font-size:12px;overflow:hidden;padding:${p.qrDataUrl?'2px':''}">
+            ${p.qrDataUrl
+              ? `<img src="${p.qrDataUrl}" style="max-width:108px;max-height:108px;object-fit:contain" alt="QR">`
+              : `<i class="ti ti-qrcode" style="font-size:28px"></i><span>อัปโหลด</span>`}
+          </div>
+          <input type="file" id="presetQrInput-${idx}" accept="image/*" style="display:none"
+            onchange="handlePresetQr(${idx}, event)">
+          ${p.qrDataUrl ? `<button class="btn btn-sm btn-danger" onclick="removePresetQr(${idx})"><i class="ti ti-x"></i> ลบ QR</button>` : ''}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// Legacy compat shims (qrDataUrl kept for old saves)
+let qrDataUrl = null;
+function handleQr() {}
+function applyQr() {}
+function removeQr() {}
+
+// Rows
+function autoResize(el) {
+  el.style.height = '0';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+function addRow() {
+  rows.push({ id: Date.now() + Math.random(), desc: '', qty: 1, unit: 'ชิ้น', price: 0, cost: 0 });
+  renderRows();
+}
+function removeRow(id) { rows = rows.filter(r => r.id !== id); renderRows(); }
+function updateRow(id, field, val) {
+  const r = rows.find(r => r.id === id);
+  if (r) r[field] = ['qty','price','cost'].includes(field) ? parseFloat(val)||0 : val;
+  calc();
+}
+
+function renderRows() {
+  const tb = $('itemBody'); tb.innerHTML = '';
+  rows.forEach((r, i) => {
+    const rev = r.qty * r.price, cost = r.qty * r.cost, profit = rev - cost;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="color:var(--text-muted);text-align:center;font-size:13px;vertical-align:middle">${i+1}</td>
+      <td style="vertical-align:middle"><textarea placeholder="รายละเอียด" oninput="updateRow(${r.id},'desc',this.value);autoResize(this)" style="width:100%;resize:none;overflow:hidden;min-height:36px;line-height:1.6;border:1px solid transparent;border-radius:6px;padding:3px 6px;font-size:13px;background:transparent;color:var(--text);font-family:inherit;display:block;vertical-align:middle">${r.desc.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea></td>
+      <td style="vertical-align:middle"><input type="number" value="${r.qty}" min="0" step="any" oninput="updateRow(${r.id},'qty',this.value)" style="text-align:center;width:100%"></td>
+      <td style="vertical-align:middle"><input type="text" value="${r.unit}" oninput="updateRow(${r.id},'unit',this.value)" style="text-align:center;width:100%"></td>
+      <td style="vertical-align:middle"><input type="number" value="${r.price}" min="0" step="any" oninput="updateRow(${r.id},'price',this.value)" style="text-align:right;width:100%"></td>
+      <td style="text-align:right;vertical-align:middle" id="lrev${r.id}">${fmt(rev)}</td>
+      <td class="no-print" style="vertical-align:middle"><input type="number" value="${r.cost}" min="0" step="any" oninput="updateRow(${r.id},'cost',this.value)" style="text-align:right;width:100%;color:var(--cost-color)"></td>
+      <td class="no-print" id="lprof${r.id}" style="text-align:right;vertical-align:middle"><span class="${profit>=0?'profit-pos':'profit-neg'}">${fmt(profit)}</span></td>
+      <td class="no-print" style="vertical-align:middle"><button class="btn btn-sm btn-danger btn-icon" onclick="removeRow(${r.id})"><i class="ti ti-trash"></i></button></td>`;
+    tb.appendChild(tr);
+  });
+  setTimeout(() => document.querySelectorAll('#itemBody textarea').forEach(autoResize), 0);
+  calc();
+}
+
+let useDiscount = false, useVat = false;
+let discountMode = 'pct'; // 'pct' | 'amt'
+
+function toggleDiscount() {
+  useDiscount = !useDiscount;
+  $('discountTrack').classList.toggle('on', useDiscount);
+  $('discountInputRow').style.display = useDiscount ? '' : 'none';
+  $('rowSubtotal').style.display = useDiscount ? '' : 'none';
+  $('rowDiscountAmt').style.display = useDiscount ? '' : 'none';
+  $('rowAfterDiscount').style.display = useDiscount ? '' : 'none';
+  if (!useDiscount) { $('discountPct').value = 0; $('discountPct2').value = ''; }
+  updateDiscountModeUI();
+  calc();
+}
+
+function toggleDiscountMode() {
+  // convert current value to the other unit
+  const sub = rows.reduce((s, r) => s + r.qty * r.price, 0);
+  const curVal = parseFloat($('discountPct2').value) || 0;
+  let newVal = 0;
+  if (discountMode === 'pct') {
+    // switching to amount
+    newVal = sub > 0 ? +(sub * curVal / 100).toFixed(2) : 0;
+    discountMode = 'amt';
+  } else {
+    // switching to percent
+    newVal = sub > 0 ? +(curVal / sub * 100).toFixed(4) : 0;
+    discountMode = 'pct';
+  }
+  $('discountPct2').value = newVal;
+  $('discountPct').value = newVal;
+  updateDiscountModeUI();
+  calc();
+}
+
+function updateDiscountModeUI() {
+  const isPct = discountMode === 'pct';
+  const btn = $('discountModeBtn');
+  const label = $('discountLabel');
+  if (btn) btn.textContent = isPct ? '%' : 'บาท';
+  if (label) label.textContent = isPct ? 'ส่วนลด (%)' : 'ส่วนลด (บาท)';
+  const inp = $('discountPct2');
+  if (inp) {
+    inp.placeholder = isPct ? '0.00' : '0.00';
+    if (isPct) inp.setAttribute('max', '100'); else inp.removeAttribute('max');
+  }
+}
+
+function toggleVat() {
+  useVat = !useVat;
+  $('vatTrack').classList.toggle('on', useVat);
+  $('vatInputRow').style.display = useVat ? '' : 'none';
+  $('rowVatAmt').style.display = useVat ? '' : 'none';
+  if (!useVat) { $('vatPct').value = 0; $('vatPct2').value = ''; }
+  calc();
+}
+
+// ===== แปลงตัวเลขเป็นตัวอักษรไทย =====
+function bahtText(amount) {
+  const digits = ['', 'หนึ่ง', 'สอง', 'สาม', 'สี่', 'ห้า', 'หก', 'เจ็ด', 'แปด', 'เก้า'];
+  const places = ['', 'สิบ', 'ร้อย', 'พัน', 'หมื่น', 'แสน'];
+
+  function convertMillion(n) {
+    if (n === 0) return '';
+    let s = '';
+    const arr = [n%10, Math.floor(n/10)%10, Math.floor(n/100)%10,
+                 Math.floor(n/1000)%10, Math.floor(n/10000)%10, Math.floor(n/100000)%10];
+    for (let i = 5; i >= 0; i--) {
+      const d = arr[i];
+      if (!d) continue;
+      if (i === 1) {
+        if (d === 1) { s += 'สิบ'; continue; }
+        if (d === 2) { s += 'ยี่สิบ'; continue; }
+      }
+      if (i === 0 && arr[1] === 1 && d === 1) { s += 'เอ็ด'; continue; }
+      s += digits[d] + places[i];
+    }
+    return s;
+  }
+
+  function convert(n) {
+    if (n === 0) return 'ศูนย์';
+    const mil = Math.floor(n / 1000000);
+    const rest = n % 1000000;
+    let s = '';
+    if (mil) s += convertMillion(mil) + 'ล้าน';
+    if (rest) s += convertMillion(rest);
+    return s;
+  }
+
+  const n = Math.round(Math.abs(amount) * 100);
+  const baht = Math.floor(n / 100);
+  const satang = n % 100;
+  let result = (amount < 0 ? 'ลบ' : '') + convert(baht) + 'บาท';
+  result += satang > 0 ? convert(satang) + 'สตางค์' : 'ถ้วน';
+  return result;
+}
+
+function calc() {
+  let sub = 0, totalCost = 0;
+  rows.forEach(r => {
+    const rev = r.qty * r.price, cost = r.qty * r.cost, profit = rev - cost;
+    sub += rev; totalCost += cost;
+    const er = $('lrev' + r.id), ep = $('lprof' + r.id);
+    if (er) er.textContent = fmt(rev);
+    if (ep) ep.innerHTML = `<span class="${profit>=0?'profit-pos':'profit-neg'}">${fmt(profit)}</span>`;
+  });
+  const vp = useVat ? (parseFloat($('vatPct').value)||0) : 0;
+  let disc = 0;
+  if (useDiscount) {
+    const rawVal = parseFloat($('discountPct').value) || 0;
+    if (discountMode === 'amt') {
+      disc = rawVal;
+    } else {
+      disc = sub * (rawVal / 100);
+    }
+  }
+  const after = sub - disc, vat = after * (vp / 100), grand = after + vat;
+  $('subtotal').textContent = fmt(sub);
+  $('discountAmt').textContent = '-' + fmt(disc);
+  $('afterDiscount').textContent = fmt(after);
+  $('vatAmt').textContent = fmt(vat);
+  $('grandTotal').textContent = fmt(grand);
+  const gtText = $('grandTotalText');
+  if (gtText) gtText.textContent = '( ' + bahtText(grand) + ' )';
+  if (typeof renderDeposits === 'function') renderDeposits();
+  const gp = after - totalCost, margin = after > 0 ? (gp/after)*100 : 0;
+  $('m_revenue').textContent = fmt(after) + ' บาท';
+  $('m_cost').textContent = fmt(totalCost) + ' บาท';
+  const mp = $('m_profit'); mp.textContent = fmt(gp) + ' บาท'; mp.className = 'metric-val ' + (gp>=0?'profit-pos':'profit-neg');
+  const mm = $('m_margin'); mm.textContent = margin.toFixed(2) + '%'; mm.className = 'metric-val ' + (margin>=0?'profit-pos':'profit-neg');
+}
+
+// Deposit
+let deposits = [];
+
+function addDeposit() {
+  const grand = parseFloat($('grandTotal').textContent.replace(/,/g,'')) || 0;
+  const usedAmt = deposits.reduce((s, d) => s + getDepositAmt(d, grand), 0);
+  const remain = Math.max(0, grand - usedAmt);
+  deposits.push({ id: Date.now()+Math.random(), label: 'งวดที่ ' + (deposits.length+1), mode: 'pct', pct: 0, amt: remain });
+  renderDeposits();
+}
+
+function removeDeposit() {
+  if (deposits.length === 0) return;
+  deposits.pop();
+  renderDeposits();
+}
+
+function getDepositAmt(d, grand) {
+  if (d.mode === 'amt') return parseFloat(d.amt) || 0;
+  return grand * (parseFloat(d.pct) || 0) / 100;
+}
+
+function toggleDepositMode(id) {
+  const grand = parseFloat($('grandTotal').textContent.replace(/,/g,'')) || 0;
+  const d = deposits.find(d => d.id === id);
+  if (!d) return;
+  if (d.mode === 'pct') {
+    // แปลงเป็นจำนวนเงิน
+    d.amt = +(grand * (parseFloat(d.pct)||0) / 100).toFixed(2);
+    d.mode = 'amt';
+  } else {
+    // แปลงเป็นเปอร์เซ็นต์
+    d.pct = grand > 0 ? +((parseFloat(d.amt)||0) / grand * 100).toFixed(4) : 0;
+    d.mode = 'pct';
+  }
+  renderDeposits();
+}
+
+function updateDepositField(id, field, val) {
+  const d = deposits.find(d => d.id === id);
+  if (!d) return;
+  d[field] = (field === 'pct' || field === 'amt') ? val : val; // keep raw string while typing
+  // update totals only, don't re-render DOM
+  calcDepositTotals();
+}
+
+function updateDepositLabel(id, val) {
+  const d = deposits.find(d => d.id === id);
+  if (d) d.label = val;
+}
+
+function calcDepositTotals() {
+  const grand = parseFloat($('grandTotal').textContent.replace(/,/g,'')) || 0;
+  let totalAmt = 0;
+  deposits.forEach((d, i) => {
+    const amt = getDepositAmt(d, grand);
+    totalAmt += amt;
+    // update only the amount display span, not the input
+    const amtEl = document.getElementById('depAmt-' + d.id);
+    if (amtEl) amtEl.textContent = fmt(amt) + ' บาท';
+  });
+  $('depTotal').textContent = fmt(totalAmt) + ' บาท';
+  const remain = grand - totalAmt;
+  const remEl = $('depRemaining');
+  remEl.textContent = fmt(remain) + ' บาท';
+  remEl.className = 'dep-remaining' + (Math.abs(remain) < 0.01 ? ' zero' : '');
+}
+
+function renderDeposits() {
+  const grand = parseFloat($('grandTotal').textContent.replace(/,/g,'')) || 0;
+  const container = $('depositRows');
+  container.innerHTML = '';
+  deposits.forEach((d, i) => {
+    const amt = getDepositAmt(d, grand);
+    const isPct = d.mode !== 'amt';
+    const row = document.createElement('div');
+    row.className = 'deposit-row';
+    row.innerHTML = `
+      <span class="dep-seq">${i+1}.</span>
+      <input type="text" value="${d.label.replace(/"/g,'&quot;')}" placeholder="รายละเอียดงวด"
+        oninput="updateDepositLabel(${d.id},this.value)">
+      <input type="number" id="depVal-${d.id}" class="no-print"
+        value="${isPct ? (parseFloat(d.pct)||0) : (parseFloat(d.amt)||0)}"
+        min="0" step="any"
+        ${isPct ? 'max="100"' : ''}
+        oninput="updateDepositField(${d.id},'${isPct?'pct':'amt'}',this.value)"
+        style="width:90px">
+      <button class="btn btn-sm no-print" onclick="toggleDepositMode(${d.id})" title="สลับโหมด"
+        style="padding:4px 8px;font-size:12px;min-width:36px">
+        ${isPct ? '%' : 'บาท'}
+      </button>
+      <span class="dep-amt" id="depAmt-${d.id}">${fmt(amt)} ฿</span>`;
+    container.appendChild(row);
+  });
+  calcDepositTotals();
+  $('depRemoveBtn').style.display = deposits.length > 0 ? '' : 'none';
+  $('depositCard').style.display = deposits.length > 0 ? '' : 'none';
+}
+
+// Storage helpers
+const DB_KEY = id => 'qt:' + id;
+const IDX_KEY = 'qt:index';
+function calcNextSeq() {
+  const year = new Date().getFullYear();
+  const prefix = `QT-${year}-`;
+  try {
+    const idx = JSON.parse(localStorage.getItem(IDX_KEY) || '[]');
+    const max = idx.reduce((m, q) => {
+      if (q.docNo && q.docNo.startsWith(prefix)) {
+        const n = parseInt(q.docNo.replace(prefix, '')) || 0;
+        return Math.max(m, n);
+      }
+      return m;
+    }, 0);
+    return { year, seq: max + 1 };
+  } catch { return { year, seq: 1 }; }
+}
+function nextDocNo() {
+  const { year, seq } = calcNextSeq();
+  return `QT-${year}-` + String(seq).padStart(3, '0');
+}
+function peekDocNo() {
+  const { year, seq } = calcNextSeq();
+  return `QT-${year}-` + String(seq).padStart(3, '0');
+}
+
+async function getIndex() {
+  try { const r = localStorage.getItem(IDX_KEY); return r ? JSON.parse(r) : []; } catch { return []; }
+}
+async function setIndex(idx) { localStorage.setItem(IDX_KEY, JSON.stringify(idx)); }
+
+function syncApprovedDate(val) {
+  if (!val) { $('approvedDate').value = ''; return; }
+  const [y, m, d] = val.split('-');
+  $('approvedDate').value = `${d}/${m}/${y}`;
+}
+
+// Form data
+function getFields() {
+  return ['docNo','docDate','validDate','s_name','s_addr','s_tel','s_tax','c_name','c_addr','c_contact','c_tel','c_tax','note','preparedBy','preparedTel','position','approvedBy','approvedDate']
+    .reduce((o, k) => { o[k] = $(k)?.value || ''; return o; }, {});
+}
+function setFields(d) {
+  ['docNo','docDate','validDate','s_name','s_addr','s_tel','s_tax','c_name','c_addr','c_contact','c_tel','c_tax','note','preparedBy','preparedTel','position','approvedBy','approvedDate']
+    .forEach(k => { if ($(k)) $(k).value = d[k] || ''; });
+  // sync approvedDate picker — stored as dd/mm/yyyy, picker needs yyyy-mm-dd
+  if (d.approvedDate && d.approvedDate.includes('/')) {
+    const parts = d.approvedDate.split('/');
+    if (parts.length === 3 && $('approvedDatePicker')) $('approvedDatePicker').value = `${parts[2]}-${parts[1]}-${parts[0]}`;
+  }
+  $('payTerm').value = d.payTerm || 'โอนเงินก่อนส่งของ';
+  $('discountPct').value = d.discountPct || 0;
+  $('vatPct').value = d.vatPct || 7;
+}
+
+async function saveQuotation() {
+  const fields = getFields();
+  // ใช้ currentId ถ้ามี (แก้ไขใบเดิม) มิฉะนั้นสร้าง id ใหม่จาก docNo
+  if (!currentId) {
+    // บริโภค counter ตอนนี้ (ครั้งแรกที่กดบันทึกจริงๆ)
+    const generated = nextDocNo();
+    // ถ้า docNo ในฟอร์มยังเป็น peek (ยังไม่แก้) ให้ใช้ generated แทน
+    if ($('docNo').value === peekDocNo() || !$('docNo').value) {
+      $('docNo').value = generated;
+      fields.docNo = generated;
+    }
+    currentId = 'id-' + Date.now();
+  }
+  const id = currentId;
+  const data = {
+    id, ...fields,
+    payTerm: $('payTerm').value,
+    discountPct: $('discountPct').value,
+    discountMode: discountMode,
+    vatPct: $('vatPct').value,
+    rows: rows.map(r => ({...r})),
+    useDiscount, useVat,
+    deposits: deposits.map(d => ({...d})),
+    logoDataUrl: logoDataUrl || null,
+    qrDataUrl: null,
+    bankAccounts: bankAccounts.map(a => ({...a})),
+    grandTotal: $('grandTotal').textContent,
+    savedAt: new Date().toISOString()
+  };
+  try {
+    localStorage.setItem(DB_KEY(id), JSON.stringify(data));
+    let idx = await getIndex();
+    const entry = { id, docNo: fields.docNo, cName: fields.c_name, total: data.grandTotal, savedAt: data.savedAt };
+    const ex = idx.findIndex(x => x.id === id);
+    if (ex >= 0) idx[ex] = entry; else idx.unshift(entry);
+    await setIndex(idx);
+    $('statusBadge').className = 'badge badge-saved no-print';
+    $('statusBadge').textContent = 'บันทึกแล้ว';
+    showToast('บันทึกสำเร็จ ✓');
+    updateCount();
+    driveSyncAuto(); // auto-sync to Drive
+  } catch (e) { showToast('เกิดข้อผิดพลาด: ' + e.message, 'error'); }
+}
+
+async function loadQuotation(id) {
+  try {
+    const r = localStorage.getItem(DB_KEY(id));
+    const d = r ? JSON.parse(r) : null; if (!d) return showToast('ไม่พบข้อมูล', 'error');
+    
+    currentId = d.id;
+    setFields(d);
+    logoDataUrl = d.logoDataUrl || null;
+    applyLogo(logoDataUrl);
+    // load bank accounts (new format) or migrate from legacy single-bank fields
+    if (d.bankAccounts && d.bankAccounts.length > 0) {
+      bankAccounts = d.bankAccounts.map(a => ({...a, id: Date.now()+Math.random()}));
+    } else if (d.bankName || d.bankAccNo || d.bankAccName) {
+      bankAccounts = [{ id: Date.now()+Math.random(), bankName: d.bankName||'', accNo: d.bankAccNo||'', accName: d.bankAccName||'', qrDataUrl: d.qrDataUrl||null, collapsed: false }];
+    } else {
+      bankAccounts = [];
+    }
+    renderBankAccounts();
+    rows = d.rows ? d.rows.map(r => ({...r, id: Date.now()+Math.random()})) : [];
+    // restore discount/vat toggles
+    useDiscount = !!d.useDiscount; useVat = !!d.useVat;
+    discountMode = d.discountMode || 'pct';
+    $('discountTrack').classList.toggle('on', useDiscount);
+    $('discountInputRow').style.display = useDiscount ? '' : 'none';
+    $('rowSubtotal').style.display = useDiscount ? '' : 'none';
+    $('rowDiscountAmt').style.display = useDiscount ? '' : 'none';
+    $('rowAfterDiscount').style.display = useDiscount ? '' : 'none';
+    updateDiscountModeUI();
+    if (useDiscount && d.discountPct) { $('discountPct').value = d.discountPct; if ($('discountPct2')) $('discountPct2').value = d.discountPct; }
+    $('vatTrack').classList.toggle('on', useVat);
+    $('vatInputRow').style.display = useVat ? '' : 'none';
+    $('rowVatAmt').style.display = useVat ? '' : 'none';
+    if (useVat && d.vatPct) { $('vatPct').value = d.vatPct; if ($('vatPct2')) $('vatPct2').value = d.vatPct; }
+    deposits = d.deposits ? d.deposits.map(dep => ({...dep, id: Date.now()+Math.random()})) : [];
+    renderDeposits();
+    renderRows();
+    $('statusBadge').className = 'badge badge-saved no-print';
+    $('statusBadge').textContent = 'บันทึกแล้ว';
+    switchTab('form');
+    setTimeout(() => document.querySelectorAll('#itemBody textarea').forEach(autoResize), 50);
+    setTimeout(() => ['s_addr','c_addr','note'].forEach(id => { const el = $(id); if (el) autoResize(el); }), 50);
+    showToast('โหลดใบเสนอราคาแล้ว');
+  } catch (e) { console.error('loadQuotation error:', e); showToast('เกิดข้อผิดพลาด: ' + e.message, 'error'); }
+}
+
+async function deleteQuotation(id) {
+  if (!confirm('ลบใบเสนอราคานี้?')) return;
+  try {
+    localStorage.removeItem(DB_KEY(id));
+    let idx = await getIndex();
+    idx = idx.filter(x => x.id !== id);
+    await setIndex(idx);
+    renderList(); updateCount(); showToast('ลบแล้ว');
+  } catch (e) { showToast('เกิดข้อผิดพลาด', 'error'); }
+}
+
+async function renderList() {
+  const idx = await getIndex();
+  const c = $('listContainer');
+  if (!idx.length) { c.innerHTML = '<div class="empty"><i class="ti ti-archive"></i>ยังไม่มีใบเสนอราคา</div>'; return; }
+  c.innerHTML = idx.map(q => `
+    <div class="qt-item">
+      <div class="qt-info">
+        <div class="qt-no">${q.docNo || q.id}</div>
+        <div class="qt-meta">${q.cName || '(ไม่มีชื่อลูกค้า)'} · ${q.savedAt ? new Date(q.savedAt).toLocaleDateString('th-TH') : ''}</div>
+      </div>
+      <div class="qt-total">${q.total || '0.00'} ฿</div>
+      <div class="actions">
+        <button class="btn btn-sm" onclick="loadQuotation('${q.id}')"><i class="ti ti-edit"></i> แก้ไข</button>
+        <button class="btn btn-sm btn-danger btn-icon" onclick="deleteQuotation('${q.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+async function updateCount() {
+  const idx = await getIndex();
+  $('listCount').textContent = idx.length;
+}
+
+function newForm() {
+  if (!confirm('สร้างใบใหม่? ข้อมูลที่ยังไม่บันทึกจะหายไป')) return;
+  clearForm();
+}
+function clearForm() {
+  currentId = null;
+  ['s_name','s_addr','s_tel','s_tax','c_name','c_addr','c_contact','c_tel','c_tax','note','preparedBy','preparedTel','approvedBy','approvedDate','position']
+    .forEach(id => { const el = $(id); if (el) el.value = ''; });
+  $('docNo').value = nextDocNo();
+  $('discountPct').value = 0; $('vatPct').value = 7;
+  const today = new Date().toISOString().split('T')[0];
+  $('docDate').value = today;
+  $('validDate').value = '';
+  $('statusBadge').className = 'badge badge-new no-print';
+  $('statusBadge').textContent = 'ใหม่';
+  removeLogo();
+  // reset bank accounts - load presets if available
+  const presets = getBankPresets();
+  if (presets.length > 0) {
+    bankAccounts = presets.map(p => ({...p, id: Date.now()+Math.random(), collapsed: false}));
+  } else {
+    bankAccounts = [];
+  }
+  renderBankAccounts();
+  rows = []; renderRows(); addRow(); addRow(); addRow();
+  deposits = []; renderDeposits();
+  useDiscount = false; useVat = false;
+  discountMode = 'pct';
+  $('discountTrack').classList.remove('on'); $('discountInputRow').style.display = 'none';
+  $('rowSubtotal').style.display = 'none'; $('rowDiscountAmt').style.display = 'none'; $('rowAfterDiscount').style.display = 'none';
+  $('discountPct').value = 0; $('discountPct2').value = '';
+  updateDiscountModeUI();
+  $('vatTrack').classList.remove('on'); $('vatInputRow').style.display = 'none';
+  $('rowVatAmt').style.display = 'none';
+  $('vatPct').value = 0; $('vatPct2').value = '';
+}
+
+// ========== CONTACT DATABASE ==========
+const CONTACTS_KEY = 'qt:contacts';
+let contactFilter = 'all';
+let pickerMode = 'buyer'; // 'seller' | 'buyer'
+
+function getContacts() {
+  try { return JSON.parse(localStorage.getItem(CONTACTS_KEY) || '[]'); } catch { return []; }
+}
+function saveContacts(list) {
+  localStorage.setItem(CONTACTS_KEY, JSON.stringify(list));
+  updateContactCount();
+}
+function updateContactCount() {
+  const el = $('contactCount');
+  if (el) el.textContent = getContacts().length;
+}
+function setContactFilter(f) {
+  contactFilter = f;
+  ['all','seller','buyer'].forEach(k => {
+    const btn = $('cf-' + k);
+    if (!btn) return;
+    btn.classList.toggle('btn-primary', k === f);
+    btn.classList.remove(...(k === f ? [] : ['btn-primary']));
+    if (k !== f) { btn.classList.remove('btn-primary'); }
+  });
+  // re-apply active styles cleanly
+  $('cf-all').className = 'btn btn-sm' + (f==='all'?' btn-primary':'');
+  $('cf-seller').className = 'btn btn-sm' + (f==='seller'?' btn-primary':'');
+  $('cf-buyer').className = 'btn btn-sm' + (f==='buyer'?' btn-primary':'');
+  renderContactList();
+}
+
+function addContact(type) {
+  const contacts = getContacts();
+  const newContact = {
+    id: 'c-' + Date.now(),
+    type: type || 'buyer',
+    name: '', addr: '', tel: '', tax: '', contact: '', createdAt: new Date().toISOString()
+  };
+  contacts.unshift(newContact);
+  saveContacts(contacts);
+  renderContactList();
+  // scroll to top and focus first field
+  setTimeout(() => {
+    const el = document.querySelector('#contactList [data-cid="' + newContact.id + '"] .contact-name-input');
+    if (el) el.focus();
+  }, 50);
+}
+
+function deleteContact(id) {
+  if (!confirm('ลบรายชื่อนี้?')) return;
+  const contacts = getContacts().filter(c => c.id !== id);
+  saveContacts(contacts);
+  renderContactList();
+  showToast('ลบรายชื่อแล้ว');
+}
+
+function updateContactField(id, field, val) {
+  const contacts = getContacts();
+  const c = contacts.find(c => c.id === id);
+  if (c) { c[field] = val; saveContacts(contacts); }
+}
+
+function useContactInForm(id, targetType) {
+  const contacts = getContacts();
+  const c = contacts.find(c => c.id === id);
+  if (!c) return;
+  const mode = targetType || (c.type === 'seller' ? 'seller' : 'buyer');
+  if (mode === 'seller') {
+    $('s_name').value = c.name || '';
+    $('s_addr').value = c.addr || '';
+    $('s_tel').value = c.tel || '';
+    $('s_tax').value = c.tax || '';
+    if (c.logoDataUrl) { logoDataUrl = c.logoDataUrl; applyLogo(logoDataUrl); }
+  } else {
+    $('c_name').value = c.name || '';
+    $('c_addr').value = c.addr || '';
+    $('c_tel').value = c.tel || '';
+    if ($('c_contact')) $('c_contact').value = c.contact || '';
+    $('c_tax').value = c.tax || '';
+  }
+  showToast(`เติมข้อมูล "${c.name||'(ไม่มีชื่อ)'}" แล้ว ✓`);
+}
+
+function saveFormToContact(type) {
+  const contacts = getContacts();
+  let name, addr, tel, tax, contact;
+  if (type === 'seller') {
+    name = $('s_name').value; addr = $('s_addr').value;
+    tel = $('s_tel').value; tax = $('s_tax').value; contact = '';
+  } else {
+    name = $('c_name').value; addr = $('c_addr').value;
+    tel = $('c_tel').value; tax = $('c_tax').value; contact = ($('c_contact') ? $('c_contact').value : '');
+  }
+  if (!name.trim()) { showToast('กรุณากรอกชื่อก่อนบันทึก', 'error'); return; }
+  const newC = { id: 'c-' + Date.now(), type, name, addr, tel, tax, contact, createdAt: new Date().toISOString() };
+  if (type === 'seller' && logoDataUrl) newC.logoDataUrl = logoDataUrl;
+  contacts.unshift(newC);
+  saveContacts(contacts);
+  showToast(`บันทึก "${name}" เข้าสมุดที่อยู่แล้ว ✓`);
+}
+
+function renderContactList() {
+  const contacts = getContacts();
+  const q = ($('contactSearch')?.value || '').toLowerCase();
+  const filtered = contacts.filter(c => {
+    if (contactFilter !== 'all' && c.type !== contactFilter) return false;
+    if (q) return (c.name||'').toLowerCase().includes(q) || (c.addr||'').toLowerCase().includes(q);
+    return true;
+  });
+  const c = $('contactList');
+  if (!c) return;
+  if (filtered.length === 0) {
+    c.innerHTML = `<div class="empty"><i class="ti ti-address-book"></i>${contacts.length === 0 ? 'ยังไม่มีรายชื่อ' : 'ไม่พบรายชื่อที่ค้นหา'}</div>`;
+    return;
+  }
+  c.innerHTML = filtered.map(ct => {
+    const typeLabel = ct.type === 'seller'
+      ? `<span style="background:#dbeafe;color:#1e40af;font-size:10px;padding:1px 7px;border-radius:20px;font-weight:700">ผู้เสนอราคา</span>`
+      : `<span style="background:var(--success-bg);color:var(--success);font-size:10px;padding:1px 7px;border-radius:20px;font-weight:700">ลูกค้า</span>`;
+    const extraField = ct.type === 'seller'
+      ? `<div class="field"><label>เลขผู้เสียภาษี</label><input class="contact-tax-input" value="${(ct.tax||'').replace(/"/g,'&quot;')}" placeholder="0-0000-00000-00-0" oninput="updateContactField('${ct.id}','tax',this.value)"></div>`
+      : `<div class="field"><label>เลขผู้เสียภาษี</label><input value="${(ct.tax||'').replace(/"/g,'&quot;')}" placeholder="0-0000-00000-00-0" oninput="updateContactField('${ct.id}','tax',this.value)"></div>`;
+    return `<div class="bank-account-item" data-cid="${ct.id}" style="margin-bottom:10px">
+      <div class="bank-account-header" style="margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          ${typeLabel}
+          <strong class="contact-name-display">${ct.name || '<span style="color:var(--text-muted);font-style:italic;font-size:13px">ยังไม่มีชื่อ</span>'}</strong>
+        </div>
+        <div class="bank-account-actions">
+          <button class="btn btn-sm" style="color:var(--success);border-color:var(--success)" onclick="useContactInForm('${ct.id}')">
+            <i class="ti ti-send"></i> ใช้ข้อมูลนี้
+          </button>
+          <button class="btn btn-sm btn-danger btn-icon" onclick="deleteContact('${ct.id}')"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex-wrap:wrap">
+        <div class="field" style="grid-column:1/-1"><label>ชื่อบริษัท / ${ct.type==='seller'?'ร้านค้า':'ลูกค้า'}</label>
+          <input class="contact-name-input" value="${(ct.name||'').replace(/"/g,'&quot;')}" placeholder="${ct.type==='seller'?'บริษัท ตัวอย่าง จำกัด':'บริษัท ลูกค้า จำกัด'}" 
+            oninput="updateContactField('${ct.id}','name',this.value);this.closest('[data-cid]').querySelector('.contact-name-display').innerHTML=this.value||'<span style=\\'color:var(--text-muted);font-style:italic;font-size:13px\\'>ยังไม่มีชื่อ</span>'">
+        </div>
+        <div class="field" style="grid-column:1/-1"><label>ที่อยู่</label>
+          <textarea style="min-height:44px" placeholder="เลขที่ ถนน แขวง เขต จังหวัด" oninput="updateContactField('${ct.id}','addr',this.value)">${(ct.addr||'').replace(/</g,'&lt;')}</textarea>
+        </div>
+        <div class="field"><label>โทรศัพท์</label>
+          <input value="${(ct.tel||'').replace(/"/g,'&quot;')}" placeholder="08x-xxx-xxxx" oninput="updateContactField('${ct.id}','tel',this.value)">
+        </div>
+        ${extraField}
+        ${ct.type==='seller' ? `
+        <div class="field" style="grid-column:1/-1">
+          <label>โลโก้</label>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="border:1.5px dashed var(--border);border-radius:6px;width:72px;height:72px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--surface2);cursor:pointer" onclick="document.getElementById('contactLogoInput-${ct.id}').click()">
+              ${ct.logoDataUrl ? `<img src="${ct.logoDataUrl}" style="max-width:70px;max-height:70px;object-fit:contain">` : `<i class="ti ti-photo" style="font-size:22px;color:var(--text-subtle)"></i>`}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <button class="btn btn-sm" onclick="document.getElementById('contactLogoInput-${ct.id}').click()"><i class="ti ti-upload"></i> อัปโหลด</button>
+              ${ct.logoDataUrl ? `<button class="btn btn-sm btn-danger" onclick="updateContactField('${ct.id}','logoDataUrl',null);renderContactList()"><i class="ti ti-x"></i> ลบ</button>` : ''}
+            </div>
+            <input type="file" id="contactLogoInput-${ct.id}" accept="image/*" style="display:none" onchange="(function(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{updateContactField('${ct.id}','logoDataUrl',ev.target.result);renderContactList();};r.readAsDataURL(f);})(event)">
+          </div>
+        </div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ---- Contact Picker (modal) ----
+function openContactPicker(mode) {
+  pickerMode = mode;
+  $('pickerTitle').textContent = mode === 'seller' ? 'เลือกผู้เสนอราคา' : 'เลือกลูกค้า';
+  $('pickerSubtitle').textContent = mode === 'seller' ? 'เลือกเพื่อกรอกข้อมูลฝั่งผู้เสนอราคา' : 'เลือกเพื่อกรอกข้อมูลผู้รับใบเสนอราคา';
+  $('pickerSearch').value = '';
+  renderPicker();
+  $('contactPickerModal').style.display = 'flex';
+  setTimeout(() => $('pickerSearch').focus(), 100);
+}
+function closeContactPicker(e) {
+  if (e && e.target !== $('contactPickerModal')) return;
+  $('contactPickerModal').style.display = 'none';
+}
+function renderPicker() {
+  const contacts = getContacts();
+  const q = ($('pickerSearch')?.value || '').toLowerCase();
+  // Show all contacts but highlight matching type
+  const filtered = contacts.filter(c => {
+    if (q) return (c.name||'').toLowerCase().includes(q) || (c.addr||'').toLowerCase().includes(q);
+    return true;
+  });
+  const c = $('pickerList');
+  if (!c) return;
+  if (filtered.length === 0) {
+    c.innerHTML = `<div class="empty" style="padding:24px"><i class="ti ti-search"></i>ไม่พบรายชื่อ</div>`;
+    return;
+  }
+  c.innerHTML = filtered.map(ct => {
+    const typeLabel = ct.type === 'seller'
+      ? `<span style="background:#dbeafe;color:#1e40af;font-size:10px;padding:1px 7px;border-radius:20px;font-weight:700">ผู้เสนอราคา</span>`
+      : `<span style="background:var(--success-bg);color:var(--success);font-size:10px;padding:1px 7px;border-radius:20px;font-weight:700">ลูกค้า</span>`;
+    return `<div onclick="selectContact('${ct.id}')" style="padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:10px;transition:background .1s" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:14px">${ct.name || '<span style="color:var(--text-muted);font-style:italic">ไม่มีชื่อ</span>'}</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ct.addr || '—'}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">${typeLabel}<i class="ti ti-chevron-right" style="color:var(--text-muted)"></i></div>
+    </div>`;
+  }).join('');
+}
+function selectContact(id) {
+  $('contactPickerModal').style.display = 'none';
+  useContactInForm(id, pickerMode);
+}
+function addContactFromPicker() {
+  $('contactPickerModal').style.display = 'none';
+  switchTab('contacts');
+  addContact(pickerMode);
+}
+
+// ========== END CONTACT DATABASE ==========
+
+// ========== STAFF PRESET ==========
+const STAFF_PRESET_KEY = 'qt:staffPresets';
+
+function getStaffPresets() {
+  try { return JSON.parse(localStorage.getItem(STAFF_PRESET_KEY) || '[]'); } catch { return []; }
+}
+
+function saveStaffPreset() {
+  const name = $('preparedBy').value.trim();
+  const tel = $('preparedTel').value.trim();
+  if (!name && !tel) { showToast('กรุณากรอกชื่อหรือเบอร์มือถือก่อน', 'error'); return; }
+  const presets = getStaffPresets();
+  // Check duplicate
+  const exists = presets.find(p => p.name === name && p.tel === tel);
+  if (exists) { showToast('มีข้อมูลนี้อยู่แล้ว', 'error'); return; }
+  presets.push({ id: Date.now(), name, tel });
+  localStorage.setItem(STAFF_PRESET_KEY, JSON.stringify(presets));
+  showToast('บันทึกข้อมูลผู้เสนอราคาแล้ว ✓');
+}
+
+function openStaffPicker() {
+  renderStaffPresetList();
+  $('staffPickerModal').style.display = 'flex';
+}
+
+function closeStaffPicker(e) {
+  if (e && e.target !== $('staffPickerModal')) return;
+  $('staffPickerModal').style.display = 'none';
+}
+
+function renderStaffPresetList() {
+  const list = $('staffPresetList');
+  const presets = getStaffPresets();
+  if (!presets.length) {
+    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-muted)"><i class="ti ti-users" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3"></i>ยังไม่มีข้อมูลที่บันทึกไว้</div>';
+    return;
+  }
+  list.innerHTML = presets.map(p => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);cursor:pointer;transition:background .15s"
+      onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--surface2)'"
+      onclick="pickStaff(${p.id})">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:14px">${p.name || '(ไม่มีชื่อ)'}</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${p.tel || '-'}</div>
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteStaffPreset(${p.id})" title="ลบ"><i class="ti ti-trash"></i></button>
+    </div>
+  `).join('');
+}
+
+function pickStaff(id) {
+  const presets = getStaffPresets();
+  const p = presets.find(p => p.id === id);
+  if (!p) return;
+  $('preparedBy').value = p.name || '';
+  $('preparedTel').value = p.tel || '';
+  $('staffPickerModal').style.display = 'none';
+  showToast('เรียกข้อมูลผู้เสนอราคาแล้ว ✓');
+}
+
+function deleteStaffPreset(id) {
+  const presets = getStaffPresets().filter(p => p.id !== id);
+  localStorage.setItem(STAFF_PRESET_KEY, JSON.stringify(presets));
+  renderStaffPresetList();
+  showToast('ลบแล้ว');
+}
+// ========== END STAFF PRESET ==========
+// ========== APPROVER PRESET ==========
+const APPROVER_PRESET_KEY = 'qt:approverPresets';
+
+function getApproverPresets() {
+  try { return JSON.parse(localStorage.getItem(APPROVER_PRESET_KEY) || '[]'); } catch { return []; }
+}
+
+function saveApproverPreset() {
+  const name = $('approvedBy').value.trim();
+  const date = $('approvedDate').value.trim();
+  if (!name) { showToast('กรุณากรอกชื่อก่อน', 'error'); return; }
+  const presets = getApproverPresets();
+  const exists = presets.find(p => p.name === name);
+  if (exists) { showToast('มีข้อมูลนี้อยู่แล้ว', 'error'); return; }
+  presets.push({ id: Date.now(), name, date });
+  localStorage.setItem(APPROVER_PRESET_KEY, JSON.stringify(presets));
+  showToast('บันทึกข้อมูลผู้อนุมัติแล้ว ✓');
+}
+
+function openApproverPicker() {
+  renderApproverPresetList();
+  $('approverPickerModal').style.display = 'flex';
+}
+
+function closeApproverPicker(e) {
+  if (e && e.target !== $('approverPickerModal')) return;
+  $('approverPickerModal').style.display = 'none';
+}
+
+function renderApproverPresetList() {
+  const list = $('approverPresetList');
+  const presets = getApproverPresets();
+  if (!presets.length) {
+    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-muted)"><i class="ti ti-users" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3"></i>ยังไม่มีข้อมูลที่บันทึกไว้</div>';
+    return;
+  }
+  list.innerHTML = presets.map(p => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);cursor:pointer;transition:background .15s"
+      onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--surface2)'"
+      onclick="pickApprover(${p.id})">
+      <div style="flex:1"><div style="font-weight:600;font-size:14px">${p.name}</div>${p.date ? `<div style="font-size:12px;color:var(--text-muted);margin-top:2px">${p.date}</div>` : ''}</div>
+      <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteApproverPreset(${p.id})" title="ลบ"><i class="ti ti-trash"></i></button>
+    </div>
+  `).join('');
+}
+
+function pickApprover(id) {
+  const p = getApproverPresets().find(p => p.id === id);
+  if (!p) return;
+  $('approvedBy').value = p.name;
+  $('approvedDate').value = p.date || '';
+  $('approverPickerModal').style.display = 'none';
+  showToast('เรียกข้อมูลผู้อนุมัติแล้ว ✓');
+}
+
+function deleteApproverPreset(id) {
+  const presets = getApproverPresets().filter(p => p.id !== id);
+  localStorage.setItem(APPROVER_PRESET_KEY, JSON.stringify(presets));
+  renderApproverPresetList();
+  showToast('ลบแล้ว');
+}
+// ========== END APPROVER PRESET ==========
+
+
+
+
+async function exportBackup() {
+  try {
+    const idx = await getIndex();
+    if (!idx.length) { showToast('ไม่มีข้อมูลที่จะ Export', 'error'); return; }
+    const records = {};
+    idx.forEach(q => {
+      const raw = localStorage.getItem(DB_KEY(q.id));
+      if (raw) records[q.id] = JSON.parse(raw);
+    });
+    const bankPresets = localStorage.getItem(BANK_PRESET_KEY);
+    const payload = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      index: idx,
+      records,
+      bankPresets: bankPresets ? JSON.parse(bankPresets) : []
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const dateStr = new Date().toISOString().slice(0,10);
+    a.href = url; a.download = `quotation-backup-${dateStr}.json`;
+    a.click(); URL.revokeObjectURL(url);
+    showToast(`Export สำเร็จ ${idx.length} รายการ ✓`);
+  } catch(e) { showToast('Export ล้มเหลว: ' + e.message, 'error'); }
+}
+
+async function importBackup(event) {
+  const file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const payload = JSON.parse(text);
+    if (!payload.index || !payload.records) { showToast('ไฟล์ไม่ถูกต้อง', 'error'); return; }
+    const existing = await getIndex();
+    const existingIds = new Set(existing.map(q => q.id));
+    let added = 0, skipped = 0;
+    const newIdx = [...existing];
+    payload.index.forEach(q => {
+      if (existingIds.has(q.id)) { skipped++; return; }
+      const rec = payload.records[q.id];
+      if (!rec) return;
+      localStorage.setItem(DB_KEY(q.id), JSON.stringify(rec));
+      newIdx.push(q);
+      added++;
+    });
+    await setIndex(newIdx);
+    if (payload.bankPresets && payload.bankPresets.length > 0) {
+      const current = localStorage.getItem(BANK_PRESET_KEY);
+      if (!current || JSON.parse(current).length === 0) {
+        localStorage.setItem(BANK_PRESET_KEY, JSON.stringify(payload.bankPresets));
+        updatePresetCount();
+      }
+    }
+    renderList(); updateCount();
+    let msg = `Import สำเร็จ ${added} รายการ`;
+    if (skipped > 0) msg += ` (ข้าม ${skipped} ที่มีอยู่แล้ว)`;
+    showToast(msg + ' ✓');
+  } catch(e) { showToast('Import ล้มเหลว: ' + e.message, 'error'); }
+}
+
+
+// ========== PAYTERM PRESETS ==========
+const PAYTERM_KEY = 'qt:payTermPresets';
+const PAYTERM_DEFAULTS = [
+  'โอนเงินก่อนส่งของ',
+  'โอนเงินหลังส่งมอบงาน/ติดตั้งเสร็จ',
+  'โอนเงินผ่านบัญชีธนาคาร',
+  'เงินสด',
+  'โอนเงินชำระงวดที่ 1 ก่อนเริ่มงาน และโอนเงินชำระงวดที่ 2 หลังส่งมอบงาน/ติดตั้งเสร็จ',
+];
+function getPayTermPresets() {
+  try { return JSON.parse(localStorage.getItem(PAYTERM_KEY) || 'null') || [...PAYTERM_DEFAULTS]; } catch { return [...PAYTERM_DEFAULTS]; }
+}
+function savePayTermPresetsToStorage(arr) {
+  localStorage.setItem(PAYTERM_KEY, JSON.stringify(arr));
+}
+function renderPayTermPresets() {
+  const list = $('payTermPresetList');
+  if (!list) return;
+  const presets = getPayTermPresets();
+  if (!presets.length) { list.innerHTML = '<div style="font-size:12px;color:var(--text-subtle);padding:2px 0">ยังไม่มี preset</div>'; return; }
+  list.innerHTML = presets.map((p, i) => `
+    <div style="display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:var(--radius-xs);background:var(--surface);border:1px solid var(--border-light)">
+      <span onclick="applyPayTerm(${i})" style="flex:1;font-size:13px;cursor:pointer;color:var(--text);line-height:1.4" title="คลิกเพื่อใช้">${p}</span>
+      <button class="btn btn-sm btn-danger" style="padding:2px 7px;flex-shrink:0" onclick="deletePayTermPreset(${i})" title="ลบ"><i class="ti ti-x"></i></button>
+    </div>`).join('');
+}
+function applyPayTerm(i) {
+  const presets = getPayTermPresets();
+  if (presets[i] !== undefined) $('payTerm').value = presets[i];
+}
+function savePayTermPreset() {
+  const val = $('payTerm').value.trim();
+  if (!val) { showToast('กรุณากรอกข้อความก่อน', 'error'); return; }
+  const presets = getPayTermPresets();
+  if (presets.includes(val)) { showToast('มี preset นี้อยู่แล้ว', 'error'); return; }
+  presets.push(val);
+  savePayTermPresetsToStorage(presets);
+  renderPayTermPresets();
+  showToast('บันทึก preset แล้ว ✓');
+}
+function deletePayTermPreset(i) {
+  const presets = getPayTermPresets();
+  presets.splice(i, 1);
+  savePayTermPresetsToStorage(presets);
+  renderPayTermPresets();
+}
+// ========== END PAYTERM PRESETS ==========
+
+function printDoc() {
+  const docNo = $('docNo').value.trim() || 'ใบเสนอราคา';
+  const cName = $('c_name').value.trim();
+  document.title = cName ? `${docNo} - ${cName}` : docNo;
+  window.print();
+  setTimeout(() => { document.title = 'ใบเสนอราคา Pro'; }, 2000);
+}
+
+// Init
+const today = new Date().toISOString().split('T')[0];
+$('docDate').value = today;
+$('validDate').value = '';
+$('docNo').value = peekDocNo();
+addRow(); addRow(); addRow();
+updateCount();
+renderBankAccounts();
+updatePresetCount();
+updateContactCount();
+renderPayTermPresets();
+
+
+
+// Auto-resize address fields on load
+['s_name','c_name','s_addr','c_addr','note'].forEach(id => { const el = $(id); if (el) autoResize(el); });
+window.addEventListener('beforeprint', () => {
+  $('discountCalcRow').classList.toggle('print-hidden', !useDiscount);
+  $('vatCalcRow').classList.toggle('print-hidden', !useVat);
+  // sync payTerm for print
+  const ptPrint = $('payTermPrintDisplay');
+  if (ptPrint) { ptPrint.textContent = $('payTerm').value; ptPrint.style.display = 'block'; }
+  // Hide empty customer fields on print
+  [['c_name','c_name_wrap'],['c_tel','c_tel_wrap'],['c_addr','c_addr_wrap'],['c_tax','c_tax_wrap']].forEach(([fid,wid]) => {
+    const el = $(fid); const wrap = $(wid);
+    if (wrap && el) wrap.classList.toggle('tax-field-empty', !el.value.trim());
+  });
+  // note field
+  const noteWrap = $('note_wrap');
+  if (noteWrap) noteWrap.classList.toggle('tax-field-empty', !$('note').value.trim());
+  // seller fields
+  [['s_name','s_name_wrap'],['s_addr','s_addr_wrap'],['s_tel','s_tel_wrap'],['s_tax','s_tax_wrap'],['validDate','validDate_wrap']].forEach(([fid,wid]) => {
+    const el = $(fid); const wrap = $(wid);
+    if (wrap && el) wrap.classList.toggle('tax-field-empty', !el.value.trim());
+  });
+});
+window.addEventListener('afterprint', () => {
+  $('discountCalcRow').classList.remove('print-hidden');
+  $('vatCalcRow').classList.remove('print-hidden');
+  const ptPrint = $('payTermPrintDisplay');
+  if (ptPrint) ptPrint.style.display = 'none';
+  ['c_name_wrap','c_tel_wrap','c_addr_wrap','c_tax_wrap'].forEach(wid => {
+    const w = $(wid); if (w) w.classList.remove('tax-field-empty');
+  });
+  const noteWrap2 = $('note_wrap');
+  if (noteWrap2) noteWrap2.classList.remove('tax-field-empty');
+  ['s_name_wrap','s_addr_wrap','s_tel_wrap','s_tax_wrap','validDate_wrap'].forEach(wid => {
+    const w = $(wid); if (w) w.classList.remove('tax-field-empty');
+  });
+});
+
+
+// ========== RECEIPT SYSTEM (moved to receipt.html) ==========
+function getRcIndex() { try { return JSON.parse(localStorage.getItem('rc:index')||'[]'); } catch{return[];} }
+function updateRcCount() {
+  const el = document.getElementById('receiptCount');
+  if (el) el.textContent = getRcIndex().length;
+}
+updateRcCount();
+// ========== END RECEIPT SYSTEM ==========
+
+// ========== GOOGLE DRIVE SYNC ==========
+const GDRIVE_CLIENT_ID = '19105819323-je6csm2e7fda5dhke44f4vcggiphec8v.apps.googleusercontent.com';
+const GDRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+const DRIVE_FILENAME = 'quotation-backup.json';
+let driveAccessToken = null;
+let driveFileId = localStorage.getItem('qt:driveFileId') || null;
+let driveTokenClient = null;
+
+function initDrive() {
+  if (!window.google) return;
+  driveTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GDRIVE_CLIENT_ID,
+    scope: GDRIVE_SCOPE,
+    callback: async (resp) => {
+      if (resp.error) { showToast('เชื่อมต่อ Drive ไม่สำเร็จ: ' + resp.error, 'error'); return; }
+      driveAccessToken = resp.access_token;
+      localStorage.setItem('qt:driveToken', driveAccessToken);
+      updateDriveBtn(true);
+      showToast('เชื่อมต่อ Google Drive แล้ว ✓');
+      await driveSyncAuto();
+    }
+  });
+  const saved = localStorage.getItem('qt:driveToken');
+  if (saved) { driveAccessToken = saved; updateDriveBtn(true); }
+}
+
+function updateDriveBtn(connected) {
+  const btn = document.getElementById('driveBtn');
+  const lbl = document.getElementById('driveBtnLabel');
+  if (!btn) return;
+  if (connected) {
+    btn.style.color = '#2d6a4f'; btn.style.borderColor = '#2d6a4f';
+    if (lbl) lbl.textContent = 'Drive: เชื่อมต่อแล้ว';
+  } else {
+    btn.style.color = ''; btn.style.borderColor = '';
+    if (lbl) lbl.textContent = 'เชื่อมต่อ Drive';
+  }
+}
+
+function driveAction() {
+  if (driveAccessToken) {
+    driveSyncAuto();
+  } else {
+    if (!driveTokenClient) { showToast('Google API ยังโหลดไม่เสร็จ กรุณารอสักครู่', 'error'); return; }
+    driveTokenClient.requestAccessToken();
+  }
+}
+
+async function buildBackupPayload() {
+  const idx = await getIndex();
+  const records = {};
+  idx.forEach(q => {
+    const raw = localStorage.getItem(DB_KEY(q.id));
+    if (raw) records[q.id] = JSON.parse(raw);
+  });
+  const bankPresets = localStorage.getItem(BANK_PRESET_KEY);
+  const contacts = localStorage.getItem(CONTACTS_KEY);
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    index: idx,
+    records,
+    bankPresets: bankPresets ? JSON.parse(bankPresets) : [],
+    contacts: contacts ? JSON.parse(contacts) : []
+  };
+}
+
+async function driveSyncAuto() {
+  if (!driveAccessToken) return;
+  try {
+    const payload = await buildBackupPayload();
+    const content = JSON.stringify(payload, null, 2);
+    if (driveFileId) {
+      const r = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`, {
+        method: 'PATCH',
+        headers: { 'Authorization': 'Bearer ' + driveAccessToken, 'Content-Type': 'application/json' },
+        body: content
+      });
+      if (r.status === 404) { driveFileId = null; localStorage.removeItem('qt:driveFileId'); await driveSyncAuto(); return; }
+      if (r.status === 401) throw new Error('401');
+    } else {
+      const meta = await fetch('https://www.googleapis.com/drive/v3/files', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + driveAccessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: DRIVE_FILENAME, parents: ['appDataFolder'] })
+      }).then(r => r.json());
+      driveFileId = meta.id;
+      localStorage.setItem('qt:driveFileId', driveFileId);
+      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`, {
+        method: 'PATCH',
+        headers: { 'Authorization': 'Bearer ' + driveAccessToken, 'Content-Type': 'application/json' },
+        body: content
+      });
+    }
+    updateDriveBtn(true);
+    showToast('ซิงค์ Drive สำเร็จ ✓');
+  } catch(e) {
+    if (e.message === '401') {
+      driveAccessToken = null; localStorage.removeItem('qt:driveToken'); updateDriveBtn(false);
+      showToast('Session Drive หมดอายุ กรุณากด "เชื่อมต่อ Drive" ใหม่', 'error');
+    } else {
+      showToast('Drive sync ล้มเหลว: ' + e.message, 'error');
+    }
+  }
+}
+
+window.addEventListener('load', () => { setTimeout(initDrive, 1000); });
+// ========== END GOOGLE DRIVE SYNC ==========
+
+
+
+</script>
+
+
+
+<!-- Staff Preset Modal -->
+<div id="staffPickerModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.45);align-items:flex-end;justify-content:center" onclick="closeStaffPicker(event)">
+  <div style="background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:480px;padding:20px;max-height:70vh;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-weight:700;font-size:15px">ข้อมูลผู้เสนอราคา</div>
+      <button class="btn btn-sm" onclick="closeStaffPicker()"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="staffPresetList" style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:8px"></div>
+    <div style="font-size:12px;color:var(--text-muted);text-align:center">กดเลือกเพื่อกรอกข้อมูลอัตโนมัติ</div>
+  </div>
+</div>
+
+<!-- Approver Preset Modal -->
+<div id="approverPickerModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.45);align-items:flex-end;justify-content:center" onclick="closeApproverPicker(event)">
+  <div style="background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:480px;padding:20px;max-height:70vh;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-weight:700;font-size:15px">ข้อมูลผู้อนุมัติ</div>
+      <button class="btn btn-sm" onclick="closeApproverPicker()"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="approverPresetList" style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:8px"></div>
+    <div style="font-size:12px;color:var(--text-muted);text-align:center">กดเลือกเพื่อกรอกข้อมูลอัตโนมัติ</div>
+  </div>
+</div>
+</body>
+</html>

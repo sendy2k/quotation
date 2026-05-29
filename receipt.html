@@ -1,0 +1,2249 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a1a1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ใบเสร็จรับเงิน">
+<title>ใบเสร็จรับเงิน Pro</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async></script>
+<style>
+:root {
+  --bg: #f0ede8;
+  --bg2: #e8e4de;
+  --surface: #ffffff;
+  --surface2: #faf9f7;
+  --border: #ddd9d0;
+  --border-light: #eae7e0;
+  --text: #1c1b18;
+  --text-muted: #8a8780;
+  --text-subtle: #b0ada6;
+  --accent: #1c1b18;
+  --accent-fg: #ffffff;
+  --accent2: #2f4f3a;
+  --success: #2d6a4f;
+  --success-bg: #e8f5ee;
+  --success-border: #a8d5b8;
+  --danger: #b91c1c;
+  --danger-bg: #fef2f2;
+  --warn-bg: #fffbeb;
+  --warn-border: #fbbf24;
+  --warn-text: #78350f;
+  --cost-color: #92400e;
+  --profit-pos: #2d6a4f;
+  --profit-neg: #b91c1c;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-xs: 5px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --shadow: 0 1px 4px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.04);
+  --shadow-md: 0 2px 8px rgba(0,0,0,.08), 0 8px 32px rgba(0,0,0,.06);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Sarabun', -apple-system, sans-serif;
+  background: var(--bg);
+  background-image: radial-gradient(circle at 20% 0%, rgba(47,79,58,.06) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 100%, rgba(28,27,24,.04) 0%, transparent 50%);
+  color: var(--text);
+  font-size: 15px;
+  min-height: 100vh;
+}
+
+/* Install Banner */
+#installBanner { display: none; background: var(--accent); color: var(--accent-fg); padding: 10px 16px; font-size: 13px; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 100; }
+#installBanner.show { display: flex; }
+#installBanner button { padding: 5px 12px; border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; font-family: inherit; border: none; }
+#installBtn { background: white; color: var(--accent); font-weight: 600; }
+#dismissInstall { background: transparent; color: rgba(255,255,255,.7); }
+
+/* Tab Nav */
+.tab-bar {
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 1px 0 var(--border), var(--shadow-sm);
+}
+.tab {
+  padding: 14px 16px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color .15s;
+  letter-spacing: .01em;
+}
+.tab.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 700; }
+.tab:hover { color: var(--text); }
+#listCount { font-size: 10px; background: var(--border); color: var(--text-muted); padding: 1px 7px; border-radius: 20px; margin-left: 2px; font-weight: 700; }
+
+/* Layout */
+.page { padding: 16px; max-width: 1100px; margin: 0 auto; }
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  transition: box-shadow .2s;
+}
+.card:hover { box-shadow: var(--shadow-md); }
+.back-card {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid var(--warn-border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Section label */
+.section-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 2px;
+  opacity: .25;
+}
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+/* Fields */
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: .03em; text-transform: uppercase; }
+.field input, .field textarea, .field select {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 11px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface2);
+  color: var(--text);
+  width: 100%;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.field input:hover, .field textarea:hover, .field select:hover { background: var(--surface); }
+.field input:focus, .field textarea:focus, .field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(28,27,24,.07);
+}
+.field textarea { resize: vertical; min-height: 48px; line-height: 1.6; }
+
+/* Doc Header */
+.doc-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+.logo-zone { flex-shrink: 0; }
+.logo-upload {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  width: auto;
+  min-height: unset;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  color: var(--text-subtle);
+  font-size: 11px;
+  transition: all .15s;
+  background: var(--surface2);
+}
+.logo-upload:hover { background: var(--bg2); border-color: var(--text-muted); color: var(--text-muted); }
+.logo-upload img { max-height: 140px; width: auto; max-width: 100%; object-fit: contain; border-radius: 4px; display: none; }
+.doc-title-area { flex: 1; text-align: right; }
+.doc-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -.8px;
+  color: var(--text);
+}
+.doc-no-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; justify-content: flex-end; }
+.doc-no-row span { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+.doc-no-input {
+  border: none;
+  border-bottom: 1.5px solid var(--border);
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 2px 6px;
+  width: 150px;
+  transition: border-color .15s;
+}
+.doc-no-input:focus { outline: none; border-bottom-color: var(--accent); color: var(--text); }
+.badge { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: .04em; }
+.badge-new { background: #dbeafe; color: #1d4ed8; }
+.badge-saved { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-border); }
+.date-col { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex-shrink: 0; justify-content: flex-end; }
+.date-field { display: flex; flex-direction: row; gap: 6px; align-items: center; }
+.date-field label { font-size: 10px; color: var(--text-subtle); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.date-field input {
+  width: 160px;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 6px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface2);
+  color: var(--text);
+  transition: border-color .15s;
+}
+.date-field input:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+
+/* Table */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { background: var(--surface2); }
+th {
+  padding: 10px 8px;
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1.5px solid var(--border);
+}
+td { padding: 5px 5px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #faf9f7; }
+td input {
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-xs);
+  padding: 5px 7px;
+  font-size: 13px;
+  width: 100%;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  transition: border-color .1s, background .1s;
+}
+td textarea { vertical-align: middle; }
+td input:focus { border-color: var(--border); background: var(--surface2); outline: none; box-shadow: 0 0 0 2px rgba(28,27,24,.05); }
+td textarea:focus { border-color: var(--border) !important; background: var(--surface2) !important; outline: none; box-shadow: 0 0 0 2px rgba(28,27,24,.05); }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .12s;
+  white-space: nowrap;
+  letter-spacing: .01em;
+}
+.btn:hover { background: var(--bg2); border-color: var(--text-subtle); }
+.btn:active { transform: scale(.97); }
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+  box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 1px 8px rgba(0,0,0,.1);
+}
+.btn-primary:hover { opacity: .88; background: var(--accent); border-color: var(--accent); box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.btn-danger { color: var(--danger); border-color: transparent; background: transparent; }
+.btn-danger:hover { background: var(--danger-bg); border-color: #fecaca; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn-icon { padding: 5px 8px; }
+
+/* Actions Row */
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.actions-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+
+/* Divider */
+.divider { border: none; border-top: 1px solid var(--border-light); margin: 12px 0; }
+
+/* VAT rows */
+.calc-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.calc-row label { font-size: 13px; font-weight: 500; color: var(--text); min-width: 120px; }
+.calc-row input[type=number] {
+  width: 80px;
+  padding: 6px 9px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  background: var(--surface2);
+  color: var(--text);
+  font-family: inherit;
+  transition: border-color .15s;
+}
+.calc-row input[type=number]:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+
+/* Summary table */
+.sum-table { width: 100%; font-size: 14px; }
+.sum-table td { padding: 6px 0; border-bottom: none; }
+.sum-table td:last-child { text-align: right; font-weight: 600; }
+.sum-grand td {
+  font-size: 18px;
+  font-weight: 700;
+  border-top: 2px solid var(--border);
+  padding-top: 12px;
+  color: var(--text);
+}
+
+/* Metrics */
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+.metric {
+  background: rgba(255,255,255,.7);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  border: 1px solid rgba(251,191,36,.4);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+}
+.metric-label { font-size: 10px; color: var(--warn-text); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; opacity: .8; }
+.metric-val { font-size: 18px; font-weight: 700; color: var(--warn-text); }
+.profit-pos { color: var(--profit-pos) !important; }
+.profit-neg { color: var(--profit-neg) !important; }
+.cost-color { color: var(--cost-color) !important; }
+
+/* List view */
+.qt-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border-light);
+  transition: background .1s;
+}
+.qt-item:last-child { border-bottom: none; }
+.qt-info { flex: 1; min-width: 0; }
+.qt-no { font-weight: 700; font-size: 14px; }
+.qt-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qt-total { font-weight: 700; font-size: 14px; white-space: nowrap; color: var(--accent2); }
+.empty { text-align: center; padding: 48px 20px; color: var(--text-muted); }
+.empty i { font-size: 40px; display: block; margin-bottom: 12px; opacity: .25; }
+.print-only { display: none; }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  padding: 11px 20px;
+  border-radius: var(--radius);
+  font-size: 13.5px;
+  font-weight: 600;
+  opacity: 0;
+  transition: all .25s cubic-bezier(.34,1.56,.64,1);
+  z-index: 999;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  letter-spacing: .01em;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.success { background: var(--accent); color: white; }
+.toast.error { background: var(--danger); color: white; }
+
+/* Toggle switch */
+.toggle-wrap { position:relative; width:38px; height:22px; flex-shrink:0; cursor:pointer; }
+.toggle-track {
+  width:38px; height:22px;
+  background: var(--border);
+  border-radius:22px;
+  transition: background .2s;
+  position:relative;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.1);
+}
+.toggle-track::after {
+  content:'';
+  position:absolute;
+  top:3px; left:3px;
+  width:16px; height:16px;
+  background:#fff;
+  border-radius:50%;
+  transition: left .2s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+.toggle-track.on { background: var(--accent); }
+.toggle-track.on::after { left:19px; }
+
+/* Deposit */
+.deposit-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border-light); }
+.deposit-row:last-child { border-bottom: none; }
+.deposit-row input[type=text] { flex:1; font-family:inherit; font-size:13px; padding:6px 9px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--surface2); color:var(--text); transition: border-color .15s; }
+.deposit-row input[type=text]:focus { outline:none; border-color:var(--accent); background:var(--surface); }
+.deposit-row input[type=number] { width:110px; font-family:inherit; font-size:13px; padding:6px 9px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--surface2); color:var(--text); text-align:right; transition:border-color .15s; }
+.deposit-row input[type=number]:focus { outline:none; border-color:var(--accent); background:var(--surface); }
+.deposit-row .dep-amt { width:110px; text-align:right; font-size:13px; font-weight:700; color:var(--success); white-space:nowrap; }
+.deposit-row .dep-seq { font-size:12px; color:var(--text-muted); min-width:44px; font-weight:600; }
+.dep-total-row { display:flex; justify-content:space-between; align-items:center; padding-top:10px; margin-top:6px; border-top:2px solid var(--border); font-weight:700; font-size:14px; }
+.dep-remaining { color: var(--danger); }
+.dep-remaining.zero { color: var(--success); }
+
+/* Bank accounts */
+.bank-account-item {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 10px;
+  position: relative;
+  background: var(--surface2);
+  transition: border-color .15s;
+}
+.bank-account-item:hover { border-color: var(--text-subtle); }
+.bank-account-item:last-child { margin-bottom: 0; }
+.bank-account-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.bank-account-label { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: .07em; text-transform: uppercase; }
+.bank-account-actions { display: flex; gap: 4px; }
+.bank-account-body { display: flex; gap: 16px; flex-wrap: nowrap; align-items: flex-start; }
+.bank-account-body.hidden-acct { display: none; }
+.bank-preset-bar {
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--warn-text);
+}
+
+/* Receipt Doc Info Grid */
+#rcDocInfo .rc-info-grid { display: grid; grid-template-columns: auto 90px; gap: 3px 8px; align-items: center; }
+#rcDocInfo .rc-info-grid label { white-space: nowrap; font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em; text-align: right; justify-self: end; margin-bottom: 0; }
+#rcDocInfo .rc-info-grid input { font-family: inherit; font-size: 12px; padding: 4px 7px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); width: 100%; box-sizing: border-box; text-align: right; transition: border-color .15s, box-shadow .15s, background .15s; }
+#rcDocInfo .rc-info-grid input:hover { background: var(--surface); }
+#rcDocInfo .rc-info-grid input:focus { outline: none; border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px rgba(28,27,24,.07); }
+
+/* Print */
+@media print {
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  .back-card { display: none !important; }
+  .print-hidden { display: none !important; }
+  body { background: white; font-size: 13px; }
+  .page { padding: 0; max-width: 100%; }
+  .card { border: none; box-shadow: none; padding: 0; margin-bottom: 4px; }
+  .card:hover { box-shadow: none; }
+  .logo-upload { border: none; }
+  .tab-bar { display: none; }
+  #installBanner { display: none !important; }
+  .doc-header { margin-bottom: 8px; }
+  .section-label { font-size: 11px; margin-bottom: 4px; font-weight: 700; }
+  .section-label::before { display: none; }
+  .grid2 { gap: 8px; }
+  .grid3 { gap: 8px; }
+  .field { gap: 2px; }
+  .field label { font-size: 11px; }
+  .field input, .field textarea, .field select { font-size: 13px; padding: 2px 6px; border: none; background: transparent; }
+  .field textarea { min-height: 0 !important; height: auto !important; overflow: hidden; padding-top: 2px; padding-bottom: 2px; }
+  .table-wrap { border: none; }
+  table { font-size: 13px; }
+  th { padding: 4px 4px; font-size: 11px; background: none; }
+  td { padding: 3px 4px; font-size: 13px; vertical-align: middle; }
+  td input, td textarea { vertical-align: middle; padding-top: 0; padding-bottom: 0; line-height: 1.4; }
+  td input { padding-top: 0; }
+  /* Receipt doc info — print */
+  #rcDocInfo .rc-info-grid { grid-template-columns: auto 120px !important; }
+  #rcDocInfo .rc-info-grid input { border: none !important; background: transparent !important; padding: 2px 0 !important; }
+  /* ซ่อนหมายเหตุถ้าว่าง */
+  .rc-note-wrap.note-empty { display: none !important; }
+  #slipRowsContainer { display: none !important; }
+  #slipPrintTable { display: block !important; }
+  /* ซ่อนช่องที่ไม่มีข้อมูลเมื่อปริ้น */
+  .field.print-empty { display: none !important; }
+  /* ซ่อน label+input ใน rc-info-grid ที่ว่าง */
+  #rcDocInfo .rc-info-grid label.print-empty,
+  #rcDocInfo .rc-info-grid input.print-empty { display: none !important; }
+  /* ซ่อน wrapper row ของ seller/customer ที่ช่องทั้งหมดว่าง */
+  .print-row-empty { display: none !important; }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .page { padding: 10px; }
+  .card { padding: 14px; border-radius: 12px; }
+  .grid2 { grid-template-columns: 1fr; }
+  .grid3 { grid-template-columns: 1fr 1fr; }
+  .doc-header { flex-wrap: wrap; }
+  .date-col { align-items: flex-start; }
+  .date-field input { width: 100%; }
+  .metrics-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div id="installBanner">
+  <i class="ti ti-download"></i>
+  <span style="flex:1">ติดตั้งแอปนี้บนอุปกรณ์ของคุณ เพื่อใช้งานแบบออฟไลน์</span>
+  <button id="installBtn">ติดตั้ง</button>
+  <button id="dismissInstall">ปิด</button>
+</div>
+
+<nav class="tab-bar no-print">
+  <a class="tab" href="index.html" style="text-decoration:none"><i class="ti ti-file-text"></i> ใบเสนอราคา</a>
+  <button class="tab active" onclick="switchTab('receipt')" id="tab-receipt"><i class="ti ti-receipt"></i> รายการ <span id="receiptCount" style="font-size:11px;background:var(--border);padding:1px 7px;border-radius:20px;margin-left:2px">0</span></button>
+  <button class="tab" onclick="switchTab('receipt-form')" id="tab-receipt-form" style="display:none"><i class="ti ti-edit"></i> แก้ไข</button>
+</nav>
+
+<div id="toast" class="toast no-print"></div>
+<!-- ============ RECEIPT LIST VIEW ============ -->
+<div id="view-receipt" class="page" style="display:none">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+      <div class="section-label" style="margin:0">ใบเสร็จรับเงิน</div>
+      <button class="btn btn-sm btn-primary" onclick="newReceipt()"><i class="ti ti-plus"></i> สร้างใบเสร็จ</button>
+    </div>
+    <div id="receiptListContainer"><div class="empty"><i class="ti ti-receipt"></i>ยังไม่มีใบเสร็จ</div></div>
+  </div>
+</div>
+
+<!-- ============ RECEIPT FORM VIEW ============ -->
+<div id="view-receipt-form" class="page" style="display:none">
+
+  <!-- Header -->
+  <div class="card no-print" style="margin-bottom:8px">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-sm" onclick="switchTab('receipt')"><i class="ti ti-arrow-left"></i> กลับ</button>
+      <div style="font-weight:700;font-size:15px">ใบเสร็จรับเงิน</div>
+      <span id="rcStatusBadge" class="badge no-print" style="background:var(--warn-bg);color:var(--warn-text);border:1px solid var(--warn-border)">ยังไม่บันทึก</span>
+      <div style="margin-left:auto;display:flex;gap:6px">
+        <button class="btn" onclick="printReceipt()"><i class="ti ti-printer"></i> พิมพ์</button>
+        <button class="btn btn-primary" onclick="saveReceipt()"><i class="ti ti-device-floppy"></i> บันทึก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doc header print area -->
+  <div class="card">
+    <div style="display:flex;gap:12px;align-items:flex-start">
+      <!-- Logo -->
+      <div id="rcLogoZone" style="flex-shrink:0;cursor:pointer" onclick="document.getElementById('rcLogoInput').click()">
+        <img id="rcLogoImg" style="max-height:140px;width:auto;max-width:120px;object-fit:contain;border-radius:4px;display:none" alt="โลโก้">
+        <div id="rcLogoPlaceholder" class="no-print" style="border:2px dashed var(--border);border-radius:var(--radius-sm);width:80px;height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--text-subtle);font-size:11px;background:var(--surface2)">
+          <i class="ti ti-photo" style="font-size:18px"></i>
+          <span>โลโก้</span>
+        </div>
+        <input type="file" id="rcLogoInput" accept="image/*" style="display:none" onchange="handleRcLogo(event)">
+      </div>
+      <!-- Seller info -->
+      <div style="flex:1;min-width:0;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;background:var(--surface2)">
+        <div data-print-row class="field" style="flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ชื่อบริษัท / ร้านค้า</label><input id="rc_s_name" placeholder="ชื่อบริษัท" style="flex:1;min-width:0"></div>
+        <div data-print-row class="field" style="flex-direction:row;align-items:flex-start;gap:8px;margin-top:6px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content;padding-top:7px">ที่อยู่</label><textarea id="rc_s_addr" rows="1" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;flex:1;min-width:0;line-height:1.5" placeholder="ที่อยู่"></textarea></div>
+        <div data-print-row style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+          <div class="field" style="flex:1;min-width:150px;flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">โทรศัพท์</label><input id="rc_s_tel" placeholder="08x-xxx-xxxx" style="flex:1;min-width:0"></div>
+          <div class="field" style="flex:1;min-width:150px;flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">เลขผู้เสียภาษี</label><input id="rc_s_tax" placeholder="0-0000-00000-00-0" style="flex:1;min-width:0"></div>
+        </div>
+      </div>
+      <!-- Doc info -->
+      <div id="rcDocInfo" style="flex-shrink:0;max-width:240px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;background:var(--surface2)">
+        <div style="font-size:18px;font-weight:800;margin-bottom:8px;text-align:right">ใบเสร็จรับเงิน</div>
+        <div class="rc-info-grid">
+          <label>เลขที่</label>
+          <input id="rc_docNo" placeholder="IV-2026-001">
+          <label>วันที่รับเงิน</label>
+          <input id="rc_date" type="text" placeholder="DD/MM/YYYY">
+          <label>อ้างอิง QT</label>
+          <input id="rc_refNo" placeholder="QT-2026-001">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer -->
+  <div class="card">
+    <div class="section-label no-print">ผู้ชำระเงิน</div>
+    <div style="border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;background:var(--surface2)">
+      <div data-print-row style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+        <div class="field" style="flex:3;flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ชื่อบริษัท / ลูกค้า</label><input id="rc_c_name" placeholder="ชื่อลูกค้า" style="flex:1"></div>
+        <div class="field" style="flex:1;min-width:140px;flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">โทรศัพท์</label><input id="rc_c_tel" placeholder="08x-xxx-xxxx" style="flex:1"></div>
+      </div>
+      <div data-print-row style="display:flex;gap:8px;align-items:flex-start">
+        <div class="field" style="flex:3;flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ที่อยู่</label><textarea id="rc_c_addr" rows="1" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;line-height:1.5;flex:1" placeholder="ที่อยู่ลูกค้า"></textarea></div>
+        <div class="field" style="flex:1;min-width:140px;flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">เลขผู้เสียภาษี</label><input id="rc_c_tax" placeholder="0-0000-00000-00-0" style="flex:1"></div>
+      </div>
+    </div>
+    <!-- Import from quotation -->
+    <div class="no-print" style="margin-top:8px">
+      <button class="btn btn-sm" onclick="showImportFromQt()"><i class="ti ti-file-import"></i> นำข้อมูลจากใบเสนอราคา</button>
+    </div>
+  </div>
+
+  <!-- Items -->
+  <div class="card">
+    <div class="section-label">รายการสินค้า / บริการ</div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead><tr>
+          <th style="width:24px">#</th>
+          <th>รายละเอียด</th>
+          <th style="width:58px;text-align:center">จำนวน</th>
+          <th style="width:75px;text-align:center">หน่วย</th>
+          <th style="width:95px;text-align:right">ราคา/หน่วย</th>
+          <th style="width:95px;text-align:right">รวม</th>
+          <th style="width:30px" class="no-print"></th>
+        </tr></thead>
+        <tbody id="rcItemBody"></tbody>
+      </table>
+    </div>
+    <!-- Summary -->
+    <div style="margin-top:12px;display:flex;justify-content:flex-end">
+      <table style="font-size:13px;border-collapse:collapse;width:auto;min-width:280px">
+        <tr id="rcSubTotalRow"><td style="padding:4px 16px 4px 0;color:var(--text)">ยอดรวม</td><td style="padding:4px 0;text-align:right;font-weight:700;white-space:nowrap" id="rcSubTotal">0.00</td></tr>
+        <tr id="rcDiscountRow"><td style="padding:4px 16px 4px 0;color:var(--text)">ส่วนลด</td><td style="padding:4px 0;text-align:right;font-weight:700;white-space:nowrap;color:var(--danger)" id="rcDiscountAmt">0.00</td></tr>
+        <tr id="rcVatRow"><td style="padding:4px 16px 4px 0;color:var(--text)">VAT <span id="rcVatPctLabel">7</span>%</td><td style="padding:4px 0;text-align:right;font-weight:700;white-space:nowrap" id="rcVatAmt">0.00</td></tr>
+        <tr><td colspan="2" style="padding:0"><div style="border-top:2px solid var(--border);margin:6px 0"></div></td></tr>
+        <tr><td style="padding:6px 16px 4px 0;font-weight:700;font-size:16px">ยอดชำระทั้งสิ้น</td><td style="padding:6px 0 4px;text-align:right;font-weight:700;font-size:16px;white-space:nowrap;color:var(--accent)" id="rcGrandTotal">0.00</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Payment info -->
+  <div class="card">
+    <div style="display:flex;gap:8px;flex-wrap:nowrap;align-items:flex-end;margin-bottom:10px">
+      <div class="section-label" style="margin:0;flex-shrink:0;padding-bottom:8px">ข้อมูลการชำระเงิน</div>
+      <select id="rc_payMethod" onchange="toggleRcBankFields()" style="flex-shrink:0;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;background:var(--surface);color:var(--text)">
+        <option>โอนเงิน</option>
+        <option>เงินสด</option>
+        <option>เช็ค</option>
+        <option>บัตรเครดิต</option>
+        <option>อื่นๆ</option>
+      </select>
+      <div class="field rc-note-wrap" style="flex:1;flex-direction:row;align-items:center;gap:6px;display:flex">
+        <label style="white-space:nowrap;margin:0;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">หมายเหตุ</label>
+        <input id="rc_note" placeholder="หมายเหตุเพิ่มเติม" style="flex:1" oninput="toggleNoteWrap()">
+      </div>
+      <button class="btn btn-sm no-print" onclick="openScanSlip()" style="flex-shrink:0;margin-bottom:1px;background:linear-gradient(135deg,#1a73e8,#0d5ab7);color:white;border-color:transparent;gap:5px">
+        <i class="ti ti-camera"></i> สแกน Slip
+      </button>
+    </div>
+
+    <!-- Slip rows (NEW MULTI-ROW) -->
+    <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-subtle);display:flex;align-items:center;gap:6px">
+          <span style="display:inline-block;width:3px;height:10px;background:var(--accent);border-radius:2px;opacity:.25"></span>
+          ข้อมูล Slip
+        </div>
+        <button class="btn btn-sm no-print" onclick="addSlipRow()" style="font-size:11px"><i class="ti ti-plus"></i> เพิ่ม Slip</button>
+      </div>
+      <div id="slipRowsContainer"></div>
+      <!-- Print-only slip table -->
+      <div id="slipPrintTable" class="print-only" style="display:none">
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead>
+            <tr style="border-bottom:1.5px solid #ccc">
+              <th style="padding:4px 8px;text-align:center;font-weight:700;color:#555">#</th>
+              <th style="padding:4px 8px;text-align:center;font-weight:700;color:#555">ธนาคาร</th>
+              <th style="padding:4px 8px;text-align:center;font-weight:700;color:#555">ชื่อผู้โอน</th>
+              <th style="padding:4px 8px;text-align:center;font-weight:700;color:#555">ยอดเงิน (บาท)</th>
+              <th style="padding:4px 8px;text-align:center;font-weight:700;color:#555">วันที่ทำรายการ</th>
+              <th style="padding:4px 8px;text-align:center;font-weight:700;color:#555">เลขที่รายการ</th>
+            </tr>
+          </thead>
+          <tbody id="slipPrintBody"></tbody>
+        </table>
+      </div>
+      <!-- hidden legacy fields for backward compat with applySlipField -->
+      <div style="display:none">
+        <input id="rc_bankName"><input id="rc_senderName"><input id="rc_slipAmount"><input id="rc_transferDatetime"><input id="rc_txnNo">
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Import from Quotation Modal -->
+<div id="importQtModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.45);align-items:center;justify-content:center" onclick="closeImportQtModal(event)">
+  <div style="background:var(--surface);border-radius:var(--radius);width:90%;max-width:500px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden" onclick="event.stopPropagation()">
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+      <div style="font-weight:700">เลือกใบเสนอราคา</div>
+      <button class="btn btn-sm" onclick="closeImportQtModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div style="padding:10px 16px;border-bottom:1px solid var(--border)">
+      <input id="importQtSearch" placeholder="ค้นหา..." style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;background:var(--surface);color:var(--text)" oninput="renderImportQtList()">
+    </div>
+    <div id="importQtList" style="overflow-y:auto;flex:1;padding:8px 0"></div>
+  </div>
+</div>
+
+<!-- ============ SCAN SLIP MODAL ============ -->
+<div id="scanSlipModal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.55);align-items:flex-end;justify-content:center" onclick="closeScanSlip(event)">
+  <div style="background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:520px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden" onclick="event.stopPropagation()">
+    <!-- Header -->
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+      <div>
+        <div style="font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px"><i class="ti ti-camera" style="color:#1a73e8"></i> สแกน Slip โอนเงิน</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">ใช้ Tesseract OCR — ฟรี 100% ไม่ต้องใช้ API Key</div>
+      </div>
+      <button class="btn btn-sm" onclick="closeScanSlipBtn()"><i class="ti ti-x"></i></button>
+    </div>
+    <!-- Body -->
+    <div style="overflow-y:auto;flex:1;padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+
+      <!-- Progress bar -->
+      <div id="slipProgress" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px">
+        <div id="slipProgressText" style="font-size:12px;color:var(--text-muted);margin-bottom:6px">กำลังโหลด...</div>
+        <div style="background:var(--border);border-radius:20px;height:6px;overflow:hidden">
+          <div id="slipProgressBar" style="height:100%;width:0%;background:var(--accent);border-radius:20px;transition:width .2s"></div>
+        </div>
+      </div>
+
+      <!-- Upload slip image -->
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">รูป Slip</div>
+        <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:2px dashed var(--border);border-radius:var(--radius-sm);padding:16px;cursor:pointer;background:var(--surface2);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--surface2)'">
+          <i class="ti ti-photo-up" style="font-size:28px;color:var(--text-subtle)"></i>
+          <span style="font-size:13px;color:var(--text-muted)">แตะหรือคลิกเพื่อเลือกรูป Slip</span>
+          <input type="file" id="slipFileInput" accept="image/*" style="display:none" onchange="onSlipFileChange(event)">
+        </label>
+        <img id="slipPreview" style="display:none;max-width:100%;max-height:200px;object-fit:contain;border-radius:var(--radius-sm);margin-top:8px;border:1px solid var(--border)">
+      </div>
+
+      <!-- Scan button -->
+      <button id="slipScanBtn" class="btn btn-primary" style="justify-content:center;gap:6px" disabled onclick="doScanSlip()">
+        <i class="ti ti-scan"></i> สแกน Slip
+      </button>
+
+      <!-- Result -->
+      <div id="slipResult" style="display:none">
+        <div id="slipResultContent"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+
+// Stubs for quotation functions not needed in receipt.html
+let rows = [], currentId = null, logoDataUrl = null;
+let deferredPrompt = null;
+let bankAccounts = [];
+let paymentSectionVisible = true;
+let deposits = [];
+let useDiscount = false, useVat = false, discountMode = 'pct';
+const BANK_PRESET_KEY = 'qt:bankPresets';
+function getBankPresets() { try { return JSON.parse(localStorage.getItem(BANK_PRESET_KEY)||'[]'); } catch{return[];} }
+function getContacts() { try { return JSON.parse(localStorage.getItem(CONTACTS_KEY)||'[]'); } catch{return[];} }
+function updateContactCount() {}
+function updatePresetCount() {}
+function updateCount() {}
+function renderList() {}
+function renderPresetBankList() {}
+function renderContactList() {}
+function renderBankAccounts() {}
+function saveBankPresets() {}
+function loadBankPresets() {}
+function autoResize(el) { if(!el) return; el.style.height='0'; el.style.height=el.scrollHeight+'px'; }
+function fmt(n) { return Number(n).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function showToast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  if(!el) return;
+  el.textContent = msg; el.className = 'toast ' + type + ' show';
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+function $(id) { return document.getElementById(id); }
+// Storage keys
+const IDX_KEY = 'qt:index';
+const DB_KEY = id => 'qt:' + id;
+const RC_KEY = id => 'rc:' + id;
+const RC_INDEX_KEY = 'rc:index';
+const CONTACTS_KEY = 'qt:contacts';
+
+// PWA Install
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredPrompt = e;
+  const banner = document.getElementById('installBanner');
+  if(banner) banner.classList.add('show');
+});
+const installBtn = document.getElementById('installBtn');
+if(installBtn) installBtn.onclick = async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  const banner = document.getElementById('installBanner');
+  if(banner) banner.classList.remove('show');
+};
+const dismissBtn = document.getElementById('dismissInstall');
+if(dismissBtn) dismissBtn.onclick = () => {
+  const banner = document.getElementById('installBanner');
+  if(banner) banner.classList.remove('show');
+};
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(console.warn);
+}
+
+// Override switchTab for receipt.html context
+function switchTab(t) {
+  ['receipt','receipt-form'].forEach(id => {
+    const el = document.getElementById('view-'+id);
+    if(el) el.style.display = (t === id) ? '' : 'none';
+  });
+  ['receipt','receipt-form'].forEach(id => {
+    const btn = document.getElementById('tab-'+id);
+    if(btn) {
+      btn.classList.toggle('active', t === id);
+      // hide receipt-form tab when going back to list
+      if(id === 'receipt-form') btn.style.display = (t === 'receipt-form') ? '' : 'none';
+    }
+  });
+  if (t === 'receipt') { renderReceiptList(); updateRcCount(); }
+}
+// ========== RECEIPT SYSTEM ==========
+// (RC_KEY and RC_INDEX_KEY defined in shared stubs above)
+let rcRows = [];
+let rcCurrentId = null;
+let rcLogoDataUrl = null;
+let rcSlipRows = []; // array of { id, bank, senderName, amount, datetime, txnNo, imageDataUrl }
+let rcUseVat = false;
+let rcUseDiscount = false;
+let rcDiscountAmt_val = 0;
+
+function getRcIndex() { try { return JSON.parse(localStorage.getItem(RC_INDEX_KEY)||'[]'); } catch{return[];} }
+function setRcIndex(idx) { localStorage.setItem(RC_INDEX_KEY, JSON.stringify(idx)); }
+
+function nextRcDocNo() {
+  const idx = getRcIndex();
+  const year = new Date().getFullYear()+543;
+  const nums = idx.map(r => { const m = (r.rcNo||'').match(/IV-\d+-(\d+)/); return m ? parseInt(m[1]) : 0; });
+  const next = (Math.max(0,...nums)+1).toString().padStart(3,'0');
+  return `IV-${new Date().getFullYear()}-${next}`;
+}
+
+function updateRcCount() {
+  const el = $('receiptCount'); if(el) el.textContent = getRcIndex().length;
+}
+
+function renderReceiptList() {
+  const idx = getRcIndex();
+  const container = $('receiptListContainer');
+  if (!idx.length) { container.innerHTML = '<div class="empty"><i class="ti ti-receipt"></i>ยังไม่มีใบเสร็จ</div>'; return; }
+  container.innerHTML = idx.map(r => `
+    <div class="list-item" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;gap:8px" onclick="loadReceipt('${r.id}')">
+      <div>
+        <div style="font-weight:600;font-size:14px">${r.rcNo||'-'}</div>
+        <div style="font-size:12px;color:var(--text-muted)">${r.cName||'-'} · ${r.rcDate||''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-weight:700;font-size:14px">${r.total||'0.00'} ฿</div>
+        <button class="btn btn-sm btn-danger btn-icon" onclick="event.stopPropagation();deleteReceipt('${r.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function deleteReceipt(id) {
+  if (!confirm('ลบใบเสร็จนี้?')) return;
+  localStorage.removeItem(RC_KEY(id));
+  setRcIndex(getRcIndex().filter(r => r.id !== id));
+  renderReceiptList(); updateRcCount();
+}
+
+function newReceipt() {
+  rcCurrentId = null; rcRows = []; rcLogoDataUrl = null;
+  // pre-fill seller from last saved quotation (index.html context not available)
+  $('rc_s_name').value = '';
+  $('rc_s_addr').value = '';
+  $('rc_s_tel').value = '';
+  $('rc_s_tax').value = '';
+  $('rc_docNo').value = nextRcDocNo();
+  const _now = new Date(); const _d = String(_now.getDate()).padStart(2,'0'); const _m = String(_now.getMonth()+1).padStart(2,'0'); const _y = _now.getFullYear();
+  $('rc_date').value = `${_d}/${_m}/${_y}`;
+  $('rc_refNo').value = '';
+  $('rc_c_name').value = ''; $('rc_c_tel').value = '';
+  $('rc_c_addr').value = ''; $('rc_c_tax').value = '';
+  $('rc_note').value = '';
+  toggleNoteWrap();
+  rcSlipRows = [];
+  renderSlipRows();
+
+  toggleRcBankFields();
+  $('rcLogoImg').style.display = 'none';
+  $('rcLogoPlaceholder').style.display = '';
+  $('rcStatusBadge').textContent = 'ยังไม่บันทึก';
+  $('rcStatusBadge').style.background = 'var(--warn-bg)';
+  $('rcStatusBadge').style.color = 'var(--warn-text)';
+  switchTab('receipt-form');
+  // reset VAT and discount
+  rcUseVat = false; rcUseDiscount = false; rcDiscountAmt_val = 0;
+  addRcRow();
+  renderSlipRows();
+  calcRcTotals();
+}
+
+function addRcRow() {
+  rcRows.push({ id: Date.now()+Math.random(), desc:'', qty:1, unit:'ชิ้น', price:0 });
+  renderRcRows();
+}
+
+function renderRcRows() {
+  const tb = $('rcItemBody'); tb.innerHTML = '';
+  rcRows.forEach((r,i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="text-align:center;color:var(--text-muted);font-size:12px">${i+1}</td>
+      <td><textarea placeholder="รายละเอียด" oninput="rcRows[${rcRows.indexOf(r)}].desc=this.value" style="width:100%;resize:none;overflow:hidden;min-height:36px;line-height:1.6;border:1px solid transparent;border-radius:6px;padding:3px 6px;font-size:13px;background:transparent;color:var(--text);font-family:inherit;display:block">${r.desc}</textarea></td>
+      <td><input type="number" value="${r.qty}" min="0" step="any" style="width:100%;text-align:center;font-size:13px;border:1px solid transparent;border-radius:6px;padding:3px 4px;background:transparent;color:var(--text)" oninput="rcRows[${rcRows.indexOf(r)}].qty=parseFloat(this.value)||0;calcRcTotals()"></td>
+      <td><input value="${r.unit}" style="width:100%;text-align:center;font-size:13px;border:1px solid transparent;border-radius:6px;padding:3px 4px;background:transparent;color:var(--text)" oninput="rcRows[${rcRows.indexOf(r)}].unit=this.value"></td>
+      <td><input type="number" value="${r.price}" min="0" step="any" style="width:100%;text-align:right;font-size:13px;border:1px solid transparent;border-radius:6px;padding:3px 4px;background:transparent;color:var(--text)" oninput="rcRows[${rcRows.indexOf(r)}].price=parseFloat(this.value)||0;calcRcTotals()"></td>
+      <td style="text-align:right;font-size:13px;padding:4px 6px">${fmt(r.qty*r.price)}</td>
+      <td class="no-print" style="text-align:center"><button class="btn btn-sm btn-danger btn-icon" onclick="rcRows.splice(${rcRows.indexOf(r)},1);renderRcRows();calcRcTotals()"><i class="ti ti-trash"></i></button></td>`;
+    tb.appendChild(tr);
+    tr.querySelectorAll('textarea').forEach(autoResize);
+  });
+  calcRcTotals();
+}
+
+function calcRcTotals() {
+  const sub = rcRows.reduce((s,r) => s + (r.qty||0)*(r.price||0), 0);
+  const disc = rcUseDiscount ? (rcDiscountAmt_val||0) : 0;
+  const afterDisc = sub - disc;
+  const vat = rcUseVat ? afterDisc*0.07 : 0;
+  const grand = afterDisc + vat;
+  $('rcSubTotal').textContent = fmt(sub) + ' บาท';
+  $('rcDiscountAmt').textContent = fmt(disc) + ' บาท';
+  $('rcVatAmt').textContent = fmt(vat) + ' บาท';
+  $('rcGrandTotal').textContent = fmt(grand) + ' บาท';
+  // show/hide rows
+  const hasExtra = rcUseDiscount || rcUseVat;
+  $('rcSubTotalRow').style.display = hasExtra ? '' : 'none';
+  $('rcDiscountRow').style.display = rcUseDiscount ? '' : 'none';
+  $('rcVatRow').style.display = rcUseVat ? '' : 'none';
+}
+
+
+function saveReceipt() {
+  const id = rcCurrentId || ('rc-' + Date.now());
+  rcCurrentId = id;
+  const data = {
+    id, rcNo: $('rc_docNo').value, rcDate: $('rc_date').value,
+    refNo: $('rc_refNo').value,
+    s_name: $('rc_s_name').value, s_addr: $('rc_s_addr').value, s_tel: $('rc_s_tel').value, s_tax: $('rc_s_tax').value,
+    c_name: $('rc_c_name').value, c_tel: $('rc_c_tel').value, c_addr: $('rc_c_addr').value, c_tax: $('rc_c_tax').value,
+    payMethod: $('rc_payMethod').value, note: $('rc_note').value,
+    // legacy single-slip fields (kept for compat)
+    bankName: '', senderName: '', slipAmount: '', transferDatetime: '', txnNo: '',
+    slipRows: rcSlipRows.map(r=>({...r})),
+    rows: rcRows.map(r=>({...r})),
+    logoDataUrl: rcLogoDataUrl || null,
+    grandTotal: $('rcGrandTotal').textContent.replace(' บาท',''),
+    savedAt: new Date().toISOString()
+  };
+  localStorage.setItem(RC_KEY(id), JSON.stringify(data));
+  let idx = getRcIndex();
+  const entry = { id, rcNo: data.rcNo, cName: data.c_name, rcDate: data.rcDate, total: data.grandTotal };
+  const ex = idx.findIndex(x => x.id === id);
+  if (ex >= 0) idx[ex] = entry; else idx.unshift(entry);
+  setRcIndex(idx);
+  $('rcStatusBadge').textContent = 'บันทึกแล้ว';
+  $('rcStatusBadge').style.background = 'var(--success-bg,#d1fae5)'; $('rcStatusBadge').style.color = 'var(--success-text,#065f46)';
+  showToast('บันทึกใบเสร็จสำเร็จ ✓');
+  updateRcCount();
+}
+
+function loadReceipt(id) {
+  const raw = localStorage.getItem(RC_KEY(id)); if (!raw) return;
+  const d = JSON.parse(raw);
+  rcCurrentId = d.id; rcRows = d.rows || []; rcLogoDataUrl = d.logoDataUrl || null;
+  // โหลด slip rows (รองรับข้อมูลเก่าที่มีแค่ field เดียว)
+  if (d.slipRows && d.slipRows.length > 0) {
+    rcSlipRows = d.slipRows;
+  } else if (d.bankName || d.senderName || d.slipAmount) {
+    rcSlipRows = [{ id: Date.now(), bank: d.bankName||'', senderName: d.senderName||'', amount: d.slipAmount||'', datetime: d.transferDatetime||'', txnNo: d.txnNo||'', imageDataUrl: d.slipImageDataUrl||null }];
+  } else {
+    rcSlipRows = [];
+  }
+  renderSlipRows();
+  $('rc_docNo').value = d.rcNo||'';
+  // แปลง yyyy-mm-dd → dd/mm/yyyy ถ้าจำเป็น
+  const _rcDate = d.rcDate||'';
+  $('rc_date').value = _rcDate.includes('-') && _rcDate.length===10
+    ? _rcDate.split('-').reverse().join('/') : _rcDate;
+  $('rc_refNo').value = d.refNo||'';
+  $('rc_s_name').value = d.s_name||''; $('rc_s_addr').value = d.s_addr||''; $('rc_s_tel').value = d.s_tel||''; $('rc_s_tax').value = d.s_tax||'';
+  $('rc_c_name').value = d.c_name||''; $('rc_c_tel').value = d.c_tel||''; $('rc_c_addr').value = d.c_addr||''; $('rc_c_tax').value = d.c_tax||'';
+  $('rc_payMethod').value = d.payMethod||'โอนเงิน'; $('rc_note').value = d.note||'';
+  toggleNoteWrap();
+
+  toggleRcBankFields();
+  if (rcLogoDataUrl) {
+    $('rcLogoImg').src = rcLogoDataUrl; $('rcLogoImg').style.display = 'block';
+    $('rcLogoPlaceholder').style.display = 'none';
+  } else {
+    $('rcLogoImg').style.display = 'none';
+    $('rcLogoPlaceholder').style.display = '';
+  }
+  autoResize($('rc_s_addr')); autoResize($('rc_c_addr'));
+  renderRcRows(); renderSlipRows(); calcRcTotals();
+  $('rcStatusBadge').textContent = 'บันทึกแล้ว';
+  $('rcStatusBadge').style.background = 'var(--success-bg,#d1fae5)'; $('rcStatusBadge').style.color = 'var(--success-text,#065f46)';
+  switchTab('receipt-form');
+  const tabBtn = $('tab-receipt-form');
+  if(tabBtn) tabBtn.style.display = '';
+}
+
+function handleRcLogo(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    rcLogoDataUrl = ev.target.result;
+    $('rcLogoImg').src = rcLogoDataUrl;
+    $('rcLogoImg').style.display = 'block';
+    $('rcLogoPlaceholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function preparePrint() {
+  // ซ่อน .field ที่ input/textarea/select ทุกตัวว่างเปล่า
+  document.querySelectorAll('.field').forEach(function(field) {
+    var inputs = field.querySelectorAll('input, textarea, select');
+    var allEmpty = Array.from(inputs).every(function(el) {
+      return !el.value || el.value.trim() === '';
+    });
+    if (allEmpty && inputs.length > 0) {
+      field.classList.add('print-empty');
+    }
+  });
+  // ซ่อน rc-info-grid rows (label+input pairs) ที่ input ว่าง
+  var grid = document.querySelector('#rcDocInfo .rc-info-grid');
+  if (grid) {
+    var labels = grid.querySelectorAll('label');
+    labels.forEach(function(lbl) {
+      var inp = lbl.nextElementSibling;
+      if (inp && (inp.tagName === 'INPUT' || inp.tagName === 'TEXTAREA')) {
+        if (!inp.value || inp.value.trim() === '') {
+          lbl.classList.add('print-empty');
+          inp.classList.add('print-empty');
+        }
+      }
+    });
+  }
+  // ซ่อน wrapper row ใน seller/customer ถ้าช่องทั้งแถวว่างหมด
+  document.querySelectorAll('[data-print-row]').forEach(function(row) {
+    var inputs = row.querySelectorAll('input, textarea');
+    var allEmpty = Array.from(inputs).every(function(el) {
+      return !el.value || el.value.trim() === '';
+    });
+    if (allEmpty && inputs.length > 0) {
+      row.classList.add('print-row-empty');
+    }
+  });
+}
+
+function cleanupPrint() {
+  document.querySelectorAll('.print-empty').forEach(function(el) {
+    el.classList.remove('print-empty');
+  });
+  document.querySelectorAll('.print-row-empty').forEach(function(el) {
+    el.classList.remove('print-row-empty');
+  });
+}
+
+function printReceipt() {
+  // render slip print table
+  const tbody = $('slipPrintBody');
+  if (tbody) {
+    tbody.innerHTML = rcSlipRows.map((r, i) => `
+      <tr style="border-bottom:1px solid #eee">
+        <td style="padding:4px 8px;text-align:center">${i+1}</td>
+        <td style="padding:4px 8px;text-align:center">${r.bank||'-'}</td>
+        <td style="padding:4px 8px;text-align:center">${r.senderName||'-'}</td>
+        <td style="padding:4px 8px;text-align:center">${r.amount ? Number(r.amount).toLocaleString('th-TH',{minimumFractionDigits:2}) : '-'}</td>
+        <td style="padding:4px 8px;text-align:center">${r.datetime||'-'}</td>
+        <td style="padding:4px 8px;text-align:center">${r.txnNo||'-'}</td>
+      </tr>`).join('');
+  }
+  window.print();
+}
+window.addEventListener('beforeprint', preparePrint);
+window.addEventListener('afterprint', cleanupPrint);
+
+function toggleNoteWrap() {
+  const wrap = document.querySelector('.rc-note-wrap');
+  const note = $('rc_note');
+  if (wrap && note) wrap.classList.toggle('note-empty', !note.value.trim());
+}
+
+function toggleRcBankFields() { }
+
+// Import from quotation
+function showImportFromQt() {
+  $('importQtModal').style.display = 'flex';
+  renderImportQtList();
+}
+function closeImportQtModal(e) {
+  if (!e || e.target === $('importQtModal')) $('importQtModal').style.display = 'none';
+}
+function renderImportQtList() {
+  const q = ($('importQtSearch')?.value||'').toLowerCase();
+  const list = JSON.parse(localStorage.getItem(IDX_KEY)||'[]');
+  const filtered = list.filter(r => ((r.docNo||'')+(r.cName||'')).toLowerCase().includes(q));
+  $('importQtList').innerHTML = filtered.length ? filtered.map(r => `
+    <div style="padding:10px 16px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center" onclick="importFromQt('${r.id}')">
+      <div><div style="font-weight:600">${r.docNo||'-'}</div><div style="font-size:12px;color:var(--text-muted)">${r.cName||'-'}</div></div>
+      <div style="font-size:13px">${r.total||''} ฿</div>
+    </div>`).join('') : '<div class="empty">ไม่พบข้อมูล</div>';
+}
+async function importFromQt(id) {
+  const raw = localStorage.getItem(DB_KEY(id));
+  if (!raw) { showToast('ไม่พบข้อมูล','error'); return; }
+  const d = JSON.parse(raw);
+  $('rc_s_name').value = d.s_name||''; $('rc_s_addr').value = d.s_addr||'';
+  $('rc_s_tel').value = d.s_tel||''; $('rc_s_tax').value = d.s_tax||'';
+  $('rc_c_name').value = d.c_name||''; $('rc_c_tel').value = d.c_tel||'';
+  $('rc_c_addr').value = d.c_addr||''; $('rc_c_tax').value = d.c_tax||'';
+  $('rc_refNo').value = d.docNo||'';
+  rcRows = (d.rows||[]).map(r => ({...r, id: Date.now()+Math.random()}));
+  if (d.logoDataUrl) {
+    rcLogoDataUrl = d.logoDataUrl;
+    $('rcLogoImg').src = rcLogoDataUrl; $('rcLogoImg').style.display = 'block';
+    $('rcLogoPlaceholder').style.display = 'none';
+  }
+  // ดึง VAT จากใบเสนอราคา
+  rcUseVat = !!d.useVat;
+
+  // ดึงส่วนลดจากใบเสนอราคา
+  const discAmt = d.useDiscount ? (() => {
+    const sub = (d.rows||[]).reduce((s,r)=>s+(r.qty||0)*(r.price||0),0);
+    const raw = parseFloat(d.discountPct)||0;
+    return d.discountMode === 'amt' ? raw : +(sub * raw / 100).toFixed(2);
+  })() : 0;
+  rcUseDiscount = !!d.useDiscount && discAmt > 0;
+
+  rcDiscountAmt_val = discAmt;
+  autoResize($('rc_s_addr')); autoResize($('rc_c_addr'));
+  renderRcRows(); calcRcTotals();
+  $('importQtModal').style.display = 'none';
+  showToast('นำข้อมูลจากใบเสนอราคาแล้ว ✓');
+  switchTab('receipt-form');
+  const tabBtn = $('tab-receipt-form');
+  if(tabBtn) tabBtn.style.display = '';
+}
+updateRcCount();
+// ========== END RECEIPT SYSTEM ==========
+
+// ========== GOOGLE DRIVE SYNC ==========
+const GDRIVE_CLIENT_ID = '19105819323-je6csm2e7fda5dhke44f4vcggiphec8v.apps.googleusercontent.com';
+const GDRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+const DRIVE_FILENAME = 'quotation-backup.json';
+let driveAccessToken = null;
+let driveFileId = localStorage.getItem('qt:driveFileId') || null;
+let driveTokenClient = null;
+
+function initDrive() {
+  if (!window.google) return;
+  driveTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GDRIVE_CLIENT_ID,
+    scope: GDRIVE_SCOPE,
+    callback: async (resp) => {
+      if (resp.error) { showToast('เชื่อมต่อ Drive ไม่สำเร็จ: ' + resp.error, 'error'); return; }
+      driveAccessToken = resp.access_token;
+      localStorage.setItem('qt:driveToken', driveAccessToken);
+      updateDriveBtn(true);
+      showToast('เชื่อมต่อ Google Drive แล้ว ✓');
+      await driveSyncAuto();
+    }
+  });
+  const saved = localStorage.getItem('qt:driveToken');
+  if (saved) { driveAccessToken = saved; updateDriveBtn(true); }
+}
+
+function updateDriveBtn(connected) {
+  const btn = $('driveBtn'); const lbl = $('driveBtnLabel');
+  if (!btn) return;
+  if (connected) {
+    btn.style.color = '#2d6a4f'; btn.style.borderColor = '#2d6a4f';
+    lbl.textContent = 'Drive: เชื่อมต่อแล้ว';
+  } else {
+    btn.style.color = ''; btn.style.borderColor = '';
+    lbl.textContent = 'เชื่อมต่อ Drive';
+  }
+}
+
+function driveAction() {
+  if (driveAccessToken) {
+    driveSyncAuto();
+  } else {
+    if (!driveTokenClient) { showToast('Google API ยังโหลดไม่เสร็จ', 'error'); return; }
+    driveTokenClient.requestAccessToken();
+  }
+}
+
+async function buildBackupPayload() {
+  const idx = await getIndex();
+  const records = {};
+  idx.forEach(q => {
+    const raw = localStorage.getItem(DB_KEY(q.id));
+    if (raw) records[q.id] = JSON.parse(raw);
+  });
+  const bankPresets = localStorage.getItem(BANK_PRESET_KEY);
+  const contacts = localStorage.getItem(CONTACTS_KEY);
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    index: idx,
+    records,
+    bankPresets: bankPresets ? JSON.parse(bankPresets) : [],
+    contacts: contacts ? JSON.parse(contacts) : []
+  };
+}
+
+async function driveSyncAuto() {
+  if (!driveAccessToken) return;
+  try {
+    const payload = await buildBackupPayload();
+    const content = JSON.stringify(payload, null, 2);
+    if (driveFileId) {
+      const r = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`, {
+        method: 'PATCH',
+        headers: { 'Authorization': 'Bearer ' + driveAccessToken, 'Content-Type': 'application/json' },
+        body: content
+      });
+      if (r.status === 404) { driveFileId = null; localStorage.removeItem('qt:driveFileId'); await driveSyncAuto(); return; }
+      if (r.status === 401) throw new Error('401');
+    } else {
+      const meta = await fetch('https://www.googleapis.com/drive/v3/files', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + driveAccessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: DRIVE_FILENAME, parents: ['appDataFolder'] })
+      }).then(r => r.json());
+      driveFileId = meta.id;
+      localStorage.setItem('qt:driveFileId', driveFileId);
+      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`, {
+        method: 'PATCH',
+        headers: { 'Authorization': 'Bearer ' + driveAccessToken, 'Content-Type': 'application/json' },
+        body: content
+      });
+    }
+    updateDriveBtn(true);
+    showToast('ซิงค์ Drive สำเร็จ ✓');
+  } catch(e) {
+    if (e.message === '401') {
+      driveAccessToken = null; localStorage.removeItem('qt:driveToken'); updateDriveBtn(false);
+      showToast('Session Drive หมดอายุ กรุณากด "เชื่อมต่อ Drive" ใหม่', 'error');
+    } else {
+      showToast('Drive sync ล้มเหลว: ' + e.message, 'error');
+    }
+  }
+}
+
+window.addEventListener('load', () => { setTimeout(initDrive, 1000); });
+// ========== END GOOGLE DRIVE SYNC ==========
+
+// ========== SCAN SLIP (Google Cloud Vision) ==========
+// ========== TESSERACT OCR ==========
+
+function openScanSlip() {
+  $('scanSlipModal').style.display = 'flex';
+  resetScanUI();
+}
+
+function closeScanSlipBtn() {
+  // ปิด modal เฉยๆ — รูปจะถูกแนบเมื่อกด "กรอกทั้งหมด"
+  $('scanSlipModal').style.display = 'none';
+}
+
+function closeScanSlip(e) {
+  if (e && e.target !== $('scanSlipModal')) return;
+  $('scanSlipModal').style.display = 'none';
+}
+
+function resetScanUI() {
+  $('slipPreview').style.display = 'none';
+  $('slipPreview').src = '';
+  $('slipFileInput').value = '';
+  $('slipResult').style.display = 'none';
+  $('slipResultContent').innerHTML = '';
+  $('slipScanBtn').disabled = true;
+  $('slipScanBtn').innerHTML = '<i class="ti ti-scan"></i> สแกน Slip';
+  const prog = $('slipProgress');
+  if (prog) prog.style.display = 'none';
+}
+
+function onSlipFileChange(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    $('slipPreview').src = ev.target.result;
+    $('slipPreview').style.display = 'block';
+    $('slipScanBtn').disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function doScanSlip() {
+  const file = $('slipFileInput').files[0];
+  if (!file) { showToast('กรุณาเลือกรูป Slip', 'error'); return; }
+
+  $('slipScanBtn').disabled = true;
+  $('slipScanBtn').innerHTML = '⏳ กำลังสแกน...';
+  $('slipResult').style.display = 'none';
+  $('slipProgress').style.display = 'block';
+  $('slipProgressBar').style.width = '5%';
+  $('slipProgressText').textContent = 'กำลังโหลด OCR Engine...';
+
+  try {
+    if (!window.Tesseract) {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+    }
+
+    const { data: { text: fullText } } = await Tesseract.recognize(
+      file, 'tha+eng',
+      {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            const pct = Math.round(m.progress * 100);
+            $('slipProgressBar').style.width = pct + '%';
+            $('slipProgressText').textContent = 'กำลังอ่านข้อความ... ' + pct + '%';
+          } else if (m.status === 'loading language traineddata') {
+            $('slipProgressText').textContent = 'โหลดข้อมูลภาษาไทย...';
+            $('slipProgressBar').style.width = '20%';
+          } else if (m.status === 'initializing api') {
+            $('slipProgressText').textContent = 'เริ่มต้น OCR Engine...';
+            $('slipProgressBar').style.width = '10%';
+          }
+        }
+      }
+    );
+
+    $('slipProgress').style.display = 'none';
+
+    if (!fullText || fullText.trim().length < 3) {
+      $('slipResultContent').innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:16px">ไม่พบข้อความในรูป กรุณาลองรูปอื่น</div>';
+      $('slipResult').style.display = 'block';
+      return;
+    }
+
+    const parsed = parseSlipText(fullText);
+    renderSlipResult(parsed, fullText);
+    $('slipResult').style.display = 'block';
+
+  } catch(err) {
+    $('slipProgress').style.display = 'none';
+    $('slipResultContent').innerHTML = '<div style="color:var(--danger);padding:12px;background:var(--danger-bg);border-radius:var(--radius-sm);font-size:13px"><strong>เกิดข้อผิดพลาด:</strong><br>' + err.message + '</div>';
+    $('slipResult').style.display = 'block';
+  } finally {
+    $('slipScanBtn').disabled = false;
+    $('slipScanBtn').innerHTML = '<i class="ti ti-scan"></i> สแกน Slip';
+  }
+}
+
+async function parseSlipWithAI(ocrText, imageDataUrl) {
+  const prompt = `คุณคือผู้เชี่ยวชาญอ่านสลิปโอนเงินไทย กรุณาสกัดข้อมูลจากสลิปให้ครบถ้วนและถูกต้อง
+
+ตอบเป็น JSON เท่านั้น ไม่ต้องมีคำอธิบาย ไม่ต้อง markdown:
+{
+  "amount": "ยอดเงิน ตัวเลขล้วน เช่น 1000.00",
+  "bank": "ธนาคารผู้โอน เช่น กรุงไทย/กสิกรไทย/ไทยพาณิชย์/กรุงเทพ/กรุงศรี/UOB/ทหารไทย/ออมสิน",
+  "datetime": "วันที่เวลา รูปแบบ DD/MM/YYYY HH:MM",
+  "txnNo": "รหัสอ้างอิง/เลขที่รายการ เต็มๆ ไม่ตัด",
+  "senderName": "ชื่อผู้โอน ต้นทาง/จาก",
+  "receiverName": "ชื่อผู้รับ ปลายทาง/ไปยัง"
+}`;
+
+  // สร้าง message content — ใช้รูปภาพถ้ามี, ไม่งั้นใช้ OCR text
+  let msgContent;
+  if (imageDataUrl && imageDataUrl.startsWith('data:image')) {
+    const mimeMatch = imageDataUrl.match(/data:(image\/[a-z]+);base64,/);
+    const mediaType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+    const base64Data = imageDataUrl.split(',')[1];
+    msgContent = [
+      { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
+      { type: 'text', text: prompt }
+    ];
+  } else {
+    // ไม่มีรูป — ส่ง OCR text พร้อมบอก Claude ให้ระวัง OCR error โดยเฉพาะ hex ref
+    const ocrPrompt = `${prompt}
+
+OCR text (อาจมีข้อผิดพลาดจาก OCR โดยเฉพาะรหัสอ้างอิง):
+${ocrText}
+
+คำแนะนำพิเศษ:
+- รหัสอ้างอิงกรุงไทย (Krungthai) มักเป็น hex เช่น A80f9124c51f94b82
+- OCR อาจอ่าน A→1, f→ตัวเลข, b→6 ให้ดูบริบทและแก้ให้ถูก
+- ถ้าเห็น "รหัสอ้างอิง" ตามด้วยตัวเลข 17 หลัก อาจเป็น hex ที่ถูก OCR แปลงผิด
+- ชื่อธนาคารผู้โอน = ธนาคารของ "จาก/ต้นทาง" ไม่ใช่ปลายทาง`;
+    msgContent = [{ type: 'text', text: ocrPrompt }];
+  }
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: msgContent }]
+    })
+  });
+  if (!response.ok) {
+    const errBody = await response.text();
+    throw new Error('API error ' + response.status + ': ' + errBody.slice(0, 200));
+  }
+  const data = await response.json();
+  if (!data.content || !data.content.length) throw new Error('ไม่ได้รับผลจาก AI');
+  const text2 = data.content.map(i => i.text || '').join('');
+  const clean = text2.replace(/```json|```/g, '').trim();
+  const parsed = JSON.parse(clean);
+  return {
+    amount: parsed.amount || '',
+    bank: parsed.bank || '',
+    datetime: parsed.datetime || '',
+    txnNo: parsed.txnNo || '',
+    senderName: parsed.senderName || '',
+    receiverName: parsed.receiverName || '',
+    senderAccount: '',
+    receiverAccount: '',
+    balance: ''
+  };
+}
+
+function parseSlipText(text) {
+  const result = { amount: '', datetime: '', txnNo: '', bank: '', senderName: '', senderAccount: '', receiverName: '', receiverAccount: '', balance: '' };
+
+  // ===== NORMALIZE =====
+  const normText = text.replace(/\r/g,'').replace(/[\t\u00A0\u200B]+/g,' ').replace(/[ \t]+/g,' ');
+  const flatText = normText.replace(/\n+/g,' ');
+
+  // ===== PRE-CLEAN: ตัด K+ watermark "ร่ำรวย" ออกจาก text ก่อน parse =====
+  // K+ slip มี watermark "ร่ำ\nรวย" หรือ "รวย" ที่ OCR อ่านติดมากับชื่อผู้โอน
+  const cleanedNormText = normText.replace(/ร่ำรวย/g, '').replace(/ร่ำ\b/g, '').replace(/\s*รวย\b/g, '');
+  const cleanedFlatText = cleanedNormText.replace(/\n+/g,' ');
+  // ใช้เฉพาะกับ candidate เลขรายการ ไม่แก้ทั้ง text
+  function fixTxnOcr(s) {
+    // ใน context ของ txn code: ตำแหน่งที่ควรเป็นตัวอักษรอาจถูกอ่านเป็นตัวเลข
+    // และตำแหน่งที่ควรเป็นตัวเลขอาจถูกอ่านเป็นตัวอักษร
+    // กฎ: ถ้า string มีทั้ง digit และ alpha ให้แก้ ambiguous chars ตามบริบท
+    // 0↔O, 5↔S, 1↔I, 8↔B, 6↔G — แต่ K+ format ขึ้นต้นด้วยตัวเลข ตามด้วย alpha+digit
+    return s; // คืนตามเดิม — ให้ regex pattern จับให้ได้หลาย variant แทน
+  }
+
+  // ===== AMOUNT =====
+  const allLines = normText.split('\n').map(l => l.trim());
+
+  // Helper: extract first decimal number from a line
+  function extractNum(line) {
+    const m = line.match(/([\d,]+\.\d{2})/);
+    return m ? parseFloat(m[1].replace(/,/g,'')) : null;
+  }
+
+  // ===== TrueMoney Wallet slip special handling =====
+  // TrueMoney slip มักมีรูปแบบ: "B 200.00" (B แทน ฿ จาก OCR) หรือ "เติมเงิน . 200.00"
+  // และ "ยอดชำระทั้งหมด $200.00" หรือ "เติมเงินในมือถือ . 200.00"
+  if (!result.amount && /truemoney|true\s*money|ทรูมันนี่/i.test(flatText)) {
+    // Pattern: "B 200.00" หรือ "฿ 200.00" หรือ "B200.00"
+    const tmBahtM = flatText.match(/\bB\s*([\d,]+\.\d{2})\b/i);
+    if (tmBahtM) result.amount = tmBahtM[1].replace(/,/g,'');
+    // Pattern: "ยอดชำระทั้งหมด $200.00" หรือ "\$200.00"
+    if (!result.amount) {
+      const tmDollarM = flatText.match(/\$\s*([\d,]+\.?\d*)/);
+      if (tmDollarM) result.amount = tmDollarM[1].replace(/,/g,'');
+    }
+    // Pattern: "เติมเงิน[ข้อความ] . 200.00" หรือ "เติมเงินในมือถือ . 200.00"
+    if (!result.amount) {
+      const tmTopupM = flatText.match(/เติมเงิน[^.\n]{0,40}\.\s*([\d,]+\.?\d*)/i);
+      if (tmTopupM) result.amount = tmTopupM[1].replace(/,/g,'');
+    }
+    // Pattern: "200.00 un" (TrueMoney บางครั้ง OCR ได้แบบนี้)
+    if (!result.amount) {
+      const tmUnitM = flatText.match(/([\d,]+\.\d{2})\s*un\b/i);
+      if (tmUnitM) result.amount = tmUnitM[1].replace(/,/g,'');
+    }
+  }
+
+  // ===== UOB/TMRW slip special handling =====
+  // UOB TMRW slip OCR อ่านได้เป็น "THB 10,759.01" หรือ "THB10,759.01"
+  // และวันที่อยู่ในรูป "14 May 2026" หรือ "14 May 2026"
+  const uobAmtM = flatText.match(/THB\s*([\d,]+\.\d{2})/i);
+  if (uobAmtM && !result.amount) {
+    result.amount = uobAmtM[1].replace(/,/g,'');
+  }
+
+  // UOB/TMRW date: "14 May 2026" English month
+  const engMonths = { 'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug':8,'Sep':9,'Oct':10,'Nov':11,'Dec':12,
+    'January':1,'February':2,'March':3,'April':4,'June':6,'July':7,'August':8,'September':9,'October':10,'November':11,'December':12 };
+  const engDateRe = /(\d{1,2})\s+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{4})/i;
+  const engDateM = flatText.match(engDateRe);
+  if (engDateM && !result.datetime) {
+    const day = engDateM[1].padStart(2,'0');
+    const mon = String(engMonths[engDateM[2]] || engMonths[engDateM[2].substring(0,3)] || '??').padStart(2,'0');
+    const yr = engDateM[3];
+    // look for time nearby — รองรับ AM/PM และแปลงเป็น 24-hour
+    const timeM = flatText.match(/(\d{1,2}):(\d{2})\s*(PM|AM)/i);
+    if (timeM) {
+      let h = parseInt(timeM[1]);
+      const m = timeM[2];
+      const ampm = timeM[3].toUpperCase();
+      if (ampm === 'PM' && h !== 12) h += 12;
+      if (ampm === 'AM' && h === 12) h = 0;
+      result.datetime = `${day}/${mon}/${yr} ${String(h).padStart(2,'0')}:${m}`;
+    } else {
+      const timeM2 = flatText.match(/(\d{1,2}:\d{2})/);
+      result.datetime = `${day}/${mon}/${yr}` + (timeM2 ? ' ' + timeM2[1] : '');
+    }
+  }
+
+  // UOB/TMRW sender name: "นาย ธนวรรธน์ จิตตริยพงศ์" from flatText
+  // Also detect bank from "UOB" or "TMRW"
+  if (!result.bank && /UOB|TMRW/i.test(flatText)) {
+    result.bank = 'UOB';
+  }
+
+  // UOB txn ref: "หมายเลขอ้างอิง XXXXXXXXXXXXXXX #UOB" pattern
+  if (!result.txnNo) {
+    const uobTxnM = flatText.match(/(?:หมายเลขอ้างอิง|หมายเลข(?:อ้างอิง)?)\s*(\d{10,20})/);
+    if (uobTxnM) result.txnNo = uobTxnM[1];
+  }
+  // Also check for reference number like "2605145614559275"
+  if (!result.txnNo) {
+    const uobTxnM2 = flatText.match(/\b(\d{16})\b/);
+    if (uobTxnM2) result.txnNo = uobTxnM2[1];
+  }
+
+  // Priority 1: find line with "จำนวน"/"ยอดเงิน"/"ยอดโอน" keyword, then look at same line or next N lines for the number
+  // รองรับ SCB slip: "จำนวนเงิน                439.00" (มี whitespace/tab เยอะ, ไม่มี บาท ต่อท้าย)
+  outer1: for (let i = 0; i < allLines.length; i++) {
+    if (/(?:จำนวน|ยอดเงิน|ยอดโอน|ยอดชำระ|ยอดชำระทั้งหมด|Amount)/i.test(allLines[i])) {
+      const sameLineNum = extractNum(allLines[i]);
+      if (sameLineNum !== null) { result.amount = sameLineNum.toFixed(2); break outer1; }
+      for (let j = i+1; j <= i+5 && j < allLines.length; j++) {
+        const n = extractNum(allLines[j]);
+        if (n !== null) { result.amount = n.toFixed(2); break outer1; }
+      }
+    }
+  }
+
+  // Priority 1b: SCB flat-text pattern "จำนวนเงิน [spaces] NNN.NN"
+  if (!result.amount) {
+    const scbAmtM = flatText.match(/จำนวนเงิน\s+([\d,]+\.\d{2})/);
+    if (scbAmtM) result.amount = scbAmtM[1].replace(/,/g,'');
+  }
+
+  // Priority 1c: multiline — บรรทัด "จำนวน..." แล้วตามด้วยตัวเลขท้ายบรรทัดเดียวกัน (SCB OCR มี spaces เยอะ)
+  if (!result.amount) {
+    for (let i = 0; i < allLines.length; i++) {
+      if (/(?:จำนวน|ยอดเงิน|ยอดโอน|ยอดชำระ)/i.test(allLines[i])) {
+        // จับตัวเลขท้ายสุดของบรรทัด (หลัง spaces เยอะ)
+        const endNum = allLines[i].match(/([\d,]+\.\d{2})\s*$/);
+        if (endNum) { result.amount = endNum[1].replace(/,/g,''); break; }
+      }
+    }
+  }
+
+  // Priority 2: collect ALL "NNN.NN บาท" occurrences, pick largest non-fee amount
+  if (!result.amount) {
+    const candidates = [];
+    for (let i = 0; i < allLines.length; i++) {
+      const line = allLines[i];
+      // match "320.00 บาท" on same line (with possible junk after)
+      const m = line.match(/([\d,]+\.\d{2})\s*(?:บาท|THB)/i);
+      if (m) {
+        const n = parseFloat(m[1].replace(/,/g,''));
+        const isFee = /ค่าธรรมเนียม|fee/i.test(line) || /ค่าธรรมเนียม|fee/i.test(allLines[i-1]||'');
+        candidates.push({ val: n, isFee });
+      }
+      // also check number on this line, บาท on next line
+      else {
+        const numM = line.match(/^([\d,]+\.\d{2})\b/);
+        const nextLine = allLines[i+1]||'';
+        if (numM && /^(?:บาท|THB)/i.test(nextLine)) {
+          const n = parseFloat(numM[1].replace(/,/g,''));
+          const isFee = /ค่าธรรมเนียม|fee/i.test(allLines[i-1]||'');
+          candidates.push({ val: n, isFee });
+        }
+      }
+    }
+    const nonFee = candidates.filter(c => !c.isFee);
+    const pool = nonFee.length > 0 ? nonFee : candidates;
+    if (pool.length > 0) {
+      result.amount = pool.reduce((a,b) => b.val > a.val ? b : a).val.toFixed(2);
+    }
+  }
+
+  // Priority 3: any "NNN.NN บาท" in flat text
+  if (!result.amount) {
+    const mFlat = flatText.match(/\b([\d,]+\.\d{2})\s*(?:บาท|THB)\b/i);
+    if (mFlat) result.amount = mFlat[1].replace(/,/g,'');
+  }
+
+  // Priority 4: ฿ symbol
+  if (!result.amount) {
+    const mfx = flatText.match(/฿\s*([\d,]+\.?\d*)/);
+    if (mfx) result.amount = mfx[1].replace(/,/g,'');
+  }
+
+  // Priority 5: standalone decimal line near บาท keyword
+  if (!result.amount) {
+    for (let i = 0; i < allLines.length; i++) {
+      const numOnly = allLines[i].match(/^([\d,]+\.\d{2})$/);
+      if (numOnly) {
+        const next = (allLines[i+1]||''); const prev = (allLines[i-1]||'');
+        if (/บาท|THB|จำนวน|ยอด/.test(next) || /บาท|THB|จำนวน|ยอด/.test(prev)) {
+          if (!/ค่าธรรมเนียม/.test(prev)) { result.amount = numOnly[1].replace(/,/g,''); break; }
+        }
+      }
+    }
+  }
+
+  // Priority 6 (last resort): ตัวเลขทศนิยม 2 ตำแหน่ง ที่ใหญ่ที่สุดใน slip ทั้งหมด
+  // ใช้เมื่อ slip ไม่มี keyword หรือ format แปลกมากๆ เช่น SCB ที่ไม่มี บาท ต่อท้าย
+  if (!result.amount) {
+    const allNums = [...flatText.matchAll(/\b([\d,]+\.\d{2})\b/g)]
+      .map(m => parseFloat(m[1].replace(/,/g,'')))
+      .filter(n => n >= 1 && n < 10000000);
+    if (allNums.length > 0) {
+      result.amount = Math.max(...allNums).toFixed(2);
+    }
+  }
+
+  // ===== DATE / TIME =====
+  const thaiMonths = {
+    'ม.ค.':1,'ก.พ.':2,'มี.ค.':3,'เม.ย.':4,'พ.ค.':5,'มิ.ย.':6,
+    'ก.ค.':7,'ส.ค.':8,'ก.ย.':9,'ต.ค.':10,'พ.ย.':11,'ธ.ค.':12,
+    'มกราคม':1,'กุมภาพันธ์':2,'มีนาคม':3,'เมษายน':4,'พฤษภาคม':5,'มิถุนายน':6,
+    'กรกฎาคม':7,'สิงหาคม':8,'กันยายน':9,'ตุลาคม':10,'พฤศจิกายน':11,'ธันวาคม':12
+  };
+  // Match Thai date with optional time — works on flat or multiline
+  const thaiDateRe = /(\d{1,2})\s+(ม\.ค\.|ก\.พ\.|มี\.ค\.|เม\.ย\.|พ\.ค\.|มิ\.ย\.|ก\.ค\.|ส\.ค\.|ก\.ย\.|ต\.ค\.|พ\.ย\.|ธ\.ค\.|มกราคม|กุมภาพันธ์|มีนาคม|เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม)\s+(\d{2,4})[\s\n]*(?:(\d{1,2}:\d{2})[\s]*(?:น\.)?)?/;
+  const tdm = flatText.match(thaiDateRe) || text.match(thaiDateRe);
+  if (tdm) {
+    const day = tdm[1].padStart(2,'0');
+    const mon = String(thaiMonths[tdm[2]] || '??').padStart(2,'0');
+    let yr = parseInt(tdm[3]);
+    if (yr < 100) yr += 2500;   // 2-digit short Buddhist era e.g. "69" → 2569
+    if (yr > 2400) yr -= 543;   // convert Buddhist → Christian
+    result.datetime = `${day}/${mon}/${yr}` + (tdm[4] ? ' ' + tdm[4] : '');
+  }
+  // Fallback: numeric date patterns
+  if (!result.datetime) {
+    const dtPatterns = [
+      /(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})\s+(\d{1,2}[:\.]\d{2}(?:[:\.]\d{2})?)/,
+      /(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})/,
+      /(\d{4}-\d{2}-\d{2})\s*[T ](\d{2}:\d{2})/,
+    ];
+    for (const p of dtPatterns) {
+      const m = flatText.match(p);
+      if (m) { result.datetime = m[1] + (m[2] ? ' ' + m[2] : ''); break; }
+    }
+  }
+
+  // ===== TRANSACTION NUMBER =====
+  // สร้าง text หลาย variant สำหรับ OCR error correction
+  // Tesseract อ่านผิดบ่อย: D↔0, S↔5, O↔0, B↔8, I↔1, G↔6, PP↔PP/0P
+  function makeOcrVariants(t) {
+    // แทนที่ตัวเลขที่อาจเป็นตัวอักษร และตัวอักษรที่อาจเป็นตัวเลข
+    const v1 = t.replace(/0(?=[A-Z])/g,'O').replace(/O(?=\d)/g,'0'); // 0/O
+    const v2 = t.replace(/5(?=[A-Z])/g,'S').replace(/S(?=\d)/g,'5'); // 5/S
+    const v3 = t.replace(/0P/g,'DP').replace(/DP/g,'0P'); // 0P↔DP (K+ DPP pattern)
+    return [t, v1, v2, v3, t.replace(/0P/g,'DP'), t.replace(/DP/g,'0P')];
+  }
+
+  // Priority 1: explicit label — ค้นใน text ต้นฉบับและ variants
+  // รองรับ hex/mixed-case เช่น A80f9124c51f94b82 (Krungthai slip)
+  const txnLabelRe = /(?:เลขที่รายการ|เลขอ้างอิง|รหัสอ้างอิง|หมายเลขรายการ|Ref(?:erence)?(?:\s*No\.?)?|TXN|Transaction\s*(?:ID|No\.?))\s*[:\s]*\s*([A-Za-z0-9]{6,50})/i;
+  // ค้นใน flatText ก่อน — label กับ value อาจอยู่คนละบรรทัด จึงต้อง collapse
+  const txnSearchText = flatText.replace(/\n/g,' ');
+  const txnLabelM = txnSearchText.match(txnLabelRe);
+  if (txnLabelM) {
+    let raw = fixTxnCode(txnLabelM[1].trim());
+    // ถ้าเป็น Krungthai slip และ ref เป็นตัวเลขล้วน 17 หลัก → น่าจะเป็น hex ที่ OCR อ่านผิด
+    if (/Krungthai|กรุงไทย/i.test(flatText) && /^\d{17}$/.test(raw)) {
+      raw = raw + ' ⚠️(ตรวจสอบรหัสจากสลิปจริง)';
+    }
+    result.txnNo = raw;
+  }
+
+  // แก้ OCR error ใน txn code
+  function fixTxnCode(s) {
+    // DQR slip (ชำระผ่าน QR): Tesseract อ่าน "DQR" เป็น "0ดต8" (Thai chars ปน)
+    s = s.replace(/[0O]ดต8/g, 'DQR');
+    // DPP/DPM slip (โอน PromptPay): D อ่านเป็น 0 หรือ O ก่อน PP/PM
+    s = s.replace(/([0O])(PP|PM|DM|DP)(?=\d)/g, 'D$2');
+    // ตัด Thai/special chars ที่อาจหลุดเข้ามา
+    s = s.replace(/[^\x00-\x7F]/g, '');
+    return s;
+  }
+
+  // แปลง OCR digit string กลับเป็น Krungthai hex ref
+  // OCR อ่าน: 1→A, 8→8, 0→0, 1→1... (A80f... → 1809...)
+  // ใช้ pattern จาก OCR text: "รหัสอ้างอิง NNNNN Ered" → N คือ hex ที่ถูก OCR แปลง
+  function tryRestoreKrungthaiRef(ocrDigits, surroundingText) {
+    // ถ้าหลัง txnNo มีคำว่า "Ered" หรือ context เป็น Krungthai → น่าจะเป็น hex ref
+    const isKrungthai = /Krungthai|กรุงไทย/i.test(surroundingText);
+    const hasEred = /Ered|Eréd|Éred/i.test(surroundingText);
+    if (!isKrungthai && !hasEred) return ocrDigits;
+    if (!/^\d{17}$/.test(ocrDigits)) return ocrDigits;
+    // สร้าง hex ref จาก OCR digits โดยแปลง digit แรกที่น่าจะเป็น A-F
+    // Krungthai ref format: [A-F][0-9a-f]{16} (hex 17 chars)
+    // OCR แปลง: A→1, B→8(หรือ6), C→(, D→0, E→E, F→F
+    // จาก "18019124651194082" ที่ถูกต้องคือ "A80f9124c51f94b82"
+    // ไม่สามารถ reverse ได้แน่นอน 100% แต่ดูจาก context ว่ามี "Ered" อยู่
+    // ให้แสดงเป็น raw OCR และบอกผู้ใช้ให้กรอกเอง
+    return ocrDigits + ' ⚠️(กรุณาตรวจสอบรหัสจากสลิปจริง)';
+  }
+
+  // Priority 2: K+ slip — digit+alpha+digit pattern เช่น 016134130753DPP06340
+  // regex รองรับ OCR error ด้วย [A-Z0O] ในตำแหน่ง alpha
+  if (!result.txnNo) {
+    const skip = /^(THB|OCR|PDF|SCB|KTB|BBL|GSB|UOB|TTB|MBN|KBANK|KPlus)$/i;
+    const kplusRe = /\b(\d{8,16}[A-Z0O]{2,4}\d{3,8})\b/g;
+    const kpMatches = [...txnSearchText.matchAll(kplusRe)].map(m => m[1]).filter(c => !skip.test(c));
+    if (kpMatches.length > 0) result.txnNo = fixTxnCode(kpMatches[0]);
+  }
+
+  // Priority 2b: digit-first alphanumeric ทั่วไป
+  if (!result.txnNo) {
+    const skip = /^(THB|OCR|PDF|SCB|KTB|BBL|GSB|UOB|TTB|MBN|KBANK|KPlus)$/i;
+    const digitFirst = [...txnSearchText.matchAll(/\b(\d[A-Z0-9]{9,34})\b/g)].map(m => m[1]).filter(c => !skip.test(c));
+    if (digitFirst.length > 0) result.txnNo = fixTxnCode(digitFirst[0]);
+  }
+  // Priority 3: letter-first alphanumeric codes (MP..., REF...) รองรับ mixed-case hex
+  if (!result.txnNo) {
+    const skip = /^(THB|OCR|PDF|SCB|KTB|BBL|GSB|UOB|TTB|MBN|KBANK|KPlus)$/i;
+    // รองรับ Krungthai hex ref: A80f9124c51f94b82 (letter+hex mixed case)
+    const letterFirst = [...txnSearchText.matchAll(/\b([A-Za-z][A-Za-z0-9]{7,49})\b/g)].map(m => m[1]).filter(c => !skip.test(c) && /[0-9]/.test(c));
+    if (letterFirst.length > 0) result.txnNo = letterFirst[0];
+  }
+
+  // Priority 3b: UOB/TMRW 16-digit reference number
+  if (!result.txnNo) {
+    const uobM = txnSearchText.match(/\b(\d{16})\b/);
+    if (uobM) result.txnNo = uobM[1];
+  }
+
+  // Priority 4: long pure digit string
+  if (!result.txnNo) {
+    const m = txnSearchText.match(/\b(\d{12,20})\b/);
+    if (m) result.txnNo = m[1];
+  }
+
+  // ===== BANK =====
+  // Check TrueMoney FIRST — สลิป TrueMoney มีชื่อธนาคารอื่นปน (เช่น "ช่องทางการชำระเงิน ธนาคารไทยพาณิชย์") ต้องจับก่อน
+  if (/truemoney|true\s*money|ทรูมันนี่/i.test(text)) { result.bank = 'TrueMoney Wallet'; }
+  // SCB+ app slip — logo text "SCB" หรือ "SCB+" หรือ "SCBX"
+  if (!result.bank && /SCB[+X]?/i.test(text)) { result.bank = 'ไทยพาณิชย์'; }
+  // SCB account format: xxx-xxx954-5 หรือ xxx-xxxNNN-N (7 หลักกลาง)
+  if (!result.bank && /[xX]{3}-[xX]{3}\d{3}-\d/.test(text)) { result.bank = 'ไทยพาณิชย์'; }
+  // SCB txn ref: "202605159RX4Mec..." format (ขึ้นต้น 6 ตัวเลข + RX หรือ เดือน+วัน)
+  if (!result.bank && /\b\d{8,9}RX[A-Z0-9]/i.test(text)) { result.bank = 'ไทยพาณิชย์'; }
+  // Check Krungthai first (logo text "Krungthai" / "กรุงไทย")
+  if (!result.bank && /Krungthai|กรุงไทย/i.test(text)) { result.bank = 'กรุงไทย'; }
+  // Check Krungsri (logo "krungsri" or ref prefix "KSA")
+  if (!result.bank && (/krungsri|กรุงศรี/i.test(text) || /^KSA/i.test(result.txnNo||''))) { result.bank = 'กรุงศรี'; }
+  // Check UOB/TMRW
+  if (!result.bank && /UOB|TMRW/i.test(text)) { result.bank = 'UOB'; }
+  // Check K+ / KBank indicators (app logo text "K+" → กสิกรไทย)
+  if (!result.bank && /K\+|KPlus|KPLUS/i.test(text)) { result.bank = 'กสิกรไทย'; }
+  if (!result.bank) {
+    const bankMap = [
+      ['กสิกรไทย','KBank','Kasikorn'],
+      ['ไทยพาณิชย์','SCB'],
+      ['กรุงเทพ','BBL'],
+      ['กรุงไทย','KTB','Krungthai'],
+      ['ทหารไทย','TTB'],
+      ['ออมสิน','GSB'],
+      ['กรุงศรี','Krungsri','BAY'],
+      ['UOB'],['CIMB'],['ทิสโก้','TISCO'],['LH Bank'],['ธ.ก.ส.','BAAC'],
+    ];
+    for (const aliases of bankMap) {
+      if (aliases.some(a => text.includes(a))) { result.bank = aliases[0]; break; }
+    }
+  }
+  if (!result.bank && (text.includes('พร้อมเพย์') || text.includes('PromptPay'))) result.bank = 'พร้อมเพย์';
+
+  // ===== SENDER NAME =====
+  // Helper: strip surrounding quotes and trailing bank name (e.g. "7 ร้านร้อยเอ็ด ฟูเจอร์วิสโ*"" กรุงไทย X → 7 ร้านร้อยเอ็ด ฟูเจอร์วิสโ*)
+  const bankSuffixRe = /\s*(?:กสิกรไทย|ไทยพาณิชย์|กรุงเทพ|กรุงไทย|ทหารไทย|ออมสิน|กรุงศรี|UOB|CIMB|ทิสโก้|LH Bank|ธ\.ก\.ส\.|KBank|Krungthai|SCB|BBL|KTB|TTB|GSB|Krungsri|BAY|BAAC|KPlus|K\+)[\s\wก-๙]*$/i;
+  function cleanSenderName(raw) {
+    return raw
+      .replace(/^[@\s]+/, '')              // ตัด @ นำหน้า (SCB+ app icon OCR)
+      .replace(/^uno\s*/i, '')             // ตัด "uno" นำหน้า (SCB+ logo OCR)
+      .replace(/^["'"']+|["'"']+$/g, '')   // strip surrounding quotes (straight + curly)
+      .replace(bankSuffixRe, '')             // strip trailing bank name
+      // ตัด K+ watermark ที่ติดมา เช่น "รวย", "ร่ำรวย", "ร่ำ", "ร่ำ\nรวย"
+      .replace(/\s+ร่ำรวย\s*$/, '').replace(/\s+ร่ำ\s*$/, '').replace(/\s+รวย\s*$/, '')
+      .replace(/ร่ำรวย$/, '').replace(/ร่ำ$/, '').replace(/รวย$/, '')
+      // ตัด trailing OCR junk: XXX, Prompt, Pay, o, ๔, ช, numbers-only words
+      .replace(/\s+(?:XXX|Prompt|Pay|PromptPay|พร้อมเพย์|[xX]{2,}|[0-9๐-๙]{1,3})\s*.*$/i, '')
+      .replace(/\s+[a-zA-Z]\s*$/, '')       // ตัดตัวอักษรภาษาอังกฤษตัวเดียวท้าย
+      .replace(/[\s,]+ธ\.\s*$/, '')          // ตัด ธ. ท้ายชื่อ
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  // กรองชื่อที่เป็นข้อความแจ้งเตือนของ TrueMoney / ข้อความระบบ ออกจาก senderName
+  function isSystemMessage(name) {
+    return /ชำระเงินสำเร็จ|ไม่สามารถ|ยกเลิกได้|ทุกกรณี|หาค|truemoney|true\s*money|ทรูมันนี่|เติมเงิน/i.test(name);
+  }
+
+  // Priority 1: explicit label on same or next line
+  // Handles: "ชื่อบัญชีผู้โอน: "7 ร้านร้อยเอ็ด..."  or  ชื่อบัญชีผู้โอน\n7 ร้าน...
+  const senderLabelRe = /(?:ชื่อบัญชีผู้โอน|ชื่อผู้โอน|ผู้โอน|โอนจาก|จากบัญชี|จาก|From\s*Account|From)\s*[:\s]*\n?\s*["'"']?([^"\n']{3,50}["'"']?)/i;
+  const senderLabelM = cleanedFlatText.match(senderLabelRe) || cleanedNormText.match(senderLabelRe);
+  if (senderLabelM) {
+    const candidate = cleanSenderName(senderLabelM[1]);
+    if (!isSystemMessage(candidate)) result.senderName = candidate;
+  }
+
+  // Priority 1b: K+ / KBank slip — หาชื่อทุกตัวในข้อความ แล้วแยก sender/receiver
+  // K+ format: ชื่อผู้โอน → ธนาคาร → เลขบัญชีผู้โอน → (↓ หรือ Prompt Pay) → ชื่อผู้รับ
+  // Tesseract มักอ่าน ↓ ไม่ออก จึงใช้ลำดับชื่อ + ตำแหน่ง masked account เป็นตัวแบ่งแทน
+  if (!result.senderName || !result.receiverName) {
+    const namePrefixRe = /(?:นาย|นาง(?:สาว)?|น\.ส\.|คุณ|บริษัท|ห้างหุ้นส่วน|ร้าน)\s*[ก-๙a-zA-Z*\s\.]{2,40}/g;
+    const allNameMatches = [...cleanedFlatText.matchAll(namePrefixRe)];
+    // masked account เป็น boundary: xxx-x-x0088-x หรือ x-xxxx-xxxx6-08-1
+    const maskedAcctIdx = cleanedFlatText.search(/[xX]{1,3}-[xX\d]{1,6}-[xX\d]/i);
+    // PromptPay / Prompt Pay เป็น boundary อีกจุด
+    const promptPayIdx = cleanedFlatText.search(/Prompt\s*Pay|พร้อมเพย์|รหัสพร้อมเพย์/i);
+    // boundary = min ของทั้งสอง (ที่ > 0)
+    const boundaries = [maskedAcctIdx, promptPayIdx].filter(i => i > 0);
+    const boundary = boundaries.length > 0 ? Math.min(...boundaries) : -1;
+
+    if (boundary > 0) {
+      // ชื่อก่อน boundary = ผู้โอน, ชื่อหลัง boundary = ผู้รับ
+      const senderNames = allNameMatches.filter(m => m.index < boundary);
+      const receiverNames = allNameMatches.filter(m => m.index > boundary);
+      if (!result.senderName && senderNames.length > 0) {
+        const candidate = cleanSenderName(senderNames[0][0]);
+        if (!isSystemMessage(candidate)) result.senderName = candidate;
+      }
+      if (!result.receiverName && receiverNames.length > 0) {
+        const candidate = cleanSenderName(receiverNames[0][0]);
+        if (!isSystemMessage(candidate)) result.receiverName = candidate;
+      }
+      // ถ้ายังไม่พบชื่อผู้รับ (เช่น ชื่อร้านไม่มี prefix) — ค้นหาชื่อร้าน/บริษัทหลัง boundary
+      if (!result.receiverName) {
+        // K+ PromptPay: ชื่อผู้รับอยู่ก่อน "รหัสพร้อมเพย์" — จับชื่อไทยบรรทัดก่อนหน้า label นั้น
+        const promptPayLabelIdx = cleanedNormText.search(/รหัสพร้อมเพย์|Prompt\s*Pay/i);
+        if (promptPayLabelIdx > 0) {
+          const beforeLabel = cleanedNormText.substring(0, promptPayLabelIdx);
+          const lines = beforeLabel.split('\n').map(l => l.trim()).filter(Boolean);
+          // หาบรรทัดสุดท้ายที่มีอักษรไทย (ชื่อผู้รับ)
+          for (let i = lines.length - 1; i >= 0; i--) {
+            if (/[ก-๙]{2,}/.test(lines[i]) && !/(?:ธนาคาร|บัญชี|xxx|โอน|สำเร็จ|จำนวน)/i.test(lines[i])) {
+              result.receiverName = lines[i].replace(/\s+/g,' ').trim();
+              break;
+            }
+          }
+        }
+      }
+      if (!result.receiverName) {
+        // ชื่อร้าน: ขึ้นต้นด้วยอักษรไทย ตามด้วย - หรืออักขระพิเศษ เช่น ศรีฟ้าเบเกอรี่-ร้อยเอ็ด
+        const shopNameRe = /[ก-๙][ก-๙a-zA-Z\s\-_&'\.]{4,50}(?:[ก-๙]|[a-zA-Z])/g;
+        const afterBoundary = cleanedFlatText.substring(boundary);
+        const shopMatches = [...afterBoundary.matchAll(shopNameRe)];
+        // กรองออก: คำสั้น, วันที่, ตัวเลข, คำที่เป็น label
+        const excludeRe = /(?:บาท|จำนวน|ค่าธรรม|สแกน|เลขที่|Prompt|PromptPay|กสิกร|ธนาคาร|โอน|ชำระ|สำเร็จ)/;
+        const shopCandidate = shopMatches.find(m => !excludeRe.test(m[0]) && m[0].trim().length >= 5);
+        if (shopCandidate) result.receiverName = shopCandidate[0].replace(/\s+/g,' ').trim();
+      }
+    } else {
+      // ไม่มี boundary — ชื่อแรก = ผู้โอน, ชื่อที่สอง = ผู้รับ
+      if (!result.senderName && allNameMatches.length >= 1) {
+        const candidate = cleanSenderName(allNameMatches[0][0]);
+        if (!isSystemMessage(candidate)) result.senderName = candidate;
+      }
+      if (!result.receiverName && allNameMatches.length >= 2) {
+        const candidate = cleanSenderName(allNameMatches[1][0]);
+        if (!isSystemMessage(candidate)) result.receiverName = candidate;
+      }
+    }
+  }
+
+  // Priority 2: quoted name anywhere in text (KTB/SCB slip style: "7 ร้าน..." or '7 ร้าน...')
+  // Matches content inside quotes that looks like a Thai business/person name
+  if (!result.senderName) {
+    // Straight double quotes  "…"
+    const quotedRe = /"([^"]{3,50})"/g;
+    for (const m of flatText.matchAll(quotedRe)) {
+      const candidate = cleanSenderName(m[1]);
+      // Must contain at least one Thai char and not be a date/number
+      if (/[ก-๙]/.test(candidate) && !/^\d/.test(candidate)) {
+        result.senderName = candidate; break;
+      }
+    }
+  }
+  if (!result.senderName) {
+    // Curly / smart quotes  "…"  '…'
+    const curlyRe = /[""'']([^""'']{3,50})[""'']/g;
+    for (const m of flatText.matchAll(curlyRe)) {
+      const candidate = cleanSenderName(m[1]);
+      if (/[ก-๙]/.test(candidate) && !/^\d/.test(candidate)) {
+        result.senderName = candidate; break;
+      }
+    }
+  }
+
+  // Priority 3: line that is (or follows) "จาก" / "ผู้โอน" standalone
+  if (!result.senderName) {
+    const lines = normText.split('\n').map(l => l.trim()).filter(Boolean);
+    for (let i = 0; i < lines.length; i++) {
+      if (/^(?:จาก|ผู้โอน|From)$/.test(lines[i])) {
+        const candidate = cleanSenderName(lines[i+1] || '');
+        if (candidate.length >= 3 && !/^\d/.test(candidate)) {
+          result.senderName = candidate; break;
+        }
+      }
+    }
+  }
+
+  // Priority 4: Thai name prefix pattern (นาย/นาง/น.ส./ร้าน/บริษัท) — masked or not
+  // Pick the FIRST occurrence = sender (not receiver after ↓ arrow)
+  if (!result.senderName) {
+    const namePrefixRe = /(?:นาย|นาง(?:สาว)?|น\.ส\.|คุณ|บริษัท|ห้างหุ้นส่วน|ร้าน)\s*[ก-๙a-zA-Z*\s\.]{3,40}/g;
+    const allNames = [...flatText.matchAll(namePrefixRe)];
+    if (allNames.length > 0) {
+      const candidate = cleanSenderName(allNames[0][0]);
+      if (!isSystemMessage(candidate)) result.senderName = candidate;
+    }
+  }
+
+  // Priority 4b: Krungsri/English slip — sender is UPPERCASE name BEFORE "→" or masked account
+  // Pattern: "THANAKORN SAR\nXXX-1-29285-X" (name then masked account)
+  if (!result.senderName) {
+    // Find all-caps English name lines (2+ words, each 2+ chars)
+    const engNameRe = /\b([A-Z]{2,}(?:\s+[A-Z]{2,})+)\b/g;
+    const allEngNames = [...flatText.matchAll(engNameRe)].map(m => m[1])
+      .filter(n => !/^(THB|UOB|SCB|BBL|KTB|GSB|TTB|BAY|MR|MS|MRS|NZ|TH|REF|FEE|IOS|OCR|XXX|KSA|Fund|Transfer|Successful|Amount|Scan|For|Verification)$/i.test(n));
+    // First valid name = sender
+    if (allEngNames.length > 0) result.senderName = allEngNames[0];
+  }
+
+  // Priority 4c: "MR. TANAWAT JITTARIYAPONG" style — receiver name with MR./MS. prefix
+  if (!result.receiverName) {
+    const mrRe = /\b(MR\.|MS\.|MRS\.)\s*([A-Z]{2,}(?:\s+[A-Z]{2,})*)/g;
+    const mrMatches = [...flatText.matchAll(mrRe)];
+    if (mrMatches.length > 0) {
+      result.receiverName = mrMatches[0][1] + ' ' + mrMatches[0][2];
+    }
+  }
+
+  // Priority 5: masked name pattern like ก***ข*** (without prefix)
+  if (!result.senderName) {
+    const maskedRe = /([ก-๙][ก-๙\s*]{1,15}[*]{2,}[ก-๙\s*]{0,15})/;
+    const mnm = flatText.match(maskedRe);
+    if (mnm) result.senderName = cleanSenderName(mnm[1]);
+  }
+
+
+  // ===== SENDER ACCOUNT (ต้นทาง) =====
+  // Pattern: x-xxx-x-xxxx-x (masked acct), or เลขที่บัญชี/จากบัญชี label
+  const senderAcctLabelRe = /(?:จากบัญชี|บัญชีต้นทาง|From\s*Account|เลขที่บัญชีผู้โอน)[^\d\n]{0,10}[\n\s]*([\dxX\-*]+)/i;
+  const salm = flatText.match(senderAcctLabelRe);
+  if (salm) result.senderAccount = salm[1].trim();
+
+  if (!result.senderAccount) {
+    // masked Thai bank account pattern x-xxx-x-xxxx-x or x-xxxxx-x (digits/x/-)
+    const maskedAcctRe = /([xX\d]{1,2}-[xX\d]{3,6}-[xX\d]{1,2}-[xX\d]{4,6}-[xX\d]{1})/;
+    const mam = flatText.match(maskedAcctRe);
+    if (mam) result.senderAccount = mam[1];
+  }
+  if (!result.senderAccount) {
+    // PromptPay / phone pattern 0xx-xxx-xxxx
+    const ppRe = /(0\d{2}-\d{3}-\d{4})/;
+    const ppm = flatText.match(ppRe);
+    if (ppm) result.senderAccount = ppm[1];
+  }
+
+  // ===== TrueMoney: ดึงชื่อผู้รับ (ปลายทาง) จาก "เติมเงินในมือถือ" pattern =====
+  // TrueMoney slip มักมีรูปแบบ: "เติมเงินทรูมูฟเอช - แอพ\ntruemove @\n081-594-7445"
+  if (!result.receiverName && /truemoney|true\s*money|ทรูมันนี่/i.test(flatText)) {
+    // ดึงชื่อบริการบรรทัดแรก เช่น "เติมเงินทรูมูฟเอช - แอพ" (หยุดที่ newline)
+    const tmServiceM = normText.match(/^(เติมเงิน[^\n]{3,50})/im);
+    if (tmServiceM) {
+      // ตัด "truemove @" และ English junk ออกจากท้าย
+      result.receiverName = tmServiceM[1].replace(/\s*truemove\s*[@\w]*\s*$/i,'').replace(/\s+$/,'').trim();
+    }
+    // fallback: หมายเลขโทรศัพท์ปลายทาง
+    if (!result.receiverName) {
+      const tmPhoneM = normText.match(/(?:เติมเงินในมือถือ|เติมเงิน[^\n]{0,30})\n\s*([\d\-]{9,13})/i);
+      if (tmPhoneM) result.receiverName = tmPhoneM[1].trim();
+    }
+  }
+
+  // ===== RECEIVER NAME (ปลายทาง) =====
+  const receiverLabelRe = /(?:ถึงบัญชี|บัญชีปลายทาง|ผู้รับ|To\s*Account|โอนให้|ถึง|ไปยัง)[^\n]{0,10}[\n\s]*["'"']?([^"\n']{3,50})/i;
+  const rlm = flatText.match(receiverLabelRe) || normText.match(receiverLabelRe);
+  if (rlm && !result.receiverName) result.receiverName = cleanSenderName(rlm[1]);
+
+  // ===== RECEIVER ACCOUNT (ปลายทาง) =====
+  const receiverAcctLabelRe = /(?:เลขที่บัญชีปลายทาง|บัญชีปลายทาง|ไปยังบัญชี|To\s*Account(?:\s*No\.?)?)[^\d\n]{0,10}[\n\s]*([\dxX\-*]+)/i;
+  const ralm = flatText.match(receiverAcctLabelRe);
+  if (ralm) result.receiverAccount = ralm[1].trim();
+
+  if (!result.receiverAccount) {
+    // Find all masked account numbers, pick second one (first = sender if found)
+    const allAccts = [...flatText.matchAll(/([xX\d]{1,2}-[xX\d]{3,6}-[xX\d]{1,2}-[xX\d]{4,6}-[xX\d]{1})/g)].map(m => m[1]);
+    if (result.senderAccount && allAccts.length >= 2) {
+      result.receiverAccount = allAccts.find(a => a !== result.senderAccount) || '';
+    } else if (!result.senderAccount && allAccts.length >= 1) {
+      result.receiverAccount = allAccts[0];
+    }
+  }
+
+  // ===== BALANCE =====
+  const balLabelRe = /(?:ยอดคงเหลือ|คงเหลือ|Balance(?:\s*After)?|ยอดเงินคงเหลือ)[^\d\n]{0,10}[\n\s]*([\d,]+\.?\d*)\s*(?:บาท|THB)?/i;
+  const blm = flatText.match(balLabelRe);
+  if (blm) result.balance = blm[1].replace(/,/g,'');
+
+  return result;
+}
+
+function renderSlipResult(parsed, rawText) {
+  const fields = [
+    { label: 'ยอดเงิน (บาท)', val: parsed.amount, fieldId: 'rc_slipAmount', icon: 'ti-currency-baht', highlight: true },
+    { label: 'ธนาคาร / ช่องทาง', val: parsed.bank, fieldId: 'rc_bankName', icon: 'ti-building-bank' },
+    { label: 'วันที่ทำรายการ', val: parsed.datetime, fieldId: 'rc_transferDatetime', icon: 'ti-calendar' },
+    { label: 'เลขที่รายการ', val: parsed.txnNo, fieldId: 'rc_txnNo', icon: 'ti-hash' },
+    { label: 'ชื่อผู้โอน (ต้นทาง)', val: parsed.senderName, fieldId: 'rc_senderName', icon: 'ti-user' },
+    { label: 'ชื่อผู้รับ (ปลายทาง)', val: parsed.receiverName, fieldId: null, icon: 'ti-user-check' },
+  ];
+
+  const html = `
+    <div style="margin-bottom:10px;font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">ผลการสแกน</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      ${fields.map(f => `
+        <div style="display:flex;align-items:center;gap:10px;background:${f.highlight?'var(--success-bg)':'var(--surface2)'};border:1px solid ${f.highlight?'var(--success-border)':'var(--border)'};border-radius:var(--radius-sm);padding:8px 12px">
+          <i class="ti ${f.icon}" style="color:${f.highlight?'var(--success)':'var(--text-muted)'};font-size:18px;flex-shrink:0"></i>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.04em;text-transform:uppercase">${f.label}</div>
+            <div style="font-size:${f.highlight?'18px':'14px'};font-weight:${f.highlight?'700':'500'};color:${f.highlight?'var(--success)':'var(--text)'};margin-top:2px;word-break:break-all">${f.val || '<span style="color:var(--text-subtle);font-style:italic;font-size:12px">ไม่พบ</span>'}</div>
+          </div>
+          ${f.fieldId && f.val ? `<button class="btn btn-sm" onclick="applySlipField('${f.fieldId}','${f.val.replace(/'/g,"\\'")}');this.textContent='✓ กรอกแล้ว';this.disabled=true" style="flex-shrink:0;font-size:11px">กรอก</button>` : ''}
+        </div>`).join('')}
+    </div>
+    <button class="btn btn-sm btn-primary" style="width:100%;margin-top:10px;justify-content:center" onclick="applyAllSlipFields()">
+      <i class="ti ti-check"></i> กรอกทั้งหมดอัตโนมัติ
+    </button>
+    <details style="margin-top:10px">
+      <summary style="font-size:11px;color:var(--text-muted);cursor:pointer">ดูข้อความทั้งหมดจาก Slip</summary>
+      <pre style="font-size:11px;line-height:1.6;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;margin-top:6px;overflow-x:auto;white-space:pre-wrap;color:var(--text-muted)">${rawText.replace(/</g,'&lt;')}</pre>
+    </details>
+  `;
+  $('slipResultContent').innerHTML = html;
+  // เก็บ parsed ไว้ใน variable global เพื่อให้ปุ่มเรียกได้ปลอดภัย
+  window._lastSlipParsed = parsed;
+}
+
+// ========== SLIP ROWS SYSTEM ==========
+function addSlipRow(prefill) {
+  const row = prefill || { id: Date.now()+Math.random(), bank:'', senderName:'', amount:'', datetime:'', txnNo:'', imageDataUrl:null };
+  rcSlipRows.push(row);
+  renderSlipRows();
+}
+
+function removeSlipRow(id) {
+  rcSlipRows = rcSlipRows.filter(r => r.id !== id);
+  renderSlipRows();
+}
+
+function renderSlipRows() {
+  const container = $('slipRowsContainer');
+  if (!container) return;
+  if (rcSlipRows.length === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:14px;color:var(--text-subtle);font-size:12px;border:2px dashed var(--border);border-radius:var(--radius-sm)">
+      <i class="ti ti-receipt-off" style="font-size:20px;display:block;margin-bottom:4px"></i>ยังไม่มีข้อมูล Slip — กด "+ เพิ่ม Slip" หรือ "สแกน Slip"</div>`;
+    return;
+  }
+  container.innerHTML = rcSlipRows.map((r, i) => {
+    const imgId = 'slipRowImg_' + r.id;
+    const fileId = 'slipRowFile_' + r.id;
+    return `
+    <div style="border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px;margin-bottom:8px;background:var(--surface)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:11px;font-weight:700;color:var(--text-muted)">Slip ${i+1}</span>
+        <button class="btn btn-sm btn-danger no-print" onclick="removeSlipRow(${r.id})" style="font-size:11px;padding:2px 8px"><i class="ti ti-trash"></i> ลบ</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <div class="field" style="flex:1;min-width:100px">
+          <label>ธนาคาร</label>
+          <input value="${r.bank||''}" placeholder="กสิกรไทย" style="font-size:12px;padding:5px 7px" oninput="rcSlipRows[${i}].bank=this.value">
+        </div>
+        <div class="field" style="flex:1.5;min-width:120px">
+          <label>ชื่อผู้โอน</label>
+          <input value="${r.senderName||''}" placeholder="ชื่อผู้โอน" style="font-size:12px;padding:5px 7px" oninput="rcSlipRows[${i}].senderName=this.value">
+        </div>
+        <div class="field" style="flex:1;min-width:90px">
+          <label>ยอดเงิน (บาท)</label>
+          <input value="${r.amount||''}" placeholder="0.00" type="number" min="0" step="any" style="font-size:12px;padding:5px 7px" oninput="rcSlipRows[${i}].amount=this.value">
+        </div>
+        <div class="field" style="flex:1.2;min-width:130px">
+          <label>วันที่ทำรายการ</label>
+          <input value="${r.datetime||''}" placeholder="DD/MM/YYYY HH:MM" style="font-size:12px;padding:5px 7px" oninput="rcSlipRows[${i}].datetime=this.value">
+        </div>
+        <div class="field" style="flex:1.5;min-width:130px">
+          <label>เลขที่รายการ</label>
+          <input value="${r.txnNo||''}" placeholder="เลขอ้างอิง" style="font-size:12px;padding:5px 7px" oninput="rcSlipRows[${i}].txnNo=this.value">
+        </div>
+      </div>
+      <!-- Slip image -->
+      <div class="no-print" style="margin-top:8px">
+        <input type="file" id="${fileId}" accept="image/*" style="display:none" onchange="handleSlipRowImage(event,${r.id})">
+        ${r.imageDataUrl ? `
+          <div style="display:flex;align-items:flex-start;gap:8px">
+            <img id="${imgId}" src="${r.imageDataUrl}" style="max-height:80px;max-width:120px;object-fit:contain;border-radius:var(--radius-xs);border:1px solid var(--border);cursor:zoom-in" onclick="openSlipImageModal(this.src)" title="คลิกดูรูปขนาดเต็ม">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <button class="btn btn-sm" onclick="document.getElementById('${fileId}').click()" style="font-size:11px"><i class="ti ti-photo-up"></i> เปลี่ยนรูป</button>
+              <button class="btn btn-sm btn-danger" onclick="rcSlipRows[${i}].imageDataUrl=null;renderSlipRows()" style="font-size:11px"><i class="ti ti-trash"></i> ลบรูป</button>
+            </div>
+          </div>` : `
+          <label onclick="document.getElementById('${fileId}').click()" style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--text-muted);cursor:pointer;border:1.5px dashed var(--border);border-radius:var(--radius-xs);padding:5px 10px;background:var(--surface2);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--surface2)'">
+            <i class="ti ti-photo-up"></i> แนบรูป Slip
+          </label>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function handleSlipRowImage(event, rowId) {
+  const file = event.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const row = rcSlipRows.find(r => r.id === rowId);
+    if (row) { row.imageDataUrl = ev.target.result; renderSlipRows(); showToast('แนบรูป Slip แล้ว ✓'); }
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function applySlipField(fieldId, val) {
+  // legacy — ไม่ทำงานแล้ว (ใช้ applyAllSlipFields แทน)
+}
+
+function applyAllSlipFields() {
+  const parsed = window._lastSlipParsed;
+  if (!parsed) return;
+  const slipImg = $('slipPreview');
+  const imgDataUrl = (slipImg && slipImg.src && slipImg.src !== window.location.href) ? slipImg.src : null;
+  addSlipRow({
+    id: Date.now()+Math.random(),
+    bank: parsed.bank || '',
+    senderName: parsed.senderName || '',
+    amount: parsed.amount || '',
+    datetime: parsed.datetime || '',
+    txnNo: parsed.txnNo || '',
+    imageDataUrl: imgDataUrl
+  });
+  $('rc_payMethod').value = 'โอนเงิน';
+  toggleRcBankFields();
+  $('scanSlipModal').style.display = 'none';
+  showToast('เพิ่ม Slip เรียบร้อย ✓');
+  resetScanUI();
+}
+// ========== END SCAN SLIP ==========
+// Override newReceipt to not depend on index.html elements
+const _origNewReceipt = newReceipt;
+function newReceipt() {
+  rcCurrentId = null; rcRows = []; rcLogoDataUrl = null;
+  // Try to get seller info from last saved quotation
+  try {
+    const idx = JSON.parse(localStorage.getItem(IDX_KEY)||'[]');
+    if (idx.length > 0) {
+      const last = JSON.parse(localStorage.getItem(DB_KEY(idx[0].id))||'{}');
+      $('rc_s_name').value = last.s_name || '';
+      $('rc_s_addr').value = last.s_addr || '';
+      $('rc_s_tel').value = last.s_tel || '';
+      $('rc_s_tax').value = last.s_tax || '';
+    }
+  } catch(e) {}
+  $('rc_docNo').value = nextRcDocNo();
+  const _now = new Date(); const _d = String(_now.getDate()).padStart(2,'0'); const _m = String(_now.getMonth()+1).padStart(2,'0'); const _y = _now.getFullYear();
+  $('rc_date').value = `${_d}/${_m}/${_y}`;
+  $('rc_refNo').value = '';
+  $('rc_c_name').value = ''; $('rc_c_tel').value = '';
+  $('rc_c_addr').value = ''; $('rc_c_tax').value = '';
+  $('rc_note').value = '';
+  toggleNoteWrap();
+  rcSlipRows = [];
+  renderSlipRows();
+  toggleRcBankFields();
+  addRcRow();
+  calcRcTotals();
+  switchTab('receipt-form');
+  // Show the receipt-form tab button
+  const tabBtn = $('tab-receipt-form');
+  if(tabBtn) tabBtn.style.display = '';
+}
+
+// Init receipt page
+updateRcCount();
+switchTab('receipt');
+window.addEventListener('load', () => { setTimeout(initDrive, 1000); });
+
+</script>
+<!-- Slip Image Viewer Modal -->
+<div id="slipImageModal" class="no-print" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);align-items:center;justify-content:center;cursor:zoom-out" onclick="closeSlipImageModal()">
+  <img id="slipImageModalImg" style="max-width:95vw;max-height:92vh;object-fit:contain;border-radius:var(--radius-sm);box-shadow:0 8px 40px rgba(0,0,0,.6)" onclick="event.stopPropagation()">
+  <button onclick="closeSlipImageModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);border:none;color:white;font-size:22px;width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">✕</button>
+</div>
+
+<script>
+function openSlipImageModal(src) {
+  const modal = $('slipImageModal');
+  const img = $('slipImageModalImg');
+  img.src = src;
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeSlipImageModal() {
+  $('slipImageModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSlipImageModal(); });
+</script>
+
+</body>
+</html>
