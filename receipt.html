@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-title" content="ใบเสร็จรับเงิน">
 <title>ใบเสร็จรับเงิน Pro</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async></script>
 <style>
@@ -456,45 +458,107 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
 
 /* Print */
 @media print {
+  .hide-print-label { display: none !important; }
   .no-print { display: none !important; }
   .print-only { display: block !important; }
   .back-card { display: none !important; }
   .print-hidden { display: none !important; }
-  body { background: white; font-size: 13px; }
-  .page { padding: 0; max-width: 100%; }
-  .card { border: none; box-shadow: none; padding: 0; margin-bottom: 4px; }
+
+  /* ── Base ── */
+  body { background: white !important; font-size: 13px; min-height: 0 !important; height: auto !important; }
+  .page { padding: 0 !important; max-width: 100%; height: auto !important; min-height: 0 !important; }
+  .card { border: none !important; box-shadow: none !important; padding: 0 !important;
+          margin-bottom: 4px !important; height: auto !important; min-height: 0 !important; }
   .card:hover { box-shadow: none; }
   .logo-upload { border: none; }
   .tab-bar { display: none; }
   #installBanner { display: none !important; }
-  .doc-header { margin-bottom: 8px; }
+
+  /* ── Header Section: กรอบครอบ logo + ข้อมูลผู้ขาย + เลขที่เอกสาร ── */
+  #view-receipt-form > .card:first-child {
+    border: 2px solid #1c1b18 !important;
+    border-radius: 0 !important;
+    padding: 12px 14px !important;
+    margin-bottom: 0 !important;
+  }
+  /* ซ่อน border ของ sub-box ข้างใน */
+  #view-receipt-form .card > div > div[style*="border:1.5px"],
+  #view-receipt-form .card > div[style*="border:1.5px"] {
+    border: none !important; background: transparent !important; padding: 0 !important;
+  }
+  /* doc title ขวา */
+  #rcDocInfo { border: none !important; background: transparent !important; padding: 0 !important; max-width: 210px !important; }
+  #rcDocInfo .rc-info-grid { grid-template-columns: auto 130px !important; gap: 2px 8px !important; }
+  #rcDocInfo .rc-info-grid label { font-size: 10px !important; color: #666 !important; }
+  #rcDocInfo .rc-info-grid input { border: none !important; background: transparent !important; padding: 1px 0 !important; font-size: 12px !important; text-align: right; }
+  /* ชื่อ "ใบเสร็จรับเงิน" ขวาบน */
+  #rcDocInfo > div:first-child { font-size: 20px !important; font-weight: 900 !important; letter-spacing: -0.5px; color: #1c1b18; border-bottom: 3px solid #1c1b18; padding-bottom: 6px; margin-bottom: 6px; }
+
+  /* ── Customer Section: กรอบบาง ── */
+  #view-receipt-form > .card:nth-child(2) {
+    border: 1px solid #ccc !important;
+    border-radius: 0 !important;
+    padding: 8px 14px !important;
+    margin-bottom: 0 !important;
+    background: #fafafa !important;
+  }
+
+  /* ── Items Table Section ── */
+  #view-receipt-form > .card:nth-child(3) {
+    border: 1px solid #ccc !important;
+    border-top: 2px solid #1c1b18 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin-bottom: 0 !important;
+    overflow: hidden;
+  }
+  /* section label รายการสินค้า */
+  #view-receipt-form > .card:nth-child(3) > .section-label {
+    background: #1c1b18 !important; color: white !important; padding: 5px 10px !important;
+    margin: 0 !important; font-size: 11px !important;
+  }
+  #view-receipt-form > .card:nth-child(3) > .section-label::before { display: none !important; }
+  #view-receipt-form > .card:nth-child(3) > div { padding: 0 10px !important; }
+  #view-receipt-form > .card:nth-child(3) > div:last-child { padding: 8px 10px !important; }
+
+  /* ── Table styling ── */
+  .table-wrap { border: none !important; }
+  table { font-size: 12.5px; border-collapse: collapse !important; width: 100%; }
+  thead tr { background: #f0ede8 !important; border-bottom: 1.5px solid #1c1b18 !important; }
+  th { padding: 5px 6px !important; font-size: 11px !important; font-weight: 700 !important; color: #1c1b18 !important; }
+  tbody tr { border-bottom: 1px solid #e8e4de !important; }
+  tbody tr:last-child { border-bottom: none !important; }
+  td { padding: 4px 6px !important; font-size: 12.5px !important; vertical-align: top; }
+  td input, td textarea { vertical-align: middle; padding-top: 0; padding-bottom: 0; line-height: 1.5; border: none !important; background: transparent !important; }
+  td input { padding-top: 0; }
+  .__ta2div { display: block; white-space: pre-wrap; font-size: 12.5px; line-height: 1.6; font-family: inherit; }
+
+  /* ── Fields ── */
+  .doc-header { margin-bottom: 6px; }
   .section-label { font-size: 11px; margin-bottom: 4px; font-weight: 700; }
   .section-label::before { display: none; }
   .grid2 { gap: 8px; }
   .grid3 { gap: 8px; }
-  .field { gap: 2px; }
+  .field { gap: 2px; height: auto !important; min-height: 0 !important; }
   .field label { font-size: 11px; }
-  .field input, .field textarea, .field select { font-size: 13px; padding: 2px 6px; border: none; background: transparent; }
-  .field textarea { min-height: 0 !important; height: auto !important; overflow: hidden; padding-top: 2px; padding-bottom: 2px; }
-  .table-wrap { border: none; }
-  table { font-size: 13px; }
-  th { padding: 4px 4px; font-size: 11px; background: none; }
-  td { padding: 3px 4px; font-size: 13px; vertical-align: top; }
-  td input, td textarea { vertical-align: middle; padding-top: 0; padding-bottom: 0; line-height: 1.4; }
-  td input { padding-top: 0; }
-  /* Receipt doc info — print */
-  #rcDocInfo .rc-info-grid { grid-template-columns: auto 120px !important; }
-  #rcDocInfo .rc-info-grid input { border: none !important; background: transparent !important; padding: 2px 0 !important; }
-  /* ซ่อนหมายเหตุถ้าว่าง */
+  .field input, .field textarea, .field select { font-size: 13px; padding: 2px 4px; border: none !important; background: transparent !important; }
+  #rc_s_addr, #rc_c_addr { height: auto !important; min-height: 0 !important; overflow: hidden !important; }
+  .field textarea { min-height: 0 !important; height: auto !important; overflow: hidden !important; padding-top: 1px; padding-bottom: 1px; }
+
+  /* ── Logo ── */
+  #rcLogoZone { width: auto !important; height: auto !important; min-height: 0 !important; }
+  #rcLogoZone > div[style*="border"] { border: none !important; background: transparent !important; width: auto !important; height: auto !important; }
+  #rcLogoImg { max-height: 80px !important; }
+
+  /* ── ซ่อน/แสดง ── */
   .rc-note-wrap.note-empty { display: none !important; }
   #slipRowsContainer { display: none !important; }
   #slipPrintTable { display: block !important; }
-  /* ซ่อนช่องที่ไม่มีข้อมูลเมื่อปริ้น */
+  #depositRowsContainer input, #depositRowsContainer .no-print { display: none !important; }
+  #depositRowsContainer .print-only { display: inline !important; }
   .field.print-empty { display: none !important; }
-  /* ซ่อน label+input ใน rc-info-grid ที่ว่าง */
-  #rcDocInfo .rc-info-grid label.print-empty,
-  #rcDocInfo .rc-info-grid input.print-empty { display: none !important; }
-  /* ซ่อน wrapper row ของ seller/customer ที่ช่องทั้งหมดว่าง */
+  #rc_payMethod { border: none !important; background: transparent !important; appearance: none !important; -webkit-appearance: none !important; padding: 0 !important; font-weight: 600; }
+  #rcDocInfo .rc-info-grid label.print-empty, #rcDocInfo .rc-info-grid input.print-empty { display: none !important; }
   .print-row-empty { display: none !important; }
 }
 
@@ -524,6 +588,13 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
   <a class="tab" href="index.html" style="text-decoration:none"><i class="ti ti-file-text"></i> ใบเสนอราคา</a>
   <button class="tab active" onclick="switchTab('receipt')" id="tab-receipt"><i class="ti ti-receipt"></i> รายการ <span id="receiptCount" style="font-size:11px;background:var(--border);padding:1px 7px;border-radius:20px;margin-left:2px">0</span></button>
   <button class="tab" onclick="switchTab('receipt-form')" id="tab-receipt-form" style="display:none"><i class="ti ti-edit"></i> แก้ไข</button>
+  <div style="flex:1"></div>
+  <div id="rcFormActions" style="display:none;align-items:center;gap:6px;padding:0 8px">
+    <button class="btn btn-sm" onclick="switchTab('receipt')"><i class="ti ti-arrow-left"></i> กลับ</button>
+    <span id="rcStatusBadge" class="badge" style="background:var(--warn-bg);color:var(--warn-text);border:1px solid var(--warn-border)">ยังไม่บันทึก</span>
+    <button class="btn btn-sm" onclick="printReceipt()"><i class="ti ti-printer"></i> พิมพ์</button>
+    <button class="btn btn-sm btn-primary" onclick="saveReceipt()"><i class="ti ti-device-floppy"></i> บันทึก</button>
+  </div>
 </nav>
 
 <div id="toast" class="toast no-print"></div>
@@ -541,18 +612,7 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
 <!-- ============ RECEIPT FORM VIEW ============ -->
 <div id="view-receipt-form" class="page" style="display:none">
 
-  <!-- Header -->
-  <div class="card no-print" style="margin-bottom:8px">
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <button class="btn btn-sm" onclick="switchTab('receipt')"><i class="ti ti-arrow-left"></i> กลับ</button>
-      <div style="font-weight:700;font-size:15px">ใบเสร็จรับเงิน</div>
-      <span id="rcStatusBadge" class="badge no-print" style="background:var(--warn-bg);color:var(--warn-text);border:1px solid var(--warn-border)">ยังไม่บันทึก</span>
-      <div style="margin-left:auto;display:flex;gap:6px">
-        <button class="btn" onclick="printReceipt()"><i class="ti ti-printer"></i> พิมพ์</button>
-        <button class="btn btn-primary" onclick="saveReceipt()"><i class="ti ti-device-floppy"></i> บันทึก</button>
-      </div>
-    </div>
-  </div>
+
 
   <!-- Doc header print area -->
   <div class="card">
@@ -568,12 +628,10 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
       </div>
       <!-- Seller info -->
       <div style="flex:1;min-width:0;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;background:var(--surface2)">
-        <div data-print-row class="field" style="flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ชื่อบริษัท / ร้านค้า</label><input id="rc_s_name" placeholder="ชื่อบริษัท" style="flex:1;min-width:0"></div>
-        <div data-print-row class="field" style="flex-direction:row;align-items:flex-start;gap:8px;margin-top:6px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content;padding-top:7px">ที่อยู่</label><textarea id="rc_s_addr" rows="1" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;flex:1;min-width:0;line-height:1.5" placeholder="ที่อยู่"></textarea></div>
-        <div data-print-row style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
-          <div class="field" style="flex:1;min-width:150px;flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">โทรศัพท์</label><input id="rc_s_tel" placeholder="08x-xxx-xxxx" style="flex:1;min-width:0"></div>
-          <div class="field" style="flex:1;min-width:150px;flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">เลขผู้เสียภาษี</label><input id="rc_s_tax" placeholder="0-0000-00000-00-0" style="flex:1;min-width:0"></div>
-        </div>
+        <div data-print-row class="field" style="flex-direction:row;align-items:center;gap:8px"><label class="hide-print-label" style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ชื่อบริษัท / ร้านค้า</label><input id="rc_s_name" placeholder="ชื่อบริษัท" style="flex:1;min-width:0"></div>
+        <div data-print-row class="field" style="flex-direction:row;align-items:flex-start;gap:8px;margin-top:6px"><label class="hide-print-label" style="white-space:nowrap;margin-bottom:0;min-width:fit-content;padding-top:7px">ที่อยู่</label><textarea id="rc_s_addr" rows="1" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;flex:1;min-width:0;line-height:1.5" placeholder="ที่อยู่"></textarea></div>
+        <div data-print-row class="field" style="flex-direction:row;align-items:center;gap:8px;margin-top:6px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">โทรศัพท์</label><input id="rc_s_tel" placeholder="08x-xxx-xxxx" style="flex:1;min-width:0"></div>
+        <div data-print-row class="field" style="flex-direction:row;align-items:center;gap:8px;margin-top:6px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">หมายเลขประจำตัวผู้เสียภาษี Tax ID</label><input id="rc_s_tax" placeholder="0-0000-00000-00-0" style="flex:1;min-width:0"></div>
       </div>
       <!-- Doc info -->
       <div id="rcDocInfo" style="flex-shrink:0;max-width:240px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;background:var(--surface2)">
@@ -582,7 +640,7 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
           <label>เลขที่</label>
           <input id="rc_docNo" placeholder="IV-2026-001">
           <label>วันที่รับเงิน</label>
-          <input id="rc_date" type="text" placeholder="DD/MM/YYYY">
+          <input id="rc_date" type="text" placeholder="DD/MM/YYYY" readonly style="cursor:pointer">
           <label>อ้างอิง QT</label>
           <input id="rc_refNo" placeholder="QT-2026-001">
         </div>
@@ -594,18 +652,15 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
   <div class="card">
     <div class="section-label no-print">ผู้ชำระเงิน</div>
     <div style="border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;background:var(--surface2)">
-      <div data-print-row style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
-        <div class="field" style="flex:3;flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ชื่อบริษัท / ลูกค้า</label><input id="rc_c_name" placeholder="ชื่อลูกค้า" style="flex:1"></div>
-        <div class="field" style="flex:1;min-width:140px;flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">โทรศัพท์</label><input id="rc_c_tel" placeholder="08x-xxx-xxxx" style="flex:1"></div>
-      </div>
-      <div data-print-row style="display:flex;gap:8px;align-items:flex-start">
-        <div class="field" style="flex:3;flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ที่อยู่</label><textarea id="rc_c_addr" rows="1" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;line-height:1.5;flex:1" placeholder="ที่อยู่ลูกค้า"></textarea></div>
-        <div class="field" style="flex:1;min-width:140px;flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">เลขผู้เสียภาษี</label><input id="rc_c_tax" placeholder="0-0000-00000-00-0" style="flex:1"></div>
-      </div>
+      <div data-print-row class="field" style="flex-direction:row;align-items:center;gap:8px;margin-bottom:6px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ชื่อบริษัท / ลูกค้า</label><input id="rc_c_name" placeholder="ชื่อลูกค้า" style="flex:1"></div>
+      <div data-print-row class="field" style="flex-direction:row;align-items:flex-start;gap:8px;margin-bottom:6px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content;padding-top:7px">ที่อยู่</label><textarea id="rc_c_addr" rows="1" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;line-height:1.5;flex:1" placeholder="ที่อยู่ลูกค้า"></textarea></div>
+      <div data-print-row class="field" style="flex-direction:row;align-items:center;gap:8px;margin-bottom:6px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">โทรศัพท์</label><input id="rc_c_tel" placeholder="08x-xxx-xxxx" style="flex:1"></div>
+      <div data-print-row class="field" style="flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">หมายเลขประจำตัวผู้เสียภาษี Tax ID</label><input id="rc_c_tax" placeholder="0-0000-00000-00-0" style="flex:1"></div>
     </div>
     <!-- Import from quotation -->
     <div class="no-print" style="margin-top:8px">
       <button class="btn btn-sm" onclick="showImportFromQt()"><i class="ti ti-file-import"></i> นำข้อมูลจากใบเสนอราคา</button>
+      <button class="btn btn-sm" onclick="reloadSellerInfo()" style="color:var(--text-muted);font-size:12px"><i class="ti ti-refresh"></i> โหลดข้อมูลผู้ขายใหม่</button>
     </div>
   </div>
 
@@ -628,38 +683,104 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
     </div>
     <!-- Summary -->
     <div style="margin-top:12px;display:flex;justify-content:flex-end">
-      <table style="font-size:13px;border-collapse:collapse;width:auto;min-width:280px">
-        <tr id="rcSubTotalRow"><td style="padding:4px 16px 4px 0;color:var(--text)">ยอดรวม</td><td style="padding:4px 0;text-align:right;font-weight:700;white-space:nowrap" id="rcSubTotal">0.00</td></tr>
-        <tr id="rcDiscountRow"><td style="padding:4px 16px 4px 0;color:var(--text)">ส่วนลด</td><td style="padding:4px 0;text-align:right;font-weight:700;white-space:nowrap;color:var(--danger)" id="rcDiscountAmt">0.00</td></tr>
-        <tr id="rcVatRow"><td style="padding:4px 16px 4px 0;color:var(--text)">VAT <span id="rcVatPctLabel">7</span>%</td><td style="padding:4px 0;text-align:right;font-weight:700;white-space:nowrap" id="rcVatAmt">0.00</td></tr>
+      <table style="font-size:13px;border-collapse:collapse;width:auto;min-width:300px">
+        <tr id="rcSubTotalRow"><td style="padding:4px 20px 4px 0;color:var(--text)">ยอดรวม</td><td style="padding:4px 0;text-align:right;font-weight:700;white-space:nowrap" id="rcSubTotal">0.00</td></tr>
+        <tr id="rcDiscountRow"><td style="padding:4px 20px 4px 0;color:var(--text)">ส่วนลด</td><td style="padding:4px 0;text-align:right;font-weight:700;white-space:nowrap;color:var(--danger)" id="rcDiscountAmt">0.00</td></tr>
+        <tr id="rcVatRow"><td style="padding:4px 20px 4px 0;color:var(--text)">VAT <span id="rcVatPctLabel">7</span>%</td><td style="padding:4px 0;text-align:right;font-weight:700;white-space:nowrap" id="rcVatAmt">0.00</td></tr>
         <tr><td colspan="2" style="padding:0"><div style="border-top:2px solid var(--border);margin:6px 0"></div></td></tr>
-        <tr><td style="padding:6px 16px 4px 0;font-weight:700;font-size:16px">ยอดชำระทั้งสิ้น</td><td style="padding:6px 0 4px;text-align:right;font-weight:700;font-size:16px;white-space:nowrap;color:var(--accent)" id="rcGrandTotal">0.00</td></tr>
+        <tr>
+          <td style="padding:6px 20px 4px 0;font-weight:700;font-size:16px">ยอดชำระทั้งสิ้น</td>
+          <td style="padding:6px 0 4px;text-align:right;font-weight:700;font-size:16px;white-space:nowrap;color:var(--accent)" id="rcGrandTotal">0.00</td>
+        </tr>
+        <tr><td colspan="2" style="padding:4px 0 2px;text-align:center;font-size:13px;color:var(--text-muted);font-style:italic" id="rcGrandTotalWords">( ศูนย์บาทถ้วน )</td></tr>
+
+        <!-- ── แถวสรุปงวด (แสดงเมื่อมีงวด) ── -->
+        <tr id="rcDepositSepRow" style="display:none"><td colspan="2" style="padding:0"><div style="border-top:1.5px dashed var(--border);margin:8px 0 4px"></div></td></tr>
+        <tr id="rcDepositPaidRow" style="display:none">
+          <td style="padding:3px 20px 3px 0;color:var(--success);font-size:13px">ชำระแล้ว (มัดจำ/งวด)</td>
+          <td style="padding:3px 0;text-align:right;font-weight:700;color:var(--success);white-space:nowrap" id="rcDepositPaidAmt">0.00</td>
+        </tr>
+        <tr id="rcDepositRemainRow" style="display:none">
+          <td style="padding:4px 20px 4px 0;font-weight:700;font-size:15px">ยอดค้างชำระ</td>
+          <td style="padding:4px 0;text-align:right;font-weight:700;font-size:15px;white-space:nowrap" id="rcDepositRemainAmt">0.00</td>
+        </tr>
+        <tr id="rcDepositWordsRow" style="display:none">
+          <td colspan="2" style="padding:2px 0;text-align:center;font-size:12px;font-style:italic" id="rcDepositRemainWords"></td>
+        </tr>
       </table>
+    </div>
+
+    <!-- ── ตารางงวด (screen: กรอก + แสดงพร้อมกัน) ── -->
+    <div id="rcDepositSection" style="display:none;margin-top:14px;border-top:1px solid var(--border-light);padding-top:12px">
+
+      <!-- header row -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-subtle);display:flex;align-items:center;gap:6px">
+          <span style="display:inline-block;width:3px;height:10px;background:var(--accent);border-radius:2px;opacity:.25"></span>
+          งวดการชำระเงิน
+        </div>
+        <button class="btn btn-sm no-print" onclick="addDepositRow()" style="font-size:11.5px;gap:4px">
+          <i class="ti ti-plus"></i> เพิ่มงวด
+        </button>
+      </div>
+
+      <!-- ตาราง (screen + print ใช้ร่วมกัน) -->
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="background:var(--surface2);border-bottom:1.5px solid var(--border)">
+            <th style="padding:6px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--text-muted);width:28px">#</th>
+            <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:700;color:var(--text-muted)">รายละเอียดงวด</th>
+            <th style="padding:6px 8px;text-align:right;font-size:11px;font-weight:700;color:var(--text-muted);width:140px">จำนวนเงิน (บาท)</th>
+            <th style="padding:6px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--text-muted);width:120px">วันที่ชำระ</th>
+            <th style="padding:6px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--text-muted);width:90px">สถานะ</th>
+            <th class="no-print" style="width:32px"></th>
+          </tr>
+        </thead>
+        <tbody id="depositRowsContainer"></tbody>
+      </table>
+
+      <!-- ปุ่มเพิ่มเมื่อยังไม่มีงวด -->
+      <div id="depositEmptyHint" style="display:none;text-align:center;padding:14px 0">
+        <button class="btn btn-sm no-print" onclick="addDepositRow()" style="border-style:dashed;font-size:12px;gap:4px;color:var(--text-muted)">
+          <i class="ti ti-plus"></i> เพิ่มงวด / มัดจำ
+        </button>
+      </div>
+    </div>
+
+    <!-- ปุ่มเพิ่มงวด (แสดงเมื่อยังไม่มีงวดเลย) -->
+    <div id="rcDepositAddBtn" class="no-print" style="margin-top:10px;text-align:right">
+      <button class="btn btn-sm" onclick="addDepositRow()" style="border-style:dashed;font-size:12px;gap:4px;color:var(--text-muted)">
+        <i class="ti ti-cash"></i> เพิ่มงวดมัดจำ
+      </button>
     </div>
   </div>
 
   <!-- Payment info -->
-  <div class="card">
+  <div class="card" style="margin-top:18px">
     <div style="display:flex;gap:8px;flex-wrap:nowrap;align-items:flex-end;margin-bottom:10px">
-      <div class="section-label" style="margin:0;flex-shrink:0;padding-bottom:8px">ข้อมูลการชำระเงิน</div>
+      <div class="section-label" style="margin:0;flex-shrink:0">ข้อมูลการชำระเงิน</div>
       <select id="rc_payMethod" onchange="toggleRcBankFields()" style="flex-shrink:0;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;background:var(--surface);color:var(--text)">
-        <option>โอนเงิน</option>
+        <option>โอนเงินก่อนส่งของ</option>
+        <option>โอนเงินหลังส่งมอบงาน/ติดตั้งเสร็จ</option>
+        <option>โอนเงินผ่านบัญชีธนาคาร</option>
         <option>เงินสด</option>
-        <option>เช็ค</option>
-        <option>บัตรเครดิต</option>
+        <option>ชำระงวดที่ 1 ก่อนเริ่มงาน และชำระงวดที่ 2 หลังส่งมอบงาน</option>
         <option>อื่นๆ</option>
       </select>
       <div class="field rc-note-wrap" style="flex:1;flex-direction:row;align-items:center;gap:6px;display:flex">
         <label style="white-space:nowrap;margin:0;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em">หมายเหตุ</label>
         <input id="rc_note" placeholder="หมายเหตุเพิ่มเติม" style="flex:1" oninput="toggleNoteWrap()">
       </div>
+      <button class="btn btn-sm no-print" onclick="openPayMethodModal()" style="flex-shrink:0;margin-bottom:1px;gap:5px" title="จัดการเงื่อนไขการชำระเงิน">
+        <i class="ti ti-settings"></i> จัดการ
+      </button>
       <button class="btn btn-sm no-print" onclick="openScanSlip()" style="flex-shrink:0;margin-bottom:1px;background:linear-gradient(135deg,#1a73e8,#0d5ab7);color:white;border-color:transparent;gap:5px">
         <i class="ti ti-camera"></i> สแกน Slip
       </button>
     </div>
 
     <!-- Slip rows (NEW MULTI-ROW) -->
-    <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px">
+    <div id="slipSection" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
         <div style="font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-subtle);display:flex;align-items:center;gap:6px">
           <span style="display:inline-block;width:3px;height:10px;background:var(--accent);border-radius:2px;opacity:.25"></span>
@@ -691,6 +812,83 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
     </div>
   </div>
 
+  <!-- Signature Block -->
+  <div class="card">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+      <!-- ส่วนที่ 1: ผู้รับสินค้า -->
+      <div style="border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2)">
+          <div style="font-size:12.5px;font-weight:600;color:var(--text)">รับสินค้าตามรายการข้างบนนี้ถูกต้องแล้ว</div>
+          <div class="no-print" style="display:flex;gap:5px;flex-shrink:0">
+            <button onclick="sigRecallUser(1)" title="เรียกใช้ข้อมูลที่บันทึกไว้" style="display:inline-flex;align-items:center;gap:4px;padding:4px 9px;font-size:11.5px;font-weight:600;font-family:inherit;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-muted);cursor:pointer;transition:all .15s;white-space:nowrap" onmouseover="this.style.background='var(--bg2)';this.style.color='var(--text)'" onmouseout="this.style.background='var(--surface)';this.style.color='var(--text-muted)'">
+              <i class="ti ti-user-circle" style="font-size:13px"></i> เรียกใช้
+            </button>
+            <button onclick="sigSaveUser(1)" title="บันทึกข้อมูลสำหรับใช้งานครั้งหน้า" style="display:inline-flex;align-items:center;gap:4px;padding:4px 9px;font-size:11.5px;font-weight:600;font-family:inherit;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-muted);cursor:pointer;transition:all .15s;white-space:nowrap" onmouseover="this.style.background='var(--bg2)';this.style.color='var(--text)'" onmouseout="this.style.background='var(--surface)';this.style.color='var(--text-muted)'">
+              <i class="ti ti-device-floppy" style="font-size:13px"></i> บันทึก
+            </button>
+          </div>
+        </div>
+        <div style="padding:14px 16px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap">ลงชื่อ</div>
+            <input id="rc_sig1_name" oninput="const _p=document.getElementById('rc_sig1_name_print');if(_p)_p.textContent=this.value" placeholder="" class="no-print" style="flex:1;font-size:13px;padding:5px 9px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);font-family:inherit">
+            <div class="print-only" style="flex:1;border-bottom:1px dashed var(--border);min-height:28px;padding-top:4px" id="rc_sig1_name_print"></div>
+            <div style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap">ผู้รับสินค้า</div>
+            <input type="hidden" id="rc_sig1_receiver" value="ผู้รับสินค้า">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap">ลงวันที่</div>
+            <input id="rc_sig1_date" oninput="const _p=document.getElementById('rc_sig1_date_print');if(_p)_p.textContent=this.value" placeholder="" class="no-print" style="flex:1;font-size:13px;padding:5px 9px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);font-family:inherit">
+            <div class="print-only" style="flex:1;border-bottom:1px dashed var(--border);min-height:28px;padding-top:4px" id="rc_sig1_date_print"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ส่วนที่ 2: ผู้ออกเอกสาร -->
+      <div style="border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2)">
+          <div style="font-size:12.5px;font-weight:600;color:var(--text-subtle)">ผู้ออกเอกสาร</div>
+          <div class="no-print" style="display:flex;gap:5px;flex-shrink:0">
+            <button onclick="sigRecallUser(2)" title="เรียกใช้ข้อมูลที่บันทึกไว้" style="display:inline-flex;align-items:center;gap:4px;padding:4px 9px;font-size:11.5px;font-weight:600;font-family:inherit;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-muted);cursor:pointer;transition:all .15s;white-space:nowrap" onmouseover="this.style.background='var(--bg2)';this.style.color='var(--text)'" onmouseout="this.style.background='var(--surface)';this.style.color='var(--text-muted)'">
+              <i class="ti ti-user-circle" style="font-size:13px"></i> เรียกใช้
+            </button>
+            <button onclick="sigSaveUser(2)" title="บันทึกข้อมูลสำหรับใช้งานครั้งหน้า" style="display:inline-flex;align-items:center;gap:4px;padding:4px 9px;font-size:11.5px;font-weight:600;font-family:inherit;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-muted);cursor:pointer;transition:all .15s;white-space:nowrap" onmouseover="this.style.background='var(--bg2)';this.style.color='var(--text)'" onmouseout="this.style.background='var(--surface)';this.style.color='var(--text-muted)'">
+              <i class="ti ti-device-floppy" style="font-size:13px"></i> บันทึก
+            </button>
+          </div>
+        </div>
+        <div style="padding:14px 16px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap">ชื่อ-นามสกุล</div>
+            <input id="rc_sig2_name" oninput="const _p=document.getElementById('rc_sig2_name_print');if(_p)_p.textContent=this.value" placeholder="" class="no-print" style="flex:1;font-size:13px;padding:5px 9px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);font-family:inherit">
+            <div class="print-only" style="flex:1;border-bottom:1px dashed var(--border);min-height:28px;padding-top:4px" id="rc_sig2_name_print"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap">เบอร์โทร</div>
+            <input id="rc_sig2_tel" oninput="const _p=document.getElementById('rc_sig2_tel_print');if(_p)_p.textContent=this.value" placeholder="" class="no-print" style="flex:1;font-size:13px;padding:5px 9px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);font-family:inherit">
+            <div class="print-only" style="flex:1;border-bottom:1px dashed var(--border);min-height:28px;padding-top:4px" id="rc_sig2_tel_print"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Signature User Recall Modal -->
+  <div id="sigRecallModal" class="no-print" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.45);align-items:center;justify-content:center" onclick="closeSigRecallModal(event)">
+    <div style="background:var(--surface);border-radius:var(--radius);width:92%;max-width:420px;overflow:hidden;box-shadow:var(--shadow-md)" onclick="event.stopPropagation()">
+      <div style="padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <div style="font-weight:700;font-size:14px" id="sigModalTitle">เลือกผู้ลงนาม</div>
+        <button onclick="closeSigRecallModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-muted);line-height:1;padding:2px 4px">✕</button>
+      </div>
+      <div id="sigRecallList" style="max-height:320px;overflow-y:auto;padding:8px 0"></div>
+      <div style="padding:10px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+        <button onclick="closeSigRecallModal()" class="btn btn-sm">ปิด</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- Import from Quotation Modal -->
@@ -704,6 +902,35 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
       <input id="importQtSearch" placeholder="ค้นหา..." style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;background:var(--surface);color:var(--text)" oninput="renderImportQtList()">
     </div>
     <div id="importQtList" style="overflow-y:auto;flex:1;padding:8px 0"></div>
+  </div>
+</div>
+
+<!-- ============ PAYMENT METHOD MODAL ============ -->
+<div id="payMethodModal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.55);align-items:center;justify-content:center" onclick="closePayMethodModal(event)">
+  <div style="background:var(--surface);border-radius:var(--radius);width:100%;max-width:480px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;margin:16px" onclick="event.stopPropagation()">
+    <!-- Header -->
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+      <div style="font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px">
+        <i class="ti ti-credit-card" style="color:var(--accent)"></i> เงื่อนไขการชำระเงิน
+      </div>
+      <button class="btn btn-sm" onclick="document.getElementById('payMethodModal').style.display='none'"><i class="ti ti-x"></i></button>
+    </div>
+    <!-- Add/Edit form -->
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface2);flex-shrink:0">
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="payMethodInput" placeholder="ระยะเวลาส่งมอบ, เงื่อนไขต่างๆ" style="flex:1;font-family:inherit;font-size:13.5px;padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')savePayMethod()">
+        <button class="btn btn-sm btn-primary" onclick="savePayMethod()" style="white-space:nowrap;gap:4px">
+          <i class="ti ti-device-floppy"></i> บันทึก
+        </button>
+      </div>
+      <input type="hidden" id="payMethodEditId">
+    </div>
+    <!-- List -->
+    <div id="payMethodList" style="overflow-y:auto;flex:1;padding:6px 0"></div>
+    <!-- Footer hint -->
+    <div style="padding:10px 16px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-subtle);text-align:center;flex-shrink:0">
+      คลิกชื่อเพื่อเรียกใช้ · <i class="ti ti-pencil" style="font-size:11px"></i> แก้ไข · <i class="ti ti-trash" style="font-size:11px"></i> ลบ
+    </div>
   </div>
 </div>
 
@@ -777,6 +1004,41 @@ function renderContactList() {}
 function renderBankAccounts() {}
 function saveBankPresets() {}
 function loadBankPresets() {}
+function bahtText(amount) {
+  const ones = ['','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
+  const placeNames = ['','สิบ','ร้อย','พัน','หมื่น','แสน'];
+  function groupToThai(n) {
+    if (n === 0) return '';
+    let result = '';
+    const s = String(n).padStart(6,'0');
+    for (let i = 0; i < 6; i++) {
+      const d = parseInt(s[i]);
+      const pos = 5 - i;
+      if (d === 0) continue;
+      if (d === 1 && pos === 1) result += 'สิบ';
+      else if (d === 2 && pos === 1) result += 'ยี่สิบ';
+      else if (pos === 1) result += ones[d] + 'สิบ';
+      else result += ones[d] + placeNames[pos];
+    }
+    return result;
+  }
+  const n = Math.round(Math.abs(amount) * 100);
+  const baht = Math.floor(n / 100);
+  const satang = n % 100;
+  let text = '';
+  if (baht === 0) {
+    text = 'ศูนย์';
+  } else {
+    const mil = Math.floor(baht / 1000000);
+    const rem = baht % 1000000;
+    if (mil > 0) text += groupToThai(mil) + 'ล้าน';
+    if (rem > 0) text += groupToThai(rem);
+  }
+  text += 'บาท';
+  if (satang > 0) text += groupToThai(satang) + 'สตางค์';
+  else text += 'ถ้วน';
+  return text;
+}
 function autoResize(el) { if(!el) return; el.style.height='0'; el.style.height=el.scrollHeight+'px'; }
 function fmt(n) { return Number(n).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function showToast(msg, type = 'success') {
@@ -833,6 +1095,8 @@ function switchTab(t) {
     }
   });
   if (t === 'receipt') { renderReceiptList(); updateRcCount(); }
+  const fa = document.getElementById('rcFormActions');
+  if (fa) fa.style.display = (t === 'receipt-form') ? 'flex' : 'none';
 }
 // ========== RECEIPT SYSTEM ==========
 // (RC_KEY and RC_INDEX_KEY defined in shared stubs above)
@@ -897,8 +1161,10 @@ function newReceipt() {
   $('rc_c_name').value = ''; $('rc_c_tel').value = '';
   $('rc_c_addr').value = ''; $('rc_c_tax').value = '';
   $('rc_note').value = '';
+  ['rc_sig1_name','rc_sig1_receiver','rc_sig1_date','rc_sig2_name','rc_sig2_tel'].forEach(id => { const el = $(id); if(el) el.value=''; const pr=$(id+'_print'); if(pr) pr.textContent=''; });
   toggleNoteWrap();
   rcSlipRows = [];
+  rcDepositRows = [];
   renderSlipRows();
 
   toggleRcBankFields();
@@ -925,15 +1191,15 @@ function renderRcRows() {
   rcRows.forEach((r,i) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td style="text-align:center;color:var(--text-muted);font-size:12px;padding-top:8px;vertical-align:top">${i+1}</td>
-      <td><textarea placeholder="รายละเอียด" oninput="rcRows[${rcRows.indexOf(r)}].desc=this.value" style="width:100%;resize:none;overflow:hidden;min-height:36px;line-height:1.6;border:1px solid transparent;border-radius:6px;padding:3px 6px;font-size:13px;background:transparent;color:var(--text);font-family:inherit;display:block">${r.desc}</textarea></td>
-      <td><input type="number" value="${r.qty}" min="0" step="any" style="width:100%;text-align:center;font-size:13px;border:1px solid transparent;border-radius:6px;padding:3px 4px;background:transparent;color:var(--text);margin-top:2px" oninput="rcRows[${rcRows.indexOf(r)}].qty=parseFloat(this.value)||0;calcRcTotals()"></td>
-      <td><input value="${r.unit}" style="width:100%;text-align:center;font-size:13px;border:1px solid transparent;border-radius:6px;padding:3px 4px;background:transparent;color:var(--text);margin-top:2px" oninput="rcRows[${rcRows.indexOf(r)}].unit=this.value"></td>
-      <td><input type="number" value="${r.price}" min="0" step="any" style="width:100%;text-align:right;font-size:13px;border:1px solid transparent;border-radius:6px;padding:3px 4px;background:transparent;color:var(--text);margin-top:2px" oninput="rcRows[${rcRows.indexOf(r)}].price=parseFloat(this.value)||0;calcRcTotals()"></td>
-      <td style="text-align:right;font-size:13px;padding:8px 6px 4px 4px;vertical-align:top">${fmt(r.qty*r.price)}</td>
-      <td class="no-print" style="text-align:center;vertical-align:top;padding-top:4px"><button class="btn btn-sm btn-danger btn-icon" onclick="rcRows.splice(${rcRows.indexOf(r)},1);renderRcRows();calcRcTotals()"><i class="ti ti-trash"></i></button></td>`;
+      <td style="text-align:center;color:var(--text-muted);font-size:12px;vertical-align:top;padding-top:0;padding-bottom:0"><input readonly tabindex="-1" value="${i+1}" style="width:100%;text-align:center;font-size:12px;border:none;background:transparent;color:var(--text-muted);padding:3px 4px;pointer-events:none"></td>
+      <td style="vertical-align:top;padding:0"><textarea placeholder="รายละเอียด" oninput="rcRows[${rcRows.indexOf(r)}].desc=this.value" style="width:100%;resize:none;overflow:hidden;min-height:36px;line-height:1.6;border:1px solid transparent;border-radius:6px;padding:5px 6px;font-size:13px;background:transparent;color:var(--text);font-family:inherit;display:block">${r.desc}</textarea></td>
+      <td style="vertical-align:top;padding-top:0;padding-bottom:0"><input type="number" value="${r.qty}" min="0" step="any" style="width:100%;text-align:center;font-size:13px;border:1px solid transparent;border-radius:6px;padding:3px 4px;background:transparent;color:var(--text)" oninput="rcRows[${rcRows.indexOf(r)}].qty=parseFloat(this.value)||0;calcRcTotals()"></td>
+      <td style="vertical-align:top;padding-top:0;padding-bottom:0"><input value="${r.unit}" style="width:100%;text-align:center;font-size:13px;border:1px solid transparent;border-radius:6px;padding:3px 4px;background:transparent;color:var(--text)" oninput="rcRows[${rcRows.indexOf(r)}].unit=this.value"></td>
+      <td style="vertical-align:top;padding-top:0;padding-bottom:0"><input type="number" value="${r.price}" min="0" step="any" style="width:100%;text-align:right;font-size:13px;border:1px solid transparent;border-radius:6px;padding:3px 4px;background:transparent;color:var(--text)" oninput="rcRows[${rcRows.indexOf(r)}].price=parseFloat(this.value)||0;calcRcTotals()"></td>
+      <td style="text-align:right;font-size:13px;vertical-align:top;padding-top:0;padding-bottom:0;padding-right:6px"><input readonly tabindex="-1" value="${fmt(r.qty*r.price)}" style="width:100%;text-align:right;font-size:13px;border:none;background:transparent;color:var(--text);padding:3px 4px;pointer-events:none"></td>
+      <td class="no-print" style="text-align:center;vertical-align:top;padding-top:2px"><button class="btn btn-sm btn-danger btn-icon" onclick="rcRows.splice(${rcRows.indexOf(r)},1);renderRcRows();calcRcTotals()"><i class="ti ti-trash"></i></button></td>`;
     tb.appendChild(tr);
-    tr.querySelectorAll('textarea').forEach(autoResize);
+    requestAnimationFrame(() => tr.querySelectorAll('textarea').forEach(autoResize));
   });
   calcRcTotals();
 }
@@ -948,12 +1214,134 @@ function calcRcTotals() {
   $('rcDiscountAmt').textContent = fmt(disc) + ' บาท';
   $('rcVatAmt').textContent = fmt(vat) + ' บาท';
   $('rcGrandTotal').textContent = fmt(grand) + ' บาท';
+  const wordsEl = $('rcGrandTotalWords');
+  if (wordsEl) wordsEl.textContent = '( ' + bahtText(grand) + ' )';
   // show/hide rows
   const hasExtra = rcUseDiscount || rcUseVat;
   $('rcSubTotalRow').style.display = hasExtra ? '' : 'none';
   $('rcDiscountRow').style.display = rcUseDiscount ? '' : 'none';
   $('rcVatRow').style.display = rcUseVat ? '' : 'none';
+  // update deposit summary
+  calcDepositSummary(grand);
 }
+
+// ========== DEPOSIT / INSTALLMENT SYSTEM ==========
+let rcDepositRows = []; // { id, label, amount, date, paid }
+
+function addDepositRow() {
+  rcDepositRows.push({
+    id: 'dep-' + Date.now(),
+    label: 'งวดที่ ' + (rcDepositRows.length + 1),
+    amount: 0,
+    date: '',
+    paid: false
+  });
+  renderDepositRows();
+  calcRcTotals();
+}
+
+function renderDepositRows() {
+  const tbody = $('depositRowsContainer');
+  const section = $('rcDepositSection');
+  const addBtn  = $('rcDepositAddBtn');
+  if (!tbody) return;
+
+  const hasDep = rcDepositRows.length > 0;
+  if (section) section.style.display = hasDep ? '' : 'none';
+  if (addBtn)  addBtn.style.display  = hasDep ? 'none' : '';
+
+  tbody.innerHTML = rcDepositRows.map((dep, i) => `
+    <tr style="border-bottom:1px solid var(--border-light)">
+      <td style="padding:5px 8px;text-align:center;color:var(--text-muted);font-size:12px">${i + 1}</td>
+      <td style="padding:4px 6px">
+        <input value="${dep.label.replace(/"/g,'&quot;')}" placeholder="รายละเอียดงวด"
+          style="width:100%;font-size:13px;padding:4px 8px;border:1.5px solid var(--border);border-radius:5px;background:var(--surface2);color:var(--text);font-family:inherit"
+          oninput="rcDepositRows[${i}].label=this.value"
+          class="no-print">
+        <span class="print-only" style="font-size:13px">${dep.label}</span>
+      </td>
+      <td style="padding:4px 6px;text-align:right">
+        <input type="number" value="${dep.amount || ''}" placeholder="0.00" min="0" step="any"
+          style="width:130px;font-size:13px;padding:4px 8px;border:1.5px solid var(--border);border-radius:5px;background:var(--surface2);color:var(--text);text-align:right;font-family:inherit"
+          oninput="rcDepositRows[${i}].amount=parseFloat(this.value)||0;calcRcTotals()"
+          class="no-print">
+        <span class="print-only" style="font-weight:600;font-size:13px">${dep.amount ? fmt(dep.amount) : '-'}</span>
+      </td>
+      <td style="padding:4px 6px;text-align:center">
+        <input value="${dep.date}" placeholder="DD/MM/YYYY" readonly
+          class="dep-date-picker no-print"
+          data-idx="${i}"
+          style="width:110px;font-size:12.5px;padding:4px 8px;border:1.5px solid var(--border);border-radius:5px;background:var(--surface2);color:var(--text);font-family:inherit;text-align:center;cursor:pointer">
+        <span class="print-only" style="font-size:13px">${dep.date || '-'}</span>
+      </td>
+      <td style="padding:4px 8px;text-align:center">
+        <label class="no-print" style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;font-size:12.5px;white-space:nowrap;
+          padding:3px 10px;border-radius:20px;border:1.5px solid ${dep.paid ? 'var(--success-border)' : 'var(--border)'};
+          background:${dep.paid ? 'var(--success-bg)' : 'var(--surface2)'};
+          color:${dep.paid ? 'var(--success)' : 'var(--text-muted)'}">
+          <input type="checkbox" ${dep.paid ? 'checked' : ''}
+            onchange="rcDepositRows[${i}].paid=this.checked;renderDepositRows();calcRcTotals()"
+            style="cursor:pointer;accent-color:var(--success)">
+          ${dep.paid ? 'ชำระแล้ว' : 'รอชำระ'}
+        </label>
+        <span class="print-only" style="padding:2px 10px;border-radius:12px;font-size:11.5px;font-weight:700;
+          ${dep.paid ? 'background:#d1fae5;color:#065f46' : 'background:#fee2e2;color:#991b1b'}">
+          ${dep.paid ? 'ชำระแล้ว' : 'รอชำระ'}
+        </span>
+      </td>
+      <td class="no-print" style="padding:4px 4px;text-align:center">
+        <button onclick="rcDepositRows.splice(${i},1);renderDepositRows();calcRcTotals()"
+          style="background:none;border:none;cursor:pointer;color:var(--text-subtle);padding:3px 5px;border-radius:4px;font-size:14px;line-height:1;transition:color .15s"
+          onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--text-subtle)'"
+          title="ลบงวดนี้"><i class="ti ti-trash" style="font-size:13px"></i></button>
+      </td>
+    </tr>`).join('');
+
+  // init flatpickr on deposit date inputs
+  document.querySelectorAll('.dep-date-picker').forEach(function(el) {
+    if (el._flatpickr) el._flatpickr.destroy();
+    flatpickr(el, {
+      dateFormat: "d/m/Y",
+      allowInput: false,
+      onChange: function(selectedDates, dateStr) {
+        var idx = parseInt(el.getAttribute('data-idx'));
+        rcDepositRows[idx].date = dateStr;
+      },
+      locale: {
+        firstDayOfWeek: 0,
+        weekdays: { shorthand: ["อา","จ","อ","พ","พฤ","ศ","ส"], longhand: ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"] },
+        months: { shorthand: ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."], longhand: ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"] }
+      }
+    });
+  });
+  // recalc with current grand
+  const grandText = ($('rcGrandTotal')?.textContent || '0').replace(/[^0-9.]/g, '');
+  calcDepositSummary(parseFloat(grandText) || 0);
+}
+
+function calcDepositSummary(grand) {
+  const hasDep = rcDepositRows.length > 0;
+  ['rcDepositSepRow','rcDepositPaidRow','rcDepositRemainRow','rcDepositWordsRow'].forEach(id => {
+    const el = $(id); if (el) el.style.display = hasDep ? '' : 'none';
+  });
+  if (!hasDep) return;
+
+  const paidTotal = rcDepositRows.filter(d => d.paid).reduce((s, d) => s + (d.amount || 0), 0);
+  const remain    = grand - paidTotal;
+  const isPaid    = remain <= 0.005;
+
+  $('rcDepositPaidAmt').textContent = fmt(paidTotal) + ' บาท';
+  $('rcDepositRemainAmt').textContent = fmt(Math.max(remain, 0)) + ' บาท';
+  $('rcDepositRemainWords').textContent = isPaid ? '( ชำระครบแล้ว )' : '( ' + bahtText(Math.max(remain, 0)) + ' )';
+
+  const remainColor = isPaid ? 'var(--success)' : 'var(--danger)';
+  $('rcDepositRemainAmt').style.color = remainColor;
+  const remRow = $('rcDepositRemainRow');
+  if (remRow) remRow.querySelector('td').style.color = remainColor;
+  const wordsEl = $('rcDepositWordsRow');
+  if (wordsEl) wordsEl.querySelector('td').style.color = remainColor;
+}
+// ========== END DEPOSIT SYSTEM ==========
 
 
 function saveReceipt() {
@@ -965,9 +1353,12 @@ function saveReceipt() {
     s_name: $('rc_s_name').value, s_addr: $('rc_s_addr').value, s_tel: $('rc_s_tel').value, s_tax: $('rc_s_tax').value,
     c_name: $('rc_c_name').value, c_tel: $('rc_c_tel').value, c_addr: $('rc_c_addr').value, c_tax: $('rc_c_tax').value,
     payMethod: $('rc_payMethod').value, note: $('rc_note').value,
+    sig1Name: $('rc_sig1_name')?.value||'', sig1Receiver: $('rc_sig1_receiver')?.value||'', sig1Date: $('rc_sig1_date')?.value||'',
+    sig2Name: $('rc_sig2_name')?.value||'', sig2Tel: $('rc_sig2_tel')?.value||'',
     // legacy single-slip fields (kept for compat)
     bankName: '', senderName: '', slipAmount: '', transferDatetime: '', txnNo: '',
     slipRows: rcSlipRows.map(r=>({...r})),
+    depositRows: rcDepositRows.map(r=>({...r})),
     rows: rcRows.map(r=>({...r})),
     logoDataUrl: rcLogoDataUrl || null,
     grandTotal: $('rcGrandTotal').textContent.replace(' บาท',''),
@@ -989,6 +1380,7 @@ function loadReceipt(id) {
   const raw = localStorage.getItem(RC_KEY(id)); if (!raw) return;
   const d = JSON.parse(raw);
   rcCurrentId = d.id; rcRows = d.rows || []; rcLogoDataUrl = d.logoDataUrl || null;
+  rcDepositRows = d.depositRows || [];
   // โหลด slip rows (รองรับข้อมูลเก่าที่มีแค่ field เดียว)
   if (d.slipRows && d.slipRows.length > 0) {
     rcSlipRows = d.slipRows;
@@ -1007,6 +1399,14 @@ function loadReceipt(id) {
   $('rc_s_name').value = d.s_name||''; $('rc_s_addr').value = d.s_addr||''; $('rc_s_tel').value = d.s_tel||''; $('rc_s_tax').value = d.s_tax||'';
   $('rc_c_name').value = d.c_name||''; $('rc_c_tel').value = d.c_tel||''; $('rc_c_addr').value = d.c_addr||''; $('rc_c_tax').value = d.c_tax||'';
   $('rc_payMethod').value = d.payMethod||'โอนเงิน'; $('rc_note').value = d.note||'';
+  const _sigFields = [
+    ['rc_sig1_name', 'sig1Name'], ['rc_sig1_receiver', 'sig1Receiver'], ['rc_sig1_date', 'sig1Date'],
+    ['rc_sig2_name', 'sig2Name'], ['rc_sig2_tel', 'sig2Tel']
+  ];
+  _sigFields.forEach(([id, key]) => {
+    const el = $(id); if (el) el.value = d[key]||'';
+    const pr = $(id+'_print'); if (pr) pr.textContent = d[key]||'';
+  });
   toggleNoteWrap();
 
   toggleRcBankFields();
@@ -1017,13 +1417,13 @@ function loadReceipt(id) {
     $('rcLogoImg').style.display = 'none';
     $('rcLogoPlaceholder').style.display = '';
   }
-  autoResize($('rc_s_addr')); autoResize($('rc_c_addr'));
-  renderRcRows(); renderSlipRows(); calcRcTotals();
+  renderRcRows(); renderSlipRows(); renderDepositRows(); calcRcTotals();
   $('rcStatusBadge').textContent = 'บันทึกแล้ว';
   $('rcStatusBadge').style.background = 'var(--success-bg,#d1fae5)'; $('rcStatusBadge').style.color = 'var(--success-text,#065f46)';
   switchTab('receipt-form');
   const tabBtn = $('tab-receipt-form');
   if(tabBtn) tabBtn.style.display = '';
+  requestAnimationFrame(() => { autoResize($('rc_s_addr')); autoResize($('rc_c_addr')); });
 }
 
 function handleRcLogo(e) {
@@ -1039,7 +1439,21 @@ function handleRcLogo(e) {
 }
 
 function preparePrint() {
-  // ซ่อน .field ที่ input/textarea/select ทุกตัวว่างเปล่า
+  // ── ลบ border/bg ของ box ใน header ที่เป็น inline style ──
+  // seller info box
+  var sellerBox = document.querySelector('#view-receipt-form .card > div > div[style*="border:1.5px"]');
+  if (sellerBox) { sellerBox.dataset._origStyle = sellerBox.getAttribute('style')||''; sellerBox.style.border = 'none'; sellerBox.style.background = 'transparent'; sellerBox.style.padding = '0'; }
+  // customer info box (first border box inside customer card)
+  var custBox = document.querySelector('#view-receipt-form .card > div[style*="border:1.5px"]');
+  if (custBox) { custBox.dataset._origStyle = custBox.getAttribute('style')||''; custBox.style.border = 'none'; custBox.style.background = 'transparent'; custBox.style.padding = '0'; }
+  // doc info box
+  var docInfo = $('rcDocInfo');
+  if (docInfo) { docInfo.dataset._origStyle = docInfo.getAttribute('style')||''; docInfo.style.border = 'none'; docInfo.style.background = 'transparent'; docInfo.style.padding = '0'; }
+  // logo zone - ลบ placeholder height ที่ทำให้เกิด whitespace
+  var logoPh = $('rcLogoPlaceholder');
+  if (logoPh) logoPh.style.display = 'none';
+
+  // ── ซ่อน .field ที่ input/textarea/select ทุกตัวว่างเปล่า ──
   document.querySelectorAll('.field').forEach(function(field) {
     var inputs = field.querySelectorAll('input, textarea, select');
     var allEmpty = Array.from(inputs).every(function(el) {
@@ -1073,19 +1487,38 @@ function preparePrint() {
       row.classList.add('print-row-empty');
     }
   });
+  // ซ่อน section ข้อมูล Slip ทั้งหมดถ้าไม่มีข้อมูล
+  var slipSection = document.getElementById('slipSection');
+  if (slipSection) {
+    slipSection.classList.toggle('print-hidden', rcSlipRows.length === 0);
+  }
 }
 
 function cleanupPrint() {
+  // ── คืน style เดิมให้ boxes ──
+  ['sellerBox','custBox','docInfo'].forEach(function() {}); // placeholder
+  var sellerBox = document.querySelector('#view-receipt-form .card > div > div[data-_origstyle]');
+  if (!sellerBox) sellerBox = document.querySelector('#view-receipt-form .card > div > div[style*="border: none"]');
+  // restore by data attribute
+  document.querySelectorAll('[data-_origstyle]').forEach(function(el) {
+    el.setAttribute('style', el.dataset._origstyle || '');
+    delete el.dataset._origstyle;
+  });
+  // logo placeholder - คืนสถานะตาม rcLogoDataUrl
+  var logoPh = $('rcLogoPlaceholder');
+  if (logoPh && !rcLogoDataUrl) logoPh.style.display = '';
+
   document.querySelectorAll('.print-empty').forEach(function(el) {
     el.classList.remove('print-empty');
   });
   document.querySelectorAll('.print-row-empty').forEach(function(el) {
     el.classList.remove('print-row-empty');
   });
+  var slipSection = document.getElementById('slipSection');
+  if (slipSection) slipSection.classList.remove('print-hidden');
 }
 
 function printReceipt() {
-  // render slip print table
   const tbody = $('slipPrintBody');
   if (tbody) {
     tbody.innerHTML = rcSlipRows.map((r, i) => `
@@ -1098,7 +1531,27 @@ function printReceipt() {
         <td style="padding:4px 8px;text-align:center">${r.txnNo||'-'}</td>
       </tr>`).join('');
   }
+  // แปลง textarea ใน td -> div เพื่อแสดงข้อความครบ
+  const taList = [];
+  document.querySelectorAll('#rcItemBody td textarea').forEach(function(ta) {
+    const div = document.createElement('div');
+    div.className = '__ta2div';
+    div.textContent = ta.value;
+    ta.parentNode.insertBefore(div, ta);
+    ta.style.display = 'none';
+    taList.push({ div, ta });
+  });
+  // ตั้งชื่อไฟล์ตามเลขที่เอกสาร
+  const _docNo = ($('rc_docNo').value || 'receipt').trim();
+  const _cName = ($('rc_c_name').value || '').trim();
+  const _origTitle = document.title;
+  document.title = _cName ? `${_docNo} - ${_cName}` : _docNo;
   window.print();
+  document.title = _origTitle;
+  taList.forEach(function(item) {
+    item.ta.style.display = '';
+    if (item.div.parentNode) item.div.parentNode.removeChild(item.div);
+  });
 }
 window.addEventListener('beforeprint', preparePrint);
 window.addEventListener('afterprint', cleanupPrint);
@@ -1110,6 +1563,147 @@ function toggleNoteWrap() {
 }
 
 function toggleRcBankFields() { }
+
+// ========== PAYMENT METHOD MANAGEMENT ==========
+const PAY_METHOD_KEY = 'rc:payMethods';
+
+function getPayMethods() {
+  try { return JSON.parse(localStorage.getItem(PAY_METHOD_KEY) || '[]'); } catch { return []; }
+}
+function setPayMethods(arr) {
+  localStorage.setItem(PAY_METHOD_KEY, JSON.stringify(arr));
+}
+
+function openPayMethodModal() {
+  // ถ้ายังไม่มีข้อมูล ให้ใส่ค่าเริ่มต้น
+  let methods = getPayMethods();
+  if (methods.length === 0) {
+    const defaults = [
+      'โอนเงินก่อนส่งของ',
+      'โอนเงินหลังส่งมอบงาน/ติดตั้งเสร็จ',
+      'โอนเงินผ่านบัญชีธนาคาร',
+      'เงินสด',
+      'ชำระงวดที่ 1 ก่อนเริ่มงาน และชำระงวดที่ 2 หลังส่งมอบงาน'
+    ];
+    methods = defaults.map(name => ({ id: 'pm-' + Date.now() + Math.random(), name }));
+    setPayMethods(methods);
+  }
+  $('payMethodInput').value = '';
+  $('payMethodEditId').value = '';
+  renderPayMethodList();
+  $('payMethodModal').style.display = 'flex';
+  setTimeout(() => $('payMethodInput').focus(), 100);
+}
+
+function closePayMethodModal(e) {
+  if (e && e.target !== $('payMethodModal')) return;
+  $('payMethodModal').style.display = 'none';
+}
+
+function renderPayMethodList() {
+  const methods = getPayMethods();
+  const list = $('payMethodList');
+  if (!list) return;
+  if (!methods.length) {
+    list.innerHTML = `<div style="padding:24px 16px;text-align:center;color:var(--text-subtle);font-size:13px">
+      <i class="ti ti-credit-card" style="font-size:28px;display:block;margin-bottom:8px"></i>
+      ยังไม่มีเงื่อนไขการชำระเงิน<br>
+      <span style="font-size:11px">กรอกข้อมูลด้านบนแล้วกด "บันทึก"</span>
+    </div>`;
+    return;
+  }
+  list.innerHTML = methods.map(m => `
+    <div style="display:flex;align-items:center;gap:6px;padding:9px 14px;border-bottom:1px solid var(--border-light);transition:background .1s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+      <div style="flex:1;cursor:pointer;font-size:13.5px;color:var(--text);min-width:0" onclick="applyPayMethod('${m.id}')" title="คลิกเพื่อเรียกใช้">${m.name}</div>
+      <button onclick="editPayMethod('${m.id}')" title="แก้ไข" style="background:none;border:1.5px solid var(--border);border-radius:6px;padding:4px 8px;cursor:pointer;color:var(--text-muted);font-size:12px;display:inline-flex;align-items:center;transition:all .15s;flex-shrink:0" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">
+        <i class="ti ti-pencil"></i>
+      </button>
+      <button onclick="deletePayMethod('${m.id}')" title="ลบ" style="background:none;border:1.5px solid var(--border);border-radius:6px;padding:4px 8px;cursor:pointer;color:var(--text-muted);font-size:12px;display:inline-flex;align-items:center;transition:all .15s;flex-shrink:0" onmouseover="this.style.borderColor='var(--danger)';this.style.color='var(--danger)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">
+        <i class="ti ti-trash"></i>
+      </button>
+    </div>`).join('');
+}
+
+function savePayMethod() {
+  const input = $('payMethodInput');
+  const name = (input?.value || '').trim();
+  if (!name) { showToast('กรุณากรอกเงื่อนไขการชำระเงิน', 'error'); return; }
+  const editId = $('payMethodEditId')?.value || '';
+  const methods = getPayMethods();
+  if (editId) {
+    const item = methods.find(m => m.id === editId);
+    if (item) { item.name = name; item.updatedAt = new Date().toISOString(); }
+    setPayMethods(methods);
+    showToast(`แก้ไขเรียบร้อย ✓`);
+    $('payMethodEditId').value = '';
+  } else {
+    methods.push({ id: 'pm-' + Date.now(), name, savedAt: new Date().toISOString() });
+    setPayMethods(methods);
+    showToast(`บันทึก "${name}" แล้ว ✓`);
+  }
+  input.value = '';
+  renderPayMethodList();
+  syncPayMethodDropdown();
+}
+
+function editPayMethod(id) {
+  const methods = getPayMethods();
+  const m = methods.find(x => x.id === id);
+  if (!m) return;
+  $('payMethodInput').value = m.name;
+  $('payMethodEditId').value = id;
+  $('payMethodInput').focus();
+  $('payMethodInput').style.borderColor = 'var(--accent)';
+}
+
+function deletePayMethod(id) {
+  const methods = getPayMethods();
+  const m = methods.find(x => x.id === id);
+  if (!m || !confirm(`ลบ "${m.name}" ออกจากรายการ?`)) return;
+  setPayMethods(methods.filter(x => x.id !== id));
+  showToast(`ลบ "${m.name}" แล้ว`);
+  renderPayMethodList();
+  syncPayMethodDropdown();
+}
+
+function applyPayMethod(id) {
+  const methods = getPayMethods();
+  const m = methods.find(x => x.id === id);
+  if (!m) return;
+  const sel = $('rc_payMethod');
+  // ตรวจว่ามี option นี้ในdropdown หรือยัง ถ้าไม่มีให้เพิ่ม
+  let found = false;
+  for (let i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value === m.name) { sel.selectedIndex = i; found = true; break; }
+  }
+  if (!found) {
+    const opt = new Option(m.name, m.name);
+    sel.appendChild(opt);
+    sel.value = m.name;
+  }
+  $('payMethodModal').style.display = 'none';
+  showToast(`เรียกใช้ "${m.name}" แล้ว ✓`);
+}
+
+function syncPayMethodDropdown() {
+  // อัปเดต dropdown จาก saved methods
+  const sel = $('rc_payMethod');
+  if (!sel) return;
+  const currentVal = sel.value;
+  const methods = getPayMethods();
+  // เก็บ options ที่ไม่ได้มาจาก saved (เช่น อื่นๆ)
+  sel.innerHTML = methods.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
+  // restore selected value
+  sel.value = currentVal;
+  if (!sel.value && sel.options.length) sel.selectedIndex = 0;
+}
+
+// โหลด dropdown จาก saved methods ตอนเริ่มต้น
+(function initPayMethodDropdown() {
+  const methods = getPayMethods();
+  if (methods.length > 0) syncPayMethodDropdown();
+})();
+// ========== END PAYMENT METHOD MANAGEMENT ==========
 
 // Import from quotation
 function showImportFromQt() {
@@ -1154,17 +1748,85 @@ async function importFromQt(id) {
     return d.discountMode === 'amt' ? raw : +(sub * raw / 100).toFixed(2);
   })() : 0;
   rcUseDiscount = !!d.useDiscount && discAmt > 0;
-
   rcDiscountAmt_val = discAmt;
-  autoResize($('rc_s_addr')); autoResize($('rc_c_addr'));
-  renderRcRows(); calcRcTotals();
+
+  // ── คำนวณ grand total จากใบเสนอราคา (เพื่อแปลงงวด % → บาท) ──
+  const _qtSub  = (d.rows||[]).reduce((s,r) => s + (r.qty||0)*(r.price||0), 0);
+  const _qtDisc = rcUseDiscount ? discAmt : 0;
+  const _qtAfter = _qtSub - _qtDisc;
+  const _qtGrand = _qtAfter + (!!d.useVat ? _qtAfter * ((parseFloat(d.vatPct)||7)/100) : 0);
+
+  // ── แปลง deposits จากใบเสนอราคา → rcDepositRows ──
+  if (d.deposits && d.deposits.length > 0) {
+    rcDepositRows = d.deposits.map((dep, i) => {
+      // คำนวณยอดจริง: mode='pct' → grand * pct/100, mode='amt' → ใช้ amt โดยตรง
+      const realAmt = dep.mode === 'amt'
+        ? (parseFloat(dep.amt) || 0)
+        : +(_qtGrand * (parseFloat(dep.pct) || 0) / 100).toFixed(2);
+      return {
+        id: 'dep-' + Date.now() + Math.random(),
+        label: dep.label || ('งวดที่ ' + (i + 1)),
+        amount: realAmt,
+        date: '',      // วันที่ชำระยังไม่มี ให้กรอกเอง
+        paid: false    // ยังไม่ถือว่าชำระ — ให้ติ๊กเองหลังได้รับเงิน
+      };
+    });
+    // ถ้า QT มีงวด ให้เลือก payMethod ให้ตรงด้วย
+    const sel = $('rc_payMethod');
+    if (sel && d.payTerm) {
+      let found = false;
+      for (let i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === d.payTerm) { sel.selectedIndex = i; found = true; break; }
+      }
+      if (!found) {
+        const opt = new Option(d.payTerm, d.payTerm);
+        sel.appendChild(opt);
+        sel.value = d.payTerm;
+      }
+    }
+  } else {
+    rcDepositRows = [];
+  }
+
+  renderRcRows(); renderDepositRows(); calcRcTotals();
   $('importQtModal').style.display = 'none';
-  showToast('นำข้อมูลจากใบเสนอราคาแล้ว ✓');
+
+  const depositMsg = (d.deposits && d.deposits.length > 0)
+    ? ` พร้อมงวดมัดจำ ${d.deposits.length} งวด ✓`
+    : '';
+  showToast('นำข้อมูลจากใบเสนอราคาแล้ว' + depositMsg);
+
   switchTab('receipt-form');
+  requestAnimationFrame(() => { autoResize($('rc_s_addr')); autoResize($('rc_c_addr')); });
   const tabBtn = $('tab-receipt-form');
   if(tabBtn) tabBtn.style.display = '';
 }
 updateRcCount();
+
+function reloadSellerInfo() {
+  try {
+    const idx = JSON.parse(localStorage.getItem(IDX_KEY)||'[]');
+    if (idx.length === 0) { showToast('ไม่พบใบเสนอราคาใน Storage', 'error'); return; }
+    for (let i = 0; i < idx.length; i++) {
+      const rec = JSON.parse(localStorage.getItem(DB_KEY(idx[i].id))||'{}');
+      if (rec.s_name || rec.s_tel || rec.s_tax) {
+        if (rec.s_name) $('rc_s_name').value = rec.s_name;
+        if (rec.s_addr) $('rc_s_addr').value = rec.s_addr;
+        if (rec.s_tel)  $('rc_s_tel').value  = rec.s_tel;
+        if (rec.s_tax)  $('rc_s_tax').value  = rec.s_tax;
+        if (rec.logoDataUrl && !rcLogoDataUrl) {
+          rcLogoDataUrl = rec.logoDataUrl;
+          $('rcLogoImg').src = rcLogoDataUrl; $('rcLogoImg').style.display = 'block';
+          $('rcLogoPlaceholder').style.display = 'none';
+        }
+        requestAnimationFrame(() => autoResize($('rc_s_addr')));
+        showToast('โหลดข้อมูลผู้ขายแล้ว ✓');
+        return;
+      }
+    }
+    showToast('ไม่พบข้อมูลผู้ขายในใบเสนอราคา', 'error');
+  } catch(e) { showToast('เกิดข้อผิดพลาด: ' + e.message, 'error'); }
+}
 // ========== END RECEIPT SYSTEM ==========
 
 // ========== GOOGLE DRIVE SYNC ==========
@@ -1673,7 +2335,8 @@ function parseSlipText(text) {
     'กรกฎาคม':7,'สิงหาคม':8,'กันยายน':9,'ตุลาคม':10,'พฤศจิกายน':11,'ธันวาคม':12
   };
   // Match Thai date with optional time — works on flat or multiline
-  const thaiDateRe = /(\d{1,2})\s+(ม\.ค\.|ก\.พ\.|มี\.ค\.|เม\.ย\.|พ\.ค\.|มิ\.ย\.|ก\.ค\.|ส\.ค\.|ก\.ย\.|ต\.ค\.|พ\.ย\.|ธ\.ค\.|มกราคม|กุมภาพันธ์|มีนาคม|เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม)\s+(\d{2,4})[\s\n]*(?:(\d{1,2}:\d{2})[\s]*(?:น\.)?)?/;
+  // รองรับทั้ง: "29 พ.ค. 69 11:01", "29 พ.ค. 69, 11:01", "29 พ.ค. 2569, 11:01"
+  const thaiDateRe = /(\d{1,2})\s+(ม\.ค\.|ก\.พ\.|มี\.ค\.|เม\.ย\.|พ\.ค\.|มิ\.ย\.|ก\.ค\.|ส\.ค\.|ก\.ย\.|ต\.ค\.|พ\.ย\.|ธ\.ค\.|มกราคม|กุมภาพันธ์|มีนาคม|เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม)\s+(\d{2,4})[,\s\n]*(?:(\d{1,2}:\d{2})[\s]*(?:น\.)?)?/;
   const tdm = flatText.match(thaiDateRe) || text.match(thaiDateRe);
   if (tdm) {
     const day = tdm[1].padStart(2,'0');
@@ -2045,26 +2708,15 @@ function parseSlipText(text) {
   // คำที่ต้องกรองออก — ชื่อธนาคาร, คำระบบ
   const isBankOrSystem = (s) => /ธนาคาร|กสิกร|กรุงเทพ|กรุงไทย|ออมสิน|ทหารไทย|อาคารสงเคราะห์|ธ\.ก\.ส|ยูโอบี|ซิตี้|SCB|KBank|BBL|KTB|GSB|TTB|BAY|UOB|Kasikorn|Bangkok|Krungsri|PromptPay|พร้อมเพย์|สแกน|รายการ|สำเร็จ|ค่าธรรม/.test(s);
 
-  // Priority 1 (แม่นยำที่สุด): BBL — บรรทัดก่อนเลขบัญชีปลายทาง
-  // โครงสร้างสลิป BBL: ชื่อผู้รับ → เลขบัญชี → ชื่อธนาคาร
-  if (!result.receiverName) {
-    const lines = normText.split('\n').map(l => l.trim()).filter(Boolean);
-    const senderAcctPattern = result.senderAccount ? result.senderAccount.replace(/[xX%]/gi,'[xX%\\d]') : null;
-    for (let i = 1; i < lines.length; i++) {
-      if (/\d{3}-\d{1,2}-[xX*%\d]{3,6}/.test(lines[i])) {
-        if (senderAcctPattern && new RegExp(senderAcctPattern,'i').test(lines[i])) continue;
-        // บรรทัดก่อนเลขบัญชี — ลบ prefix ขยะ OCR
-        const prevLine = lines[i-1]
-          .replace(/^[^ก-๙a-zA-Z]{0,20}/,'')
-          .trim();
-        if (prevLine.length >= 3 && /[ก-๙]/.test(prevLine) && !isBankOrSystem(prevLine) && !isSystemMessage(prevLine)) {
-          result.receiverName = cleanSenderName(prevLine); break;
-        }
-      }
-    }
+  // Priority 1 (แม่นยำที่สุด): BBL "ไปที่" label — ดึงชื่อผู้รับโดยตรง
+  // OCR อาจมี garbage นำหน้า เช่น '"ด) พนบาย ธนวรรธน์' → ตัด prefix ด้วย fixOcrReceiverPrefix
+  function fixOcrReceiverPrefix(s) {
+    // ถ้ามี นาย/นาง/น.ส./คุณ → ดึงจากจุดนั้น
+    const prefixM = s.match(/((?:นาย|นาง(?:สาว)?|น\.ส\.|คุณ)\s*[ก-๙]+.*)/);
+    if (prefixM) return prefixM[1].trim();
+    // ตัด OCR junk อักษรเดี่ยว+สัญลักษณ์นำหน้า เช่น "ด) " หรือ "*ก) "
+    return s.replace(/^[^ก-๙]{0,5}[ก-๙][^ก-๙\s]{0,3}[\s)}\]]+/, '').trim() || s.trim();
   }
-
-  // Priority 2: BBL "ไปที่" — บรรทัดเดียวกันหรือถัดไป (fallback ถ้าหาเลขบัญชีไม่เจอ)
   if (!result.receiverName) {
     const lines = normText.split('\n').map(l => l.trim()).filter(Boolean);
     for (let i = 0; i < lines.length; i++) {
@@ -2072,16 +2724,41 @@ function parseSlipText(text) {
         for (let j = i; j <= Math.min(i+2, lines.length-1); j++) {
           const cleaned = lines[j]
             .replace(/^ไปที่\s*/,'')
-            .replace(/^[^ก-๙a-zA-Z]{0,20}/,'')
+            .replace(/^["'"'"]+/,'')
             .trim();
           if (cleaned.length >= 3 && /[ก-๙]/.test(cleaned) && !isBankOrSystem(cleaned) && !isSystemMessage(cleaned)) {
-            const candidate = cleanSenderName(cleaned);
+            const candidate = cleanSenderName(fixOcrReceiverPrefix(cleaned));
             if (candidate.length >= 3 && !isBankOrSystem(candidate)) {
               result.receiverName = candidate; break;
             }
           }
         }
         if (result.receiverName) break;
+      }
+    }
+  }
+
+  // Priority 2: BBL — บรรทัดก่อนเลขบัญชีปลายทาง (ที่อยู่หลังบัญชีผู้โอน)
+  if (!result.receiverName) {
+    const lines = normText.split('\n').map(l => l.trim()).filter(Boolean);
+    const senderAcctPattern = result.senderAccount ? result.senderAccount.replace(/[xX%]/gi,'[xX%\\d]') : null;
+    let senderAcctLineIdx = -1;
+    if (senderAcctPattern) {
+      for (let i = 0; i < lines.length; i++) {
+        if (new RegExp(senderAcctPattern,'i').test(lines[i])) { senderAcctLineIdx = i; break; }
+      }
+    }
+    for (let i = 1; i < lines.length; i++) {
+      if (/\d{3}-\d{1,2}-[xX*%\d]{3,6}/.test(lines[i])) {
+        if (i === senderAcctLineIdx) continue;
+        if (senderAcctPattern && new RegExp(senderAcctPattern,'i').test(lines[i])) continue;
+        if (senderAcctLineIdx >= 0 && i <= senderAcctLineIdx) continue;
+        const prevLine = lines[i-1]
+          .replace(/^[^ก-๙a-zA-Z]{0,20}/,'')
+          .trim();
+        if (prevLine.length >= 3 && /[ก-๙]/.test(prevLine) && !isBankOrSystem(prevLine) && !isSystemMessage(prevLine)) {
+          result.receiverName = cleanSenderName(prevLine); break;
+        }
       }
     }
   }
@@ -2259,17 +2936,14 @@ function applyAllSlipFields() {
 const _origNewReceipt = newReceipt;
 function newReceipt() {
   rcCurrentId = null; rcRows = []; rcLogoDataUrl = null;
-  // Try to get seller info from last saved quotation
-  try {
-    const idx = JSON.parse(localStorage.getItem(IDX_KEY)||'[]');
-    if (idx.length > 0) {
-      const last = JSON.parse(localStorage.getItem(DB_KEY(idx[0].id))||'{}');
-      $('rc_s_name').value = last.s_name || '';
-      $('rc_s_addr').value = last.s_addr || '';
-      $('rc_s_tel').value = last.s_tel || '';
-      $('rc_s_tax').value = last.s_tax || '';
-    }
-  } catch(e) {}
+  rcSlipRows = [];
+  rcDepositRows = [];
+  rcUseVat = false; rcUseDiscount = false; rcDiscountAmt_val = 0;
+  // Show tab first so elements are visible before setting values
+  switchTab('receipt-form');
+  const tabBtn = $('tab-receipt-form');
+  if(tabBtn) tabBtn.style.display = '';
+  // Set values after tab is visible
   $('rc_docNo').value = nextRcDocNo();
   const _now = new Date(); const _d = String(_now.getDate()).padStart(2,'0'); const _m = String(_now.getMonth()+1).padStart(2,'0'); const _y = _now.getFullYear();
   $('rc_date').value = `${_d}/${_m}/${_y}`;
@@ -2278,21 +2952,152 @@ function newReceipt() {
   $('rc_c_addr').value = ''; $('rc_c_tax').value = '';
   $('rc_note').value = '';
   toggleNoteWrap();
-  rcSlipRows = [];
+  // Try to get seller info from last saved quotation (ลอง loop หาตัวที่มีข้อมูล)
+  try {
+    const _sidx = JSON.parse(localStorage.getItem(IDX_KEY)||'[]');
+    for (let _si = 0; _si < _sidx.length; _si++) {
+      const _srec = JSON.parse(localStorage.getItem(DB_KEY(_sidx[_si].id))||'{}');
+      if (_srec.s_name || _srec.s_tel || _srec.s_tax) {
+        $('rc_s_name').value = _srec.s_name || '';
+        $('rc_s_addr').value = _srec.s_addr || '';
+        $('rc_s_tel').value = _srec.s_tel || '';
+        $('rc_s_tax').value = _srec.s_tax || '';
+        if (_srec.logoDataUrl) {
+          rcLogoDataUrl = _srec.logoDataUrl;
+          $('rcLogoImg').src = rcLogoDataUrl; $('rcLogoImg').style.display = 'block';
+          $('rcLogoPlaceholder').style.display = 'none';
+        }
+        break;
+      }
+    }
+  } catch(e) { console.error('prefill seller:', e); }
+  $('rcLogoImg').style.display = 'none';
+  $('rcLogoPlaceholder').style.display = '';
+  $('rcStatusBadge').textContent = 'ยังไม่บันทึก';
+  $('rcStatusBadge').style.background = 'var(--warn-bg)';
+  $('rcStatusBadge').style.color = 'var(--warn-text)';
   renderSlipRows();
+  renderDepositRows();
   toggleRcBankFields();
   addRcRow();
   calcRcTotals();
-  switchTab('receipt-form');
-  // Show the receipt-form tab button
-  const tabBtn = $('tab-receipt-form');
-  if(tabBtn) tabBtn.style.display = '';
+  requestAnimationFrame(() => { autoResize($('rc_s_addr')); autoResize($('rc_c_addr')); });
 }
 
 // Init receipt page
 updateRcCount();
 switchTab('receipt');
 window.addEventListener('load', () => { setTimeout(initDrive, 1000); });
+
+// ========== SIGNATURE USER MANAGEMENT ==========
+const SIG_KEY = (side) => `rc_sig_users_${side}`; // side = 1 or 2
+let _sigCurrentSide = 1;
+
+function sigGetUsers(side) {
+  try { return JSON.parse(localStorage.getItem(SIG_KEY(side)) || '[]'); } catch { return []; }
+}
+function sigSetUsers(side, arr) {
+  localStorage.setItem(SIG_KEY(side), JSON.stringify(arr));
+}
+
+function sigSaveUser(side) {
+  let name = '', extra = '';
+  if (side === 1) {
+    name = ($('rc_sig1_name')?.value || '').trim();
+    extra = ($('rc_sig1_receiver')?.value || '').trim();
+  } else {
+    name = ($('rc_sig2_name')?.value || '').trim();
+    extra = ($('rc_sig2_tel')?.value || '').trim();
+  }
+  if (!name) { showToast('กรุณากรอกชื่อก่อนบันทึก'); return; }
+  const users = sigGetUsers(side);
+  const exists = users.find(u => u.name === name);
+  if (exists) {
+    exists.extra = extra;
+    exists.updatedAt = new Date().toISOString();
+    sigSetUsers(side, users);
+    showToast(`อัปเดต "${name}" แล้ว ✓`);
+  } else {
+    users.push({ id: 'sig-' + Date.now(), name, extra, savedAt: new Date().toISOString() });
+    sigSetUsers(side, users);
+    showToast(`บันทึก "${name}" แล้ว ✓`);
+  }
+}
+
+function sigRecallUser(side) {
+  _sigCurrentSide = side;
+  const users = sigGetUsers(side);
+  const title = document.getElementById('sigModalTitle');
+  if (title) title.textContent = side === 1 ? 'เลือกผู้รับสินค้า' : 'เลือกผู้ออกเอกสาร';
+  const list = document.getElementById('sigRecallList');
+  if (!list) return;
+  if (!users.length) {
+    list.innerHTML = `<div style="padding:20px 16px;text-align:center;color:var(--text-subtle);font-size:13px"><i class="ti ti-users" style="font-size:24px;display:block;margin-bottom:6px"></i>ยังไม่มีข้อมูลบันทึกไว้<br><span style="font-size:11px">กรอกข้อมูลแล้วกด "บันทึก" เพื่อเก็บไว้ใช้งาน</span></div>`;
+  } else {
+    list.innerHTML = users.map(u => `
+      <div style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--border-light);transition:background .1s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+        <div style="flex:1;cursor:pointer;min-width:0" onclick="sigApplyUser(${_sigCurrentSide},'${u.id}')">
+          <div style="font-size:13.5px;font-weight:600;color:var(--text)">${u.name}</div>
+          ${u.extra ? `<div style="font-size:11.5px;color:var(--text-muted);margin-top:1px">${u.extra}</div>` : ''}
+        </div>
+        <button onclick="sigEditUser(${_sigCurrentSide},'${u.id}')" title="แก้ไข" style="background:none;border:1.5px solid var(--border);border-radius:6px;padding:4px 7px;cursor:pointer;color:var(--text-muted);font-size:12px;display:inline-flex;align-items:center;gap:3px;transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">
+          <i class="ti ti-pencil"></i>
+        </button>
+        <button onclick="sigDeleteUser(${_sigCurrentSide},'${u.id}')" title="ลบ" style="background:none;border:1.5px solid var(--border);border-radius:6px;padding:4px 7px;cursor:pointer;color:var(--text-muted);font-size:12px;display:inline-flex;align-items:center;gap:3px;transition:all .15s" onmouseover="this.style.borderColor='var(--danger)';this.style.color='var(--danger)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">
+          <i class="ti ti-trash"></i>
+        </button>
+      </div>`).join('');
+  }
+  document.getElementById('sigRecallModal').style.display = 'flex';
+}
+
+function sigApplyUser(side, id) {
+  const users = sigGetUsers(side);
+  const u = users.find(x => x.id === id);
+  if (!u) return;
+  if (side === 1) {
+    const n = $('rc_sig1_name'); if (n) { n.value = u.name; const p = $('rc_sig1_name_print'); if(p) p.textContent = u.name; }
+    const r = $('rc_sig1_receiver'); if (r) { r.value = u.extra || ''; const p = $('rc_sig1_receiver_print'); if(p) p.textContent = u.extra||''; }
+  } else {
+    const n = $('rc_sig2_name'); if (n) { n.value = u.name; const p = $('rc_sig2_name_print'); if(p) p.textContent = u.name; }
+    const t = $('rc_sig2_tel'); if (t) { t.value = u.extra || ''; const p = $('rc_sig2_tel_print'); if(p) p.textContent = u.extra||''; }
+  }
+  closeSigRecallModal();
+  showToast(`เรียกใช้ "${u.name}" แล้ว ✓`);
+}
+
+function sigDeleteUser(side, id) {
+  const users = sigGetUsers(side);
+  const u = users.find(x => x.id === id);
+  if (!u || !confirm(`ลบ "${u.name}" ออกจากรายการ?`)) return;
+  sigSetUsers(side, users.filter(x => x.id !== id));
+  showToast(`ลบ "${u.name}" แล้ว`);
+  sigRecallUser(side); // re-render
+}
+
+function sigEditUser(side, id) {
+  const users = sigGetUsers(side);
+  const u = users.find(x => x.id === id);
+  if (!u) return;
+  const label1 = side === 1 ? 'ชื่อผู้รับสินค้า' : 'ชื่อผู้รับเงิน';
+  const label2 = side === 1 ? 'ตำแหน่ง / แผนก' : 'เบอร์โทร';
+  const newName = prompt(label1, u.name);
+  if (newName === null) return;
+  const newExtra = prompt(label2, u.extra || '');
+  if (newExtra === null) return;
+  u.name = newName.trim() || u.name;
+  u.extra = newExtra.trim();
+  u.updatedAt = new Date().toISOString();
+  sigSetUsers(side, users);
+  showToast(`แก้ไข "${u.name}" แล้ว ✓`);
+  sigRecallUser(side); // re-render
+}
+
+function closeSigRecallModal(event) {
+  if (event && event.target !== document.getElementById('sigRecallModal')) return;
+  document.getElementById('sigRecallModal').style.display = 'none';
+}
+// ========== END SIGNATURE USER MANAGEMENT ==========
 
 </script>
 <!-- Slip Image Viewer Modal -->
@@ -2316,5 +3121,24 @@ function closeSlipImageModal() {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSlipImageModal(); });
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  flatpickr("#rc_date", {
+    dateFormat: "d/m/Y",
+    allowInput: false,
+    locale: {
+      firstDayOfWeek: 0,
+      weekdays: {
+        shorthand: ["อา","จ","อ","พ","พฤ","ศ","ส"],
+        longhand: ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"]
+      },
+      months: {
+        shorthand: ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."],
+        longhand: ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"]
+      }
+    }
+  });
+});
+</script>
 </body>
 </html>

@@ -249,13 +249,13 @@ th {
   color: var(--text-muted);
   border-bottom: 1.5px solid var(--border);
 }
-td { padding: 5px 5px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+td { padding: 5px 5px; border-bottom: 1px solid var(--border-light); vertical-align: top; }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background: #faf9f7; }
 td input {
   border: 1.5px solid transparent;
   border-radius: var(--radius-xs);
-  padding: 5px 7px;
+  padding: 3px 7px;
   font-size: 13px;
   width: 100%;
   background: transparent;
@@ -263,7 +263,9 @@ td input {
   font-family: inherit;
   transition: border-color .1s, background .1s;
 }
-td textarea { vertical-align: middle; }
+td textarea { vertical-align: top; }
+td.td-num { padding-top: 8px; }
+.print-val { display: none; }
 td input:focus { border-color: var(--border); background: var(--surface2); outline: none; box-shadow: 0 0 0 2px rgba(28,27,24,.05); }
 td textarea:focus { border-color: var(--border) !important; background: var(--surface2) !important; outline: none; box-shadow: 0 0 0 2px rgba(28,27,24,.05); }
 
@@ -488,9 +490,17 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
   .table-wrap { border: none; }
   table { font-size: 13px; }
   th { padding: 4px 4px; font-size: 11px; background: none; }
-  td { padding: 3px 4px; font-size: 13px; vertical-align: middle; }
-  td input, td textarea { vertical-align: middle; padding-top: 0; padding-bottom: 0; line-height: 1.4; }
-  td input { padding-top: 0; }
+  td { padding: 3px 4px; font-size: 13px; vertical-align: top; }
+  .card { page-break-inside: avoid; break-inside: avoid; }
+  #noteSummaryWrap { page-break-inside: avoid; break-inside: avoid; }
+  td input, td textarea { vertical-align: top; padding-top: 2px; padding-bottom: 0; line-height: 1.4; }
+  td input { padding-top: 2px; padding-bottom: 0; }
+  td input + .print-val { display: block !important; font-size: 13px; line-height: 1.4; }
+  td:has(input[style*="text-align:center"]) .print-val { text-align: center; }
+  td:has(input[style*="text-align:right"]) .print-val { text-align: right; }
+  td input { display: none !important; }
+  td textarea { display: block !important; }
+  td.td-num { padding-top: 2px !important; }
   /* Receipt doc info — print */
   #rcDocInfo .rc-info-grid { grid-template-columns: auto 120px !important; }
   #rcDocInfo .rc-info-grid input { border: none !important; background: transparent !important; padding: 2px 0 !important; }
@@ -526,6 +536,13 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
   <button class="tab" onclick="switchTab('banks')" id="tab-banks"><i class="ti ti-building-bank"></i> บัญชีธนาคาร <span id="bankPresetCount" style="font-size:11px;background:var(--border);padding:1px 7px;border-radius:20px;margin-left:2px">0</span></button>
   <button class="tab" onclick="switchTab('contacts')" id="tab-contacts"><i class="ti ti-address-book"></i> ลูกค้า <span id="contactCount" style="font-size:11px;background:var(--border);padding:1px 7px;border-radius:20px;margin-left:2px">0</span></button>
   <a class="tab" href="receipt.html" style="text-decoration:none"><i class="ti ti-receipt"></i> ใบเสร็จ <span id="receiptCount" style="font-size:11px;background:var(--border);padding:1px 7px;border-radius:20px;margin-left:2px">0</span></a>
+  <div style="flex:1"></div>
+  <div id="formActions" style="display:flex;align-items:center;gap:6px;padding:0 8px">
+    <button class="btn btn-sm" onclick="newForm()"><i class="ti ti-file-plus"></i> ใหม่</button>
+    <button class="btn btn-sm" onclick="clearForm()"><i class="ti ti-trash"></i> ล้าง</button>
+    <button class="btn btn-sm" onclick="printDoc()"><i class="ti ti-printer"></i> พิมพ์</button>
+    <button class="btn btn-sm btn-primary" onclick="saveQuotation()"><i class="ti ti-device-floppy"></i> บันทึก</button>
+  </div>
 </nav>
 
 <div id="toast" class="toast no-print"></div>
@@ -547,12 +564,10 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
       <div style="border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;background:var(--surface2);min-width:220px;flex:1">
         <div class="section-label no-print" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">ผู้เสนอราคา <button class="btn btn-sm no-print" onclick="openContactPicker('seller')" title="เลือกจากสมุดที่อยู่"><i class="ti ti-address-book"></i> เลือก</button></div>
         <div style="display:flex;flex-direction:column;gap:6px">
-          <div id="s_name_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ชื่อบริษัท / ร้านค้า</label><textarea id="s_name" rows="1" placeholder="บริษัท ตัวอย่าง จำกัด" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;max-height:38px;flex:1;line-height:1.5"></textarea></div>
-          <div id="s_addr_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ที่อยู่</label><textarea id="s_addr" rows="1" placeholder="เลขที่ ถนน แขวง เขต จังหวัด" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;max-height:38px;flex:1;line-height:1.5"></textarea></div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <div id="s_tel_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex:1"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">โทรศัพท์</label><input id="s_tel" placeholder="02-xxx-xxxx" style="flex:1;min-width:0"></div>
-            <div id="s_tax_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex:1"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">เลขผู้เสียภาษี</label><input id="s_tax" placeholder="0-0000-00000-00-0" style="flex:1;min-width:0"></div>
-          </div>
+          <div id="s_name_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px"><label class="no-print" style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ชื่อบริษัท / ร้านค้า</label><textarea id="s_name" rows="1" placeholder="บริษัท ตัวอย่าง จำกัด" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;max-height:38px;flex:1;line-height:1.5"></textarea></div>
+          <div id="s_addr_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px"><label class="no-print" style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ที่อยู่</label><textarea id="s_addr" rows="1" placeholder="เลขที่ ถนน แขวง เขต จังหวัด" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;max-height:38px;flex:1;line-height:1.5"></textarea></div>
+          <div id="s_tel_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">โทรศัพท์</label><input id="s_tel" placeholder="02-xxx-xxxx" style="flex:1;min-width:0"></div>
+          <div id="s_tax_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">หมายเลขประจำตัวผู้เสียภาษี Tax ID</label><input id="s_tax" placeholder="0-0000-00000-00-0" style="flex:1;min-width:0"></div>
           <button class="btn btn-sm no-print" onclick="saveFormToContact('seller')" style="margin-top:4px;width:100%;justify-content:center"><i class="ti ti-bookmark"></i> บันทึกลงสมุดที่อยู่</button>
         </div>
       </div>
@@ -578,12 +593,13 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
         <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:6px" class="no-print"><button class="btn btn-sm no-print" onclick="openContactPicker('buyer')" title="เลือกจากสมุดที่อยู่"><i class="ti ti-address-book"></i> เลือก</button></div>
         <div style="display:flex;flex-direction:column;gap:6px">
           <div style="display:flex;gap:8px;align-items:center">
-            <div id="c_name_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex:1"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ชื่อบริษัท / ลูกค้า</label><textarea id="c_name" rows="1" placeholder="บริษัท ลูกค้า จำกัด" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;flex:1"></textarea></div>
-            <div id="c_tel_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex-shrink:0"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">โทรศัพท์</label><input id="c_tel" placeholder="08x-xxx-xxxx" style="width:200px;min-width:0"></div>
+            <div id="c_name_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex:1"><label class="no-print" style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ชื่อบริษัท / ลูกค้า</label><textarea id="c_name" rows="1" placeholder="บริษัท ลูกค้า จำกัด" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;flex:1"></textarea></div>
+            <div id="c_tel_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex-shrink:0"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">โทรศัพท์</label><input id="c_tel" placeholder="08x-xxx-xxxx" style="flex:1;min-width:0"></div>
           </div>
           <div style="display:flex;gap:8px;align-items:center">
-            <div id="c_addr_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex:1"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ที่อยู่</label><textarea id="c_addr" rows="1" placeholder="เลขที่ ถนน แขวง เขต จังหวัด" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;flex:1"></textarea></div>
-            <div id="c_tax_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex-shrink:0"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">เลขผู้เสียภาษี</label><input id="c_tax" placeholder="0-0000-00000-00-0" style="width:200px;min-width:0"></div>
+            <div id="c_addr_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px;flex:1"><label class="no-print" style="white-space:nowrap;margin-bottom:0;min-width:fit-content">ที่อยู่</label><textarea id="c_addr" rows="1" placeholder="เลขที่ ถนน แขวง เขต จังหวัด" oninput="autoResize(this)" style="resize:none;overflow:hidden;min-height:0;flex:1"></textarea></div>
+          </div>
+          <div id="c_tax_wrap" class="field" style="flex-direction:row;align-items:center;gap:8px"><label style="white-space:nowrap;margin-bottom:0;min-width:fit-content">หมายเลขประจำตัวผู้เสียภาษี Tax ID</label><input id="c_tax" placeholder="0-0000-00000-00-0" style="flex:1;min-width:0"></div
           </div>
           <button class="btn btn-sm no-print" onclick="saveFormToContact('buyer')" style="margin-top:4px;width:100%;justify-content:center"><i class="ti ti-bookmark"></i> บันทึกลงสมุดที่อยู่</button>
         </div>
@@ -624,7 +640,8 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
     </div>
   </div>
 
-  <div class="card">
+  <div id="noteSummaryWrap">
+  <div class="card" id="summaryCard">
       <div class="section-label">สรุปยอด</div>
 
       <!-- ส่วนลด -->
@@ -686,6 +703,7 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
       <div id="note_wrap" class="field"><label></label><textarea id="note" placeholder="ระยะเวลาส่งมอบ, เงื่อนไขต่างๆ" oninput="autoResize(this)" style="resize:none;overflow:hidden;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2)"></textarea></div>
     </div>
   </div>
+  </div><!-- /noteSummaryWrap -->
 
   <!-- ปุ่มเพิ่มงวดอยู่นอกการ์ด เห็นได้ตลอด -->
   <div class="actions no-print" style="margin-bottom:8px">
@@ -763,16 +781,6 @@ td textarea:focus { border-color: var(--border) !important; background: var(--su
     </div>
   </div>
 
-  <div class="actions-bar no-print">
-    <div class="actions">
-      <button class="btn" onclick="newForm()"><i class="ti ti-file-plus"></i> ใหม่</button>
-      <button class="btn" onclick="clearForm()"><i class="ti ti-trash"></i> ล้าง</button>
-    </div>
-    <div class="actions">
-      <button class="btn" onclick="printDoc()"><i class="ti ti-printer"></i> พิมพ์</button>
-      <button class="btn btn-primary" onclick="saveQuotation()"><i class="ti ti-device-floppy"></i> บันทึก</button>
-    </div>
-  </div>
 </div>
 
 <!-- ============ LIST VIEW ============ -->
@@ -1269,15 +1277,15 @@ function renderRows() {
     const rev = r.qty * r.price, cost = r.qty * r.cost, profit = rev - cost;
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td style="color:var(--text-muted);text-align:center;font-size:13px;vertical-align:middle">${i+1}</td>
-      <td style="vertical-align:middle"><textarea placeholder="รายละเอียด" oninput="updateRow(${r.id},'desc',this.value);autoResize(this)" style="width:100%;resize:none;overflow:hidden;min-height:36px;line-height:1.6;border:1px solid transparent;border-radius:6px;padding:3px 6px;font-size:13px;background:transparent;color:var(--text);font-family:inherit;display:block;vertical-align:middle">${r.desc.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea></td>
-      <td style="vertical-align:middle"><input type="number" value="${r.qty}" min="0" step="any" oninput="updateRow(${r.id},'qty',this.value)" style="text-align:center;width:100%"></td>
-      <td style="vertical-align:middle"><input type="text" value="${r.unit}" oninput="updateRow(${r.id},'unit',this.value)" style="text-align:center;width:100%"></td>
-      <td style="vertical-align:middle"><input type="number" value="${r.price}" min="0" step="any" oninput="updateRow(${r.id},'price',this.value)" style="text-align:right;width:100%"></td>
-      <td style="text-align:right;vertical-align:middle" id="lrev${r.id}">${fmt(rev)}</td>
-      <td class="no-print" style="vertical-align:middle"><input type="number" value="${r.cost}" min="0" step="any" oninput="updateRow(${r.id},'cost',this.value)" style="text-align:right;width:100%;color:var(--cost-color)"></td>
-      <td class="no-print" id="lprof${r.id}" style="text-align:right;vertical-align:middle"><span class="${profit>=0?'profit-pos':'profit-neg'}">${fmt(profit)}</span></td>
-      <td class="no-print" style="vertical-align:middle"><button class="btn btn-sm btn-danger btn-icon" onclick="removeRow(${r.id})"><i class="ti ti-trash"></i></button></td>`;
+      <td class="td-num" style="color:var(--text-muted);text-align:center;font-size:13px;vertical-align:top">${i+1}</td>
+      <td style="vertical-align:top"><textarea placeholder="รายละเอียด" oninput="updateRow(${r.id},'desc',this.value);autoResize(this)" style="width:100%;resize:none;overflow:hidden;min-height:36px;line-height:1.6;border:1px solid transparent;border-radius:6px;padding:3px 6px;font-size:13px;background:transparent;color:var(--text);font-family:inherit;display:block;vertical-align:top">${r.desc.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea></td>
+      <td style="vertical-align:top"><input type="number" value="${r.qty}" min="0" step="any" oninput="updateRow(${r.id},'qty',this.value);this.nextElementSibling.textContent=this.value" style="text-align:center;width:100%"><span class="print-val">${r.qty}</span></td>
+      <td style="vertical-align:top"><input type="text" value="${r.unit}" oninput="updateRow(${r.id},'unit',this.value);this.nextElementSibling.textContent=this.value" style="text-align:center;width:100%"><span class="print-val">${r.unit}</span></td>
+      <td style="vertical-align:top"><input type="number" value="${r.price}" min="0" step="any" oninput="updateRow(${r.id},'price',this.value);this.nextElementSibling.textContent=this.value" style="text-align:right;width:100%"><span class="print-val">${r.price}</span></td>
+      <td class="td-num" style="text-align:right;vertical-align:top" id="lrev${r.id}">${fmt(rev)}</td>
+      <td class="no-print" style="vertical-align:top"><input type="number" value="${r.cost}" min="0" step="any" oninput="updateRow(${r.id},'cost',this.value)" style="text-align:right;width:100%;color:var(--cost-color)"></td>
+      <td class="no-print" id="lprof${r.id}" style="text-align:right;vertical-align:top"><span class="${profit>=0?'profit-pos':'profit-neg'}">${fmt(profit)}</span></td>
+      <td class="no-print" style="vertical-align:top"><button class="btn btn-sm btn-danger btn-icon" onclick="removeRow(${r.id})"><i class="ti ti-trash"></i></button></td>`;
     tb.appendChild(tr);
   });
   setTimeout(() => document.querySelectorAll('#itemBody textarea').forEach(autoResize), 0);
@@ -1853,8 +1861,8 @@ function renderContactList() {
       ? `<span style="background:#dbeafe;color:#1e40af;font-size:10px;padding:1px 7px;border-radius:20px;font-weight:700">ผู้เสนอราคา</span>`
       : `<span style="background:var(--success-bg);color:var(--success);font-size:10px;padding:1px 7px;border-radius:20px;font-weight:700">ลูกค้า</span>`;
     const extraField = ct.type === 'seller'
-      ? `<div class="field"><label>เลขผู้เสียภาษี</label><input class="contact-tax-input" value="${(ct.tax||'').replace(/"/g,'&quot;')}" placeholder="0-0000-00000-00-0" oninput="updateContactField('${ct.id}','tax',this.value)"></div>`
-      : `<div class="field"><label>เลขผู้เสียภาษี</label><input value="${(ct.tax||'').replace(/"/g,'&quot;')}" placeholder="0-0000-00000-00-0" oninput="updateContactField('${ct.id}','tax',this.value)"></div>`;
+      ? `<div class="field"><label>หมายเลขประจำตัวผู้เสียภาษี Tax ID</label><input class="contact-tax-input" value="${(ct.tax||'').replace(/"/g,'&quot;')}" placeholder="0-0000-00000-00-0" oninput="updateContactField('${ct.id}','tax',this.value)"></div>`
+      : `<div class="field"><label>หมายเลขประจำตัวผู้เสียภาษี Tax ID</label><input value="${(ct.tax||'').replace(/"/g,'&quot;')}" placeholder="0-0000-00000-00-0" oninput="updateContactField('${ct.id}','tax',this.value)"></div>`;
     return `<div class="bank-account-item" data-cid="${ct.id}" style="margin-bottom:10px">
       <div class="bank-account-header" style="margin-bottom:10px">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
